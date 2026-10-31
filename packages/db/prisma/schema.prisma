@@ -1,0 +1,13 @@
+// Эталонная схема — SPEC 7.2. Модели добавляются первой задачей M1 (DECISIONS D-04).
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url — в prisma.config.ts (Prisma 7)
+}

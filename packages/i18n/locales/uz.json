@@ -1,0 +1,58 @@
+{
+  "common": {
+    "tagline": "Baliq xo'jaliklari uchun B2B savdo maydonchasi",
+    "language": "Til",
+    "languages": {
+      "uz": "O'zbekcha",
+      "ru": "Русский"
+    },
+    "loading": "Yuklanmoqda…",
+    "retry": "Qayta urinish",
+    "currency": "so'm",
+    "kg": "kg"
+  },
+  "health": {
+    "title": "Tizim holati",
+    "api": "API serveri",
+    "ok": "Ishlayapti",
+    "down": "Mavjud emas",
+    "checking": "Tekshirilmoqda…",
+    "version": "Versiya: {version}"
+  },
+  "web": {
+    "home": {
+      "title": "Baliq savdosi — to'g'ridan-to'g'ri xo'jalikdan",
+      "subtitle": "Restoranlar, do'konlar va ulgurji xaridorlar uchun"
+    }
+  },
+  "admin": {
+    "home": {
+      "title": "Operator paneli",
+      "subtitle": "Buyurtmalar, tekshiruvlar va topshiriqlar"
+    }
+  },
+  "mobile": {
+    "home": {
+      "title": "Baliq savdosi"
+    }
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Ma'lumotlar noto'g'ri kiritilgan",
+    "UNAUTHORIZED": "Tizimga kiring",
+    "FORBIDDEN": "Ruxsat yo'q",
+    "NOT_FOUND": "Topilmadi",
+    "CONFLICT": "Ma'lumotlar o'zgargan, sahifani yangilang",
+    "INVALID_TRANSITION": "Bu amalni hozirgi holatda bajarib bo'lmaydi",
+    "INSUFFICIENT_VOLUME": "Mavjud hajm yetarli emas",
+    "ORG_NOT_VERIFIED": "Tashkilot hali tekshirilmagan",
+    "ORG_SUSPENDED": "Tashkilot faoliyati to'xtatilgan",
+    "OTP_INVALID": "Kod noto'g'ri",
+    "OTP_EXPIRED": "Kodning amal qilish muddati tugagan",
+    "OTP_TOO_MANY_ATTEMPTS": "Urinishlar juda ko'p, keyinroq qayta urinib ko'ring",
+    "RATE_LIMITED": "So'rovlar juda ko'p, biroz kuting",
+    "COMMISSION_OVERDUE_BLOCK": "Komissiya to'lovi muddati o'tgan",
+    "MEDIA_TOO_LARGE": "Fayl hajmi juda katta",
+    "MEDIA_TYPE_NOT_ALLOWED": "Bu turdagi fayl qabul qilinmaydi",
+    "INTERNAL_ERROR": "Xatolik yuz berdi, keyinroq qayta urinib ko'ring"
+  }
+}

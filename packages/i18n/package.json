@@ -1,0 +1,38 @@
+{
+  "name": "@baliqbozor/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./locales/*.json": "./locales/*.json"
+  },
+  "files": [
+    "dist",
+    "locales"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate-messages.js",
+    "build": "pnpm generate && tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "lint": "eslint .",
+    "typecheck": "pnpm generate && tsc --noEmit",
+    "test": "pnpm generate && vitest run --coverage",
+    "i18n:check": "node scripts/check.js"
+  },
+  "dependencies": {
+    "decimal.js": "10.6.0"
+  },
+  "devDependencies": {
+    "@baliqbozor/config": "workspace:*",
+    "@baliqbozor/domain": "workspace:*",
+    "@vitest/coverage-v8": "5.0.5",
+    "eslint": "10.14.0",
+    "typescript": "6.0.3",
+    "vitest": "5.0.5"
+  }
+}

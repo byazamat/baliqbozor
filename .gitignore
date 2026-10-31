@@ -1,0 +1,45 @@
+# зависимости
+node_modules/
+.pnpm-store/
+
+# сборка
+dist/
+build/
+.next/
+out/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# окружение и секреты
+.env
+.env.*
+!.env.example
+
+# логи
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# ОС и редакторы
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# тесты
+playwright-report/
+test-results/
+
+# mobile
+apps/mobile/android/.gradle/
+apps/mobile/android/app/build/
+apps/mobile/android/local.properties
+apps/mobile/ios/Pods/
+apps/mobile/ios/build/
+*.keystore
+!debug.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision

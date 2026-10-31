@@ -1,0 +1,105 @@
+# Прогресс
+
+Чек-листы по milestones M0–M11 (см. SPEC.md, раздел 14.1). Агент ведёт этот файл.
+Ссылки вида D-NN — на записи в `docs/DECISIONS.md`.
+
+## M0. Каркас
+
+Критерий готовности: `pnpm dev` поднимает всё; CI зелёный; `/health` отвечает.
+
+### M0.0 Основа репозитория
+- [ ] `git init`, `.gitignore`, `.editorconfig`, `.nvmrc` (D-01), `packageManager` в корневом `package.json`
+- [ ] `pnpm-workspace.yaml`, `turbo.json`, `.npmrc` (hoisting для RN — D-07)
+- [ ] Корневые скрипты: `dev`, `build`, `lint`, `typecheck`, `test`, `test:e2e`, `db:migrate`, `db:seed`, `api:generate`, `i18n:check`
+- [ ] Commitlint (Conventional Commits) + lint-staged
+
+### M0.1 packages/config
+- [ ] `tsconfig.base.json` (strict) + варианты node / next / react-native
+- [ ] ESLint flat config: `no-explicit-any: error`, `ban-ts-comment` только с описанием, запрет строк-литералов в JSX
+- [ ] Prettier
+
+### M0.2 packages/domain
+- [ ] Скелет пакета, Vitest с порогом покрытия 90%
+- [ ] `errors.ts`: коды из SPEC 10.2 + тип `ApiError`
+- [ ] `decimal.js`; заготовки `money/`, `matching/` без логики
+
+### M0.3 packages/db
+- [ ] `schema.prisma` целиком из SPEC 7.2 (D-03, D-04), `prisma validate` проходит
+- [ ] Миграция `init` + ручной SQL частичного уникального индекса `PriceIndex`
+- [ ] Экспорт клиента; заготовка seed
+- [ ] Скрипт проверки `prisma migrate diff` для CI
+
+### M0.4 packages/i18n
+- [ ] `locales/uz.json`, `locales/ru.json` (`common.*`, `errors.<CODE>`)
+- [ ] `formatMoney`, `formatKg`, `formatDate`, `formatPhone` без `Intl` (D-09) + тесты по форматам SPEC 12.1
+- [ ] Скрипт `i18n:check` (паритет ключей)
+
+### M0.5 packages/api-client
+- [ ] `openapi-typescript` + `openapi-fetch`; `openapi.json` в репозитории
+- [ ] `pnpm api:generate`: документ из модулей Nest без БД и сети → типы
+
+### M0.6 packages/ui
+- [ ] Пресет Tailwind (токены, контраст AA), базовые Button и Badge
+
+### M0.7 infra
+- [ ] `infra/docker-compose.yml`: Postgres 16, Redis 7, MinIO + init приватного бакета; healthcheck'и
+- [ ] `.env.example` по SPEC 13.6 + D-10
+
+### M0.8 apps/api
+- [ ] NestJS, префикс `/api/v1`, проверка env (zod)
+- [ ] pino с `requestId` и маской телефонов; Helmet; CORS по `WEB_URL`/`ADMIN_URL`
+- [ ] Глобальный фильтр исключений → формат SPEC 10.2
+- [ ] `health`: `/health`, `/ready` (БД, Redis, S3) вне префикса (D-05)
+- [ ] Swagger `/api/docs` (не в production)
+- [ ] Глобальная сериализация `BigInt`/`Decimal` → строка
+- [ ] Sentry (выключен без DSN)
+- [ ] Jest + supertest: e2e `/health`, `/ready`, формат ошибки
+
+### M0.9 apps/worker
+- [ ] NestJS standalone + BullMQ, очередь `system.heartbeat`
+- [ ] HTTP `/health` на `WORKER_HEALTH_PORT` (D-05)
+- [ ] Заготовка цикла опроса outbox
+
+### M0.10 apps/web и apps/admin
+- [ ] Next.js App Router, Tailwind + пресет `ui`, TanStack Query (D-02)
+- [ ] i18n: uz по умолчанию, ru, переключатель (D-08)
+- [ ] Страница-заглушка со статусом `/health` через `api-client`
+- [ ] Vitest; smoke-тест Playwright на web
+- [ ] Порты: web 3000, admin 3001, api 4000
+
+### M0.11 apps/mobile
+- [ ] React Native CLI (не Expo), TypeScript; Metro для pnpm-монорепозитория (D-07)
+- [ ] i18n из `packages/i18n`, экран-заглушка с `/health`
+- [ ] Jest + RNTL smoke-тест; Android debug-сборка проверена локально
+- [ ] Скрипты `mobile:start|android|ios`, вне `pnpm dev` (D-06)
+
+### M0.12 CI (GitHub Actions)
+- [ ] install → lint → typecheck → unit → e2e API (postgres, redis, minio) → build api/worker/web/admin
+- [ ] `prisma migrate diff`, `i18n:check`, дрейф OpenAPI (`api:generate && git diff --exit-code`)
+- [ ] mobile: typecheck + jest (D-06)
+
+### M0.13 Закрытие
+- [ ] Чистый клон → `pnpm i` → `docker compose up -d` → `pnpm db:migrate` → `pnpm dev`: `/health` и `/ready` 200, web/admin на uz/ru, worker healthy
+- [ ] PROGRESS и DECISIONS обновлены
+
+Dockerfile'ы приложений — при подготовке staging (M11).
+
+## M1. Доступ и организации (план, детализировать перед стартом)
+- [ ] Seed справочников и настроек 8.13 (+ недостающие); `settings` с кэшем Redis; `audit`
+- [ ] `auth`: SmsProvider (console), OTP с лимитами, JWT + refresh-ротация (`familyId`)
+- [ ] Guard'ы: аутентификация → роль → членство (`X-Org-Id`) → политика; хелпер e2e изоляции
+- [ ] `/me`, `orgs`, участники, `OrgInvitation` (D-11), адреса
+- [ ] Минимальный `media`: presigned PUT + complete (D-12)
+- [ ] Верификация: отправка → `PENDING` + `OpsTask(VERIFY_ORG)` → решение оператора
+- [ ] Outbox `DomainEvent` → worker → `Notification(IN_APP)`, `GET /notifications` (D-12)
+- [ ] UI web: вход, онбординг, профиль организации, документы, уведомления; admin: вход, очередь верификации
+- [ ] Демо-сценарий M1
+
+## M2. Хозяйства и наличие (план, детализировать перед стартом)
+- [ ] Обработка медиа в worker: magic bytes, sharp, удаление EXIF/GPS, лимиты видео
+- [ ] Domain: статусная машина наличия, валидации 8.3, свежесть, гаверсинус + bbox
+- [ ] `farms` (деактивация → PAUSED), карта в web
+- [ ] `listings`: CRUD, publish/pause/resume/archive/confirm, `pauseReason`
+- [ ] Планировщик (Asia/Tashkent): напоминание о свежести, автопауза, EXPIRED → outbox → in-app
+- [ ] Публичный каталог `GET /listings` + страницы `/catalog`, `/listing/:id`
+- [ ] Демо: критерий M2 и сценарий 14.3 №4

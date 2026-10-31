@@ -1,0 +1,9 @@
+{
+  "extends": "@baliqbozor/config/tsconfig/nest.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "types": ["node", "jest"]
+  },
+  "include": ["src", "test", "*.config.js"]
+}

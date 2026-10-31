@@ -43,3 +43,5 @@ apps/mobile/ios/build/
 *.p8
 *.p12
 *.mobileprovision
+packages/db/src/generated/
+packages/i18n/src/generated/

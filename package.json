@@ -1,0 +1,42 @@
+{
+  "name": "baliqbozor",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
+  "scripts": {
+    "dev": "turbo run dev --filter=!@baliqbozor/mobile",
+    "build": "turbo run build --filter=!@baliqbozor/mobile",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test test:e2e",
+    "test:unit": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "test:web-e2e": "pnpm --filter @baliqbozor/web test:pw",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:migrate": "pnpm --filter @baliqbozor/db db:migrate",
+    "db:seed": "pnpm --filter @baliqbozor/db db:seed",
+    "db:generate": "pnpm --filter @baliqbozor/db db:generate",
+    "db:validate": "pnpm --filter @baliqbozor/db db:validate",
+    "api:generate": "turbo run build --filter=@baliqbozor/api^... && pnpm --filter @baliqbozor/api openapi:export && pnpm --filter @baliqbozor/api-client generate",
+    "i18n:check": "pnpm --filter @baliqbozor/i18n i18n:check",
+    "mobile:start": "pnpm --filter @baliqbozor/mobile start",
+    "mobile:android": "pnpm --filter @baliqbozor/mobile android",
+    "mobile:ios": "pnpm --filter @baliqbozor/mobile ios",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@baliqbozor/config": "workspace:*",
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "@types/node": "^24.19.2",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "prettier": "3.9.10",
+    "turbo": "2.11.10",
+    "typescript": "6.0.3"
+  }
+}

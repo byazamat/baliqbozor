@@ -54,7 +54,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Start Postgres, Redis, MinIO
-        run: docker compose -f infra/docker-compose.yml up -d --wait
+        run: pnpm infra:up
       - name: E2E tests
         run: pnpm test:e2e
       - name: Service logs on failure

@@ -55,7 +55,7 @@
 ### M0.8 apps/api
 
 - [x] NestJS, префикс `/api/v1`, проверка env (zod)
-- [x] pino с `requestId` и маской телефонов; Helmet; CORS по `WEB_URL`/`ADMIN_URL` (известная проблема: в логе `res.statusCode: null`, исправить)
+- [x] pino с `requestId` и маской телефонов; Helmet; CORS по `WEB_URL`/`ADMIN_URL`; в логе ответа только `statusCode` (исправлен `null`, D-27)
 - [x] Глобальный фильтр исключений → формат SPEC 10.2
 - [x] `health`: `/health`, `/ready` (БД, Redis, S3) вне префикса (D-05)
 - [x] Swagger `/api/docs` (не в production)
@@ -94,8 +94,10 @@
 
 ### M0.13 Закрытие
 
-- [ ] Чистый клон → `pnpm i` → `docker compose up -d` → `pnpm db:migrate` → `pnpm dev`: `/health` и `/ready` 200, web/admin на uz/ru, worker healthy
-- [ ] PROGRESS и DECISIONS обновлены
+- [x] Чистый клон → `pnpm i` → `pnpm infra:up` → `pnpm db:migrate` → `pnpm db:seed` → `pnpm dev`: api и worker `/health`, `/ready` 200, web/admin 200 на uz и ru, heartbeat worker идёт (2026-11-01)
+- [x] Все шаги CI на нетронутом клоне с проверкой кодов выхода; исправлены скрытые зависимости от локальных артефактов (D-27)
+- [ ] CI на GitHub зелёный
+- [x] PROGRESS и DECISIONS обновлены
 
 Dockerfile'ы приложений — при подготовке staging (M11).
 

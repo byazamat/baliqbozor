@@ -10,7 +10,7 @@
 ### M0.0 Основа репозитория
 
 - [x] `git init`, `.gitignore`, `.editorconfig`, `.nvmrc` (D-01), `packageManager` в корневом `package.json`
-- [x] `pnpm-workspace.yaml`, `turbo.json` (`allowBuilds` для pnpm 12); `.npmrc` — в M0.11 (D-07)
+- [x] `pnpm-workspace.yaml`, `turbo.json` (`allowBuilds` для pnpm 12); `.npmrc` не понадобился — Metro работает с изолированным `node_modules` (D-25)
 - [x] Корневые скрипты: `dev`, `build`, `lint`, `typecheck`, `test`, `test:e2e`, `db:migrate`, `db:seed`, `api:generate`, `i18n:check`
 - [x] Commitlint (Conventional Commits) + lint-staged
 
@@ -49,7 +49,7 @@
 
 ### M0.7 infra
 
-- [x] `infra/docker-compose.yml`: Postgres 16, Redis 7, MinIO + init приватного бакета; healthcheck'и
+- [x] `infra/docker-compose.yml`: Postgres 18, Redis 8 (D-17), MinIO (D-21) + init приватного бакета; healthcheck'и
 - [x] `.env.example` по SPEC 13.6 + D-10
 
 ### M0.8 apps/api
@@ -79,10 +79,10 @@
 
 ### M0.11 apps/mobile
 
-- [ ] React Native CLI (не Expo), TypeScript; Metro для pnpm-монорепозитория (D-07)
-- [ ] i18n из `packages/i18n`, экран-заглушка с `/health`
-- [ ] Jest + RNTL smoke-тест; Android debug-сборка проверена локально
-- [ ] Скрипты `mobile:start|android|ios`, вне `pnpm dev` (D-06)
+- [x] React Native 0.88 CLI (не Expo), TypeScript, `uz.baliqbozor.app`; Metro с `watchFolders` на корень, без hoisting (D-07, D-25)
+- [x] i18next с ключами `packages/i18n` (плейсхолдеры `{name}`), переключатель uz/ru, экран-заглушка с `/health` через `api-client`
+- [x] Jest 29 + RNTL 14 smoke-тест (uz по умолчанию, переключение на ru, ok/down/повтор); Android debug-сборка (`assembleDebug`) собрана и запущена на эмуляторе: Hermes, i18n, `/health` через `10.0.2.2` — работает. iOS (`pod install`) не проверялся: нет совместимого Ruby/CocoaPods
+- [x] Скрипты `mobile:start|android|ios`, вне `pnpm dev` (D-06); lint/typecheck/test входят в общие turbo-задачи
 
 ### M0.12 CI (GitHub Actions)
 

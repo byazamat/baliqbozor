@@ -71,11 +71,11 @@
 
 ### M0.10 apps/web и apps/admin
 
-- [ ] Next.js App Router, Tailwind + пресет `ui`, TanStack Query (D-02)
-- [ ] i18n: uz по умолчанию, ru, переключатель (D-08)
-- [ ] Страница-заглушка со статусом `/health` через `api-client`
-- [ ] Vitest; smoke-тест Playwright на web
-- [ ] Порты: web 3000, admin 3001, api 4000
+- [x] Next.js 16 App Router, Tailwind 4 + `@baliqbozor/ui/theme.css`, TanStack Query, `ApiProvider` на `api-client` (D-02)
+- [x] i18n на next-intl: uz по умолчанию без префикса, ru — `/ru/…`, переключатель в шапке (D-08, D-24)
+- [x] Страница-заглушка со статусом `/health` через `api-client` (проверено на живом API через CORS)
+- [x] Vitest (HealthStatus: ok / down / повтор); smoke-тест Playwright на web (десктоп и Pixel 7, API подменяется)
+- [x] Порты: web 3000, admin 3001, api 4000
 
 ### M0.11 apps/mobile
 

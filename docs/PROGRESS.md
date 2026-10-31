@@ -30,7 +30,7 @@
 
 - [x] Prisma 7: `prisma.config.ts`, генератор `prisma-client`, `@prisma/adapter-pg`, экспорт клиента
 - [x] Команды `db:migrate`, `db:seed`, `db:generate`; заготовка seed
-- [ ] `prisma validate` в CI (схема с моделями — в M1)
+- [x] `prisma validate` в CI (схема с моделями — в M1)
 
 ### M0.4 packages/i18n
 
@@ -86,9 +86,11 @@
 
 ### M0.12 CI (GitHub Actions)
 
-- [ ] install → lint → typecheck → unit → e2e API (postgres, redis, minio) → build api/worker/web/admin
-- [ ] `prisma validate`, `i18n:check`, дрейф OpenAPI (`api:generate && git diff --exit-code`)
-- [ ] mobile: lint + typecheck + jest (D-06)
+Все шаги прогнаны локально на чистом клоне с `CI=true`; на GitHub-раннере ещё не запускался.
+
+- [x] `.github/workflows/ci.yml`, три параллельных job'а (D-26): `checks` (format → lint → typecheck → unit → … → build), `e2e` (api + worker на docker compose), `web-e2e` (Playwright, отчёт артефактом при падении)
+- [x] `prisma validate`, `i18n:check`, дрейф OpenAPI (`api:generate && git diff --exit-code`)
+- [x] mobile: lint + typecheck + jest — в общих turbo-задачах job'а `checks` (D-06, D-26)
 
 ### M0.13 Закрытие
 

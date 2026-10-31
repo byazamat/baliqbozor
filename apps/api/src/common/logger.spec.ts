@@ -1,3 +1,6 @@
+import { IncomingMessage, ServerResponse } from 'node:http';
+import { Socket } from 'node:net';
+
 import { loadEnv } from '../config/env.js';
 import { loggerParams } from './logger.js';
 
@@ -18,7 +21,10 @@ const env = loadEnv({
 describe('loggerParams', () => {
   const pinoHttp = loggerParams(env).pinoHttp as {
     formatters: { log: (o: Record<string, unknown>) => Record<string, unknown> };
-    serializers: { req: (r: { id: string; method: string; url: string }) => unknown };
+    serializers: {
+      req: (r: { id: string; method: string; url: string }) => unknown;
+      res: (r: { statusCode: number | null; headers?: unknown }) => unknown;
+    };
     transport?: unknown;
   };
 
@@ -33,6 +39,18 @@ describe('loggerParams', () => {
       msg: 'otp for +99890*****67',
       ctx: { phone: '99890*****67' },
       list: ['+99890*****67'],
+    });
+  });
+
+  it('passes non-plain objects (http response) through untouched for serializers', () => {
+    const res = new ServerResponse(new IncomingMessage(new Socket()));
+    const out = pinoHttp.formatters.log({ res });
+    expect(out.res).toBe(res);
+  });
+
+  it('logs only the response status', () => {
+    expect(pinoHttp.serializers.res({ statusCode: 201, headers: { 'set-cookie': 'x' } })).toEqual({
+      statusCode: 201,
     });
   });
 

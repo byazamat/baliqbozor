@@ -167,18 +167,18 @@
 
 | Слой | Технология | Примечание |
 |---|---|---|
-| Язык | TypeScript (strict) везде | `noImplicitAny`, `strictNullChecks` |
+| Язык | TypeScript 6 (strict) везде | `noImplicitAny`, `strictNullChecks`; TypeScript 7 — когда его поддержат typescript-eslint и openapi-typescript (DECISIONS D-16) |
 | Монорепозиторий | pnpm workspaces + Turborepo | |
-| Бэкенд | NestJS 10+, Node.js 20 LTS | REST + Socket.IO gateway |
-| ORM | Prisma | PostgreSQL 16 |
-| Очереди | BullMQ + Redis 7 | Отдельный процесс `apps/worker` |
+| Бэкенд | NestJS 12, Node.js 24 LTS | REST + Socket.IO gateway |
+| ORM | Prisma 7 (driver adapter `@prisma/adapter-pg`, `prisma.config.ts`) | PostgreSQL 18 |
+| Очереди | BullMQ + Redis 8 | Отдельный процесс `apps/worker` |
 | Валидация | class-validator + class-transformer в API; zod в общих пакетах и на клиентах | |
 | Документация API | @nestjs/swagger → OpenAPI 3 | Клиент генерируется `openapi-typescript` + `openapi-fetch` в `packages/api-client` |
 | Аутентификация | OTP по SMS, JWT access (15 мин) + refresh (30 дней, ротация) | |
 | Файлы | S3-совместимое хранилище, загрузка по presigned URL | MinIO в dev |
 | PDF | HTML-шаблоны → PDF через headless Chromium (Playwright) в worker | Шрифты с кириллицей и узбекской латиницей (Noto Sans) |
 | Изображения | sharp: ресайз, превью, удаление EXIF | В worker после загрузки |
-| Веб | Next.js 14+ (App Router), React 18, TanStack Query, react-hook-form + zod, Tailwind CSS | |
+| Веб | Next.js 16 (App Router), React 19, TanStack Query, react-hook-form + zod, Tailwind CSS | |
 | Админка | Отдельное Next.js-приложение, тот же стек, таблицы — TanStack Table | |
 | Карты | MapLibre GL или Leaflet + OpenStreetMap | Выбор точки на карте, показ хозяйств |
 | Мобильное | React Native CLI (не Expo), TypeScript, React Navigation, TanStack Query, Zustand, MMKV, react-native-vision-camera, Notifee + FCM | |
@@ -297,7 +297,7 @@ baliqbozor/
 
 ### 7.1. Принципы
 
-- Эталонная схема ниже — **обязательная по смыслу** и проходит `prisma validate` (Prisma 5). При реализации допускается добавлять индексы, служебные поля и обратные связи, если `prisma validate` того требует, но не менять смысл сущностей, статусов и правил.
+- Эталонная схема ниже — **обязательная по смыслу** и проходит `prisma validate` (Prisma 7.10). Строка подключения к БД задаётся не в схеме, а в `packages/db/prisma.config.ts` (`datasource.url = env("DATABASE_URL")`); клиент создаётся с driver adapter `@prisma/adapter-pg`. При реализации допускается добавлять индексы, служебные поля и обратные связи, если `prisma validate` того требует, но не менять смысл сущностей, статусов и правил.
 - Ссылки на пользователя-автора (`createdById`, `operatorId` и т.п.) хранятся как UUID без связи Prisma, чтобы не раздувать модель `User`; существование проверяется в сервисе.
 - Удаление: бизнес-сущности не удаляются физически — используются статусы (`ARCHIVED`, `CANCELLED`). Физически удаляются только черновики и просроченные OTP.
 - Все суммы — `BigInt` (UZS), все веса — `Decimal(12,3)` (кг), координаты — `Decimal(9,6)`.
@@ -306,12 +306,13 @@ baliqbozor/
 
 ```prisma
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // url — в prisma.config.ts (Prisma 7)
 }
 
 // ===================== ENUMS =====================
@@ -2225,7 +2226,7 @@ reliability = 100 × (completed + 3) / (completed + cancelledByOrg + declinedLin
 
 ### 13.5. DevOps
 
-- **Локально:** `docker compose up -d` (Postgres 16, Redis 7, MinIO), `pnpm i`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm dev` (все приложения через Turborepo).
+- **Локально:** `docker compose up -d` (Postgres 18, Redis 8, MinIO), `pnpm i`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm dev` (все приложения через Turborepo).
 - **CI (GitHub Actions)** на каждый PR: установка, lint, typecheck, unit, e2e API (сервисы в контейнерах), сборка всех приложений, проверка `prisma migrate diff` (схема и миграции совпадают), проверка ключей i18n, проверка актуальности OpenAPI-клиента.
 - **Сборка:** Docker-образ на каждое приложение (`api`, `worker`, `web`, `admin`), multi-stage, non-root.
 - **Staging/production:** docker compose или k3s на VPS в дата-центре Узбекистана, reverse proxy (Caddy/Nginx) с TLS, отдельный managed или self-hosted Postgres с бэкапами, S3-совместимое хранилище (MinIO на отдельном диске или облачный S3 провайдера).

@@ -23,11 +23,10 @@
 - [ ] `errors.ts`: коды из SPEC 10.2 + тип `ApiError`
 - [ ] `decimal.js`; заготовки `money/`, `matching/` без логики
 
-### M0.3 packages/db
-- [ ] `schema.prisma` целиком из SPEC 7.2 (D-03, D-04), `prisma validate` проходит
-- [ ] Миграция `init` + ручной SQL частичного уникального индекса `PriceIndex`
-- [ ] Экспорт клиента; заготовка seed
-- [ ] Скрипт проверки `prisma migrate diff` для CI
+### M0.3 packages/db (D-03, D-04)
+- [ ] Prisma 7: `prisma.config.ts`, генератор `prisma-client`, `@prisma/adapter-pg`, экспорт клиента
+- [ ] Команды `db:migrate`, `db:seed`, `db:generate`; заготовка seed
+- [ ] `prisma validate` в CI (схема с моделями — в M1)
 
 ### M0.4 packages/i18n
 - [ ] `locales/uz.json`, `locales/ru.json` (`common.*`, `errors.<CODE>`)
@@ -75,8 +74,8 @@
 
 ### M0.12 CI (GitHub Actions)
 - [ ] install → lint → typecheck → unit → e2e API (postgres, redis, minio) → build api/worker/web/admin
-- [ ] `prisma migrate diff`, `i18n:check`, дрейф OpenAPI (`api:generate && git diff --exit-code`)
-- [ ] mobile: typecheck + jest (D-06)
+- [ ] `prisma validate`, `i18n:check`, дрейф OpenAPI (`api:generate && git diff --exit-code`)
+- [ ] mobile: lint + typecheck + jest (D-06)
 
 ### M0.13 Закрытие
 - [ ] Чистый клон → `pnpm i` → `docker compose up -d` → `pnpm db:migrate` → `pnpm dev`: `/health` и `/ready` 200, web/admin на uz/ru, worker healthy
@@ -85,6 +84,7 @@
 Dockerfile'ы приложений — при подготовке staging (M11).
 
 ## M1. Доступ и организации (план, детализировать перед стартом)
+- [ ] Полная схема SPEC 7.2 + миграция `init` + ручной SQL частичного уникального индекса `PriceIndex`; проверка `prisma migrate diff` в CI (D-04)
 - [ ] Seed справочников и настроек 8.13 (+ недостающие); `settings` с кэшем Redis; `audit`
 - [ ] `auth`: SmsProvider (console), OTP с лимитами, JWT + refresh-ротация (`familyId`)
 - [ ] Guard'ы: аутентификация → роль → членство (`X-Org-Id`) → политика; хелпер e2e изоляции

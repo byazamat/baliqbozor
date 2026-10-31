@@ -96,7 +96,10 @@
 
 - [x] Чистый клон → `pnpm i` → `pnpm infra:up` → `pnpm db:migrate` → `pnpm db:seed` → `pnpm dev`: api и worker `/health`, `/ready` 200, web/admin 200 на uz и ru, heartbeat worker идёт (2026-11-01)
 - [x] Все шаги CI на нетронутом клоне с проверкой кодов выхода; исправлены скрытые зависимости от локальных артефактов (D-27)
-- [ ] CI на GitHub зелёный
+- [x] CI на GitHub зелёный: https://github.com/byazamat/baliqbozor/actions/runs/41247185692
+
+**M0 закрыт 2026-11-01.**
+
 - [x] PROGRESS и DECISIONS обновлены
 
 Dockerfile'ы приложений — при подготовке staging (M11).

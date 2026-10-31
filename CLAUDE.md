@@ -18,17 +18,22 @@
 ## Команды
 
 ```bash
+nvm use                                             # Node из .nvmrc (24.x); pnpm 12 под Node 20 не запускается
 pnpm i
-docker compose -f infra/docker-compose.yml up -d   # Postgres, Redis, MinIO
+pnpm infra:up                                       # Postgres, Redis, MinIO + бакет; ждёт готовности
 pnpm db:migrate                                     # prisma migrate dev
 pnpm db:seed
-pnpm dev                                            # все приложения (turbo)
-pnpm test                                           # unit + e2e
+pnpm dev                                            # api, worker, web, admin (turbo), без mobile
+pnpm test                                           # unit + e2e (нужен pnpm infra:up)
+pnpm test:web-e2e                                   # Playwright smoke web
 pnpm lint && pnpm typecheck
-pnpm api:generate                                   # OpenAPI → packages/api-client
+pnpm i18n:check                                     # паритет ключей uz/ru
+pnpm api:generate                                   # OpenAPI → packages/api-client (закоммитить результат)
+pnpm infra:down                                     # остановить инфраструктуру
+pnpm mobile:start / mobile:android / mobile:ios     # React Native, отдельно от pnpm dev
 ```
 
-Если какой-то команды ещё нет — создай её в корневом `package.json` в M0.
+Не используй `docker compose up --wait` без списка сервисов: одноразовый `minio-init` завершается, и команда возвращает код 1 (D-27). CI (`.github/workflows/ci.yml`) запускает те же скрипты — новую проверку добавляй и туда.
 
 ## Обязательные правила кода
 

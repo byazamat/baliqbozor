@@ -1,0 +1,229 @@
+{
+  "components": {
+    "schemas": {
+      "ApiErrorBodyDto": {
+        "properties": {
+          "code": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ErrorCode"
+              }
+            ]
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "message": {
+            "example": "Недостаточно доступного объёма",
+            "type": "string"
+          },
+          "requestId": {
+            "example": "b7c1f0e2-…",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "requestId"
+        ],
+        "type": "object"
+      },
+      "ApiErrorDto": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ApiErrorBodyDto"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "type": "object"
+      },
+      "ErrorCode": {
+        "enum": [
+          "VALIDATION_FAILED",
+          "UNAUTHORIZED",
+          "FORBIDDEN",
+          "NOT_FOUND",
+          "CONFLICT",
+          "INVALID_TRANSITION",
+          "INSUFFICIENT_VOLUME",
+          "ORG_NOT_VERIFIED",
+          "ORG_SUSPENDED",
+          "OTP_INVALID",
+          "OTP_EXPIRED",
+          "OTP_TOO_MANY_ATTEMPTS",
+          "RATE_LIMITED",
+          "COMMISSION_OVERDUE_BLOCK",
+          "MEDIA_TOO_LARGE",
+          "MEDIA_TYPE_NOT_ALLOWED",
+          "INTERNAL_ERROR"
+        ],
+        "type": "string"
+      },
+      "HealthDto": {
+        "properties": {
+          "service": {
+            "example": "api",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ok"
+            ],
+            "type": "string"
+          },
+          "time": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "uptimeSec": {
+            "example": 42,
+            "type": "number"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "uptimeSec",
+          "time"
+        ],
+        "type": "object"
+      },
+      "ReadinessCheckDto": {
+        "properties": {
+          "error": {
+            "example": "timeout",
+            "type": "string"
+          },
+          "latencyMs": {
+            "example": 3,
+            "type": "number"
+          },
+          "status": {
+            "enum": [
+              "up",
+              "down"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "latencyMs"
+        ],
+        "type": "object"
+      },
+      "ReadinessChecksDto": {
+        "properties": {
+          "database": {
+            "$ref": "#/components/schemas/ReadinessCheckDto"
+          },
+          "redis": {
+            "$ref": "#/components/schemas/ReadinessCheckDto"
+          },
+          "storage": {
+            "$ref": "#/components/schemas/ReadinessCheckDto"
+          }
+        },
+        "required": [
+          "database",
+          "redis",
+          "storage"
+        ],
+        "type": "object"
+      },
+      "ReadinessDto": {
+        "properties": {
+          "checks": {
+            "$ref": "#/components/schemas/ReadinessChecksDto"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "error"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "checks"
+        ],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "bearerFormat": "JWT",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "contact": {},
+    "description": "",
+    "title": "BaliqBozor API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "Health_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto"
+                }
+              }
+            },
+            "description": "Процесс жив"
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "Health_getReady",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessDto"
+                }
+              }
+            },
+            "description": "БД, Redis и S3 доступны"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessDto"
+                }
+              }
+            },
+            "description": "Одна из зависимостей недоступна"
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  },
+  "servers": [],
+  "tags": []
+}

@@ -9,6 +9,7 @@ allowBuilds:
   esbuild: true
   '@parcel/watcher': true
   unrs-resolver: true
+  '@swc/core': true # проверка нативного бинарника (next-intl, @nestjs/cli)
   msgpackr-extract: true # нативный ускоритель msgpack для bullmq (готовые бинарники)
   '@scarf/scarf': false # телеметрия swagger-ui
 

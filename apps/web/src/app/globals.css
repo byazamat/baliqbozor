@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+@import '@baliqbozor/ui/theme.css';
+@source '../../node_modules/@baliqbozor/ui/dist';
+
+body {
+  @apply bg-surface-muted font-sans text-ink antialiased;
+}

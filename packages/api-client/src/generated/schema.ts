@@ -132,6 +132,54 @@ export interface paths {
         patch: operations["Me_update"];
         trace?: never;
     };
+    "/api/v1/media/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Media_complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/media/{id}/url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Media_downloadUrl"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/media/upload-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Media_requestUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orgs": {
         parameters: {
             query?: never;
@@ -337,6 +385,12 @@ export interface components {
             tin?: string;
             type: components["schemas"]["OrgType"];
         };
+        DownloadUrlDto: {
+            /** Format: date-time */
+            expiresAt: string;
+            /** @description Подписанная ссылка на скачивание, 10 минут */
+            url: string;
+        };
         /** @enum {string} */
         ErrorCode: "VALIDATION_FAILED" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "INVALID_TRANSITION" | "INSUFFICIENT_VOLUME" | "ORG_NOT_VERIFIED" | "ORG_SUSPENDED" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_TOO_MANY_ATTEMPTS" | "RATE_LIMITED" | "COMMISSION_OVERDUE_BLOCK" | "MEDIA_TOO_LARGE" | "MEDIA_TYPE_NOT_ALLOWED" | "INTERNAL_ERROR";
         HealthDto: {
@@ -387,6 +441,24 @@ export interface components {
             refreshToken: string;
             user: components["schemas"]["AuthUserDto"];
         };
+        MediaDto: {
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["MediaKind"];
+            mimeType: string;
+            sizeBytes: number;
+            /** @enum {string} */
+            status: "PENDING_UPLOAD" | "UPLOADED" | "PROCESSED" | "REJECTED";
+        };
+        /** @enum {string} */
+        MediaKind: "IMAGE" | "VIDEO" | "PDF" | "OTHER";
+        /**
+         * @description ORG_VERIFICATION требует X-Org-Id
+         * @enum {string}
+         */
+        MediaPurpose: "ORG_VERIFICATION";
         MeDto: {
             fullName: string | null;
             /** Format: uuid */
@@ -571,6 +643,27 @@ export interface components {
             regionId?: number;
             /** @description СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1) */
             tin?: string;
+        };
+        UploadUrlDto: {
+            /** Format: date-time */
+            expiresAt: string;
+            /** @description Заголовки для PUT */
+            headers: {
+                [key: string]: string;
+            };
+            /** Format: uuid */
+            mediaId: string;
+            /** @description Presigned PUT, 10 минут */
+            uploadUrl: string;
+        };
+        UploadUrlRequestDto: {
+            kind: components["schemas"]["MediaKind"];
+            /** @example image/jpeg */
+            mimeType: string;
+            /** @description ORG_VERIFICATION требует X-Org-Id */
+            purpose: components["schemas"]["MediaPurpose"];
+            /** @example 1048576 */
+            sizeBytes: number;
         };
         /** @enum {string} */
         VerificationStatus: "UNVERIFIED" | "PENDING" | "VERIFIED" | "REJECTED" | "SUSPENDED";
@@ -847,6 +940,116 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeDto"];
+                };
+            };
+        };
+    };
+    Media_complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            /** @description Файл не загружен или размер не совпадает */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Media_downloadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DownloadUrlDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Media_requestUpload: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UploadUrlRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadUrlDto"];
+                };
+            };
+            /** @description MEDIA_TOO_LARGE */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            /** @description MEDIA_TYPE_NOT_ALLOWED */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
                 };
             };
         };

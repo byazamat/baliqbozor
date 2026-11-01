@@ -261,6 +261,23 @@
         ],
         "type": "object"
       },
+      "DownloadUrlDto": {
+        "properties": {
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "url": {
+            "description": "Подписанная ссылка на скачивание, 10 минут",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "expiresAt"
+        ],
+        "type": "object"
+      },
       "ErrorCode": {
         "enum": [
           "VALIDATION_FAILED",
@@ -475,6 +492,65 @@
           "organizations"
         ],
         "type": "object"
+      },
+      "MediaDto": {
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaKind"
+              }
+            ]
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "number"
+          },
+          "status": {
+            "enum": [
+              "PENDING_UPLOAD",
+              "UPLOADED",
+              "PROCESSED",
+              "REJECTED"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "mimeType",
+          "sizeBytes",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "MediaKind": {
+        "enum": [
+          "IMAGE",
+          "VIDEO",
+          "PDF",
+          "OTHER"
+        ],
+        "type": "string"
+      },
+      "MediaPurpose": {
+        "description": "ORG_VERIFICATION требует X-Org-Id",
+        "enum": [
+          "ORG_VERIFICATION"
+        ],
+        "type": "string"
       },
       "MemberDto": {
         "properties": {
@@ -1067,6 +1143,70 @@
         },
         "type": "object"
       },
+      "UploadUrlDto": {
+        "properties": {
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Заголовки для PUT",
+            "type": "object"
+          },
+          "mediaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "uploadUrl": {
+            "description": "Presigned PUT, 10 минут",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mediaId",
+          "uploadUrl",
+          "headers",
+          "expiresAt"
+        ],
+        "type": "object"
+      },
+      "UploadUrlRequestDto": {
+        "properties": {
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaKind"
+              }
+            ]
+          },
+          "mimeType": {
+            "example": "image/jpeg",
+            "type": "string"
+          },
+          "purpose": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MediaPurpose"
+              }
+            ],
+            "description": "ORG_VERIFICATION требует X-Org-Id"
+          },
+          "sizeBytes": {
+            "example": 1048576,
+            "type": "number"
+          }
+        },
+        "required": [
+          "kind",
+          "mimeType",
+          "sizeBytes",
+          "purpose"
+        ],
+        "type": "object"
+      },
       "VerificationStatus": {
         "enum": [
           "UNVERIFIED",
@@ -1458,6 +1598,171 @@
         ],
         "tags": [
           "me"
+        ]
+      }
+    },
+    "/api/v1/media/upload-url": {
+      "post": {
+        "operationId": "Media_requestUpload",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadUrlRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadUrlDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "MEDIA_TOO_LARGE"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "MEDIA_TYPE_NOT_ALLOWED"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "media"
+        ]
+      }
+    },
+    "/api/v1/media/{id}/complete": {
+      "post": {
+        "operationId": "Media_complete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "Файл не загружен или размер не совпадает"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "media"
+        ]
+      }
+    },
+    "/api/v1/media/{id}/url": {
+      "get": {
+        "operationId": "Media_downloadUrl",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadUrlDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "media"
         ]
       }
     },

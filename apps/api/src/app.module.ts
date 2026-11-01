@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { AddressesModule } from './modules/addresses/addresses.module.js';
 import { DictModule } from './modules/dict/dict.module.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { MediaModule } from './modules/media/media.module.js';
 import { MeModule } from './modules/me/me.module.js';
 import { OrgsModule } from './modules/orgs/orgs.module.js';
 import { SettingsModule } from './modules/settings/settings.module.js';
@@ -32,6 +33,7 @@ export class AppModule {
         OrgsModule,
         AddressesModule,
         DictModule,
+        MediaModule,
       ],
       providers: [
         { provide: ENV, useValue: env },

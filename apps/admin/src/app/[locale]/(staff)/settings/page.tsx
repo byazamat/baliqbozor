@@ -1,7 +1,7 @@
 'use client';
 
 import type { components } from '@baliqbozor/api-client';
-import { isSettingKey, parseSetting, type SettingKey } from '@baliqbozor/domain';
+import { isSettingKey, parseSetting, type SettingIssue, type SettingKey } from '@baliqbozor/domain';
 import { formatDateTime } from '@baliqbozor/i18n';
 import { Alert, type AlertTone, Badge, Button, cn } from '@baliqbozor/ui';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -12,6 +12,7 @@ import { Loading, Page } from '@/components/page';
 import { useApi } from '@/lib/api';
 import { ApiRequestError, unwrap, useErrorText } from '@/lib/errors';
 import { useSession } from '@/lib/session';
+import { useSettingIssuesText } from '@/lib/setting-issues';
 import { settingFromText, settingToText } from '@/lib/settings';
 
 type Setting = components['schemas']['SettingDto'];
@@ -86,6 +87,7 @@ function SettingRow({ setting }: { setting: Setting }) {
   const t = useTranslations('admin.settings');
   const tc = useTranslations('common');
   const errorText = useErrorText();
+  const issuesText = useSettingIssuesText();
   const api = useApi();
   const queryClient = useQueryClient();
   const key = setting.key as SettingKey;
@@ -106,7 +108,7 @@ function SettingRow({ setting }: { setting: Setting }) {
     // Та же схема, что на сервере (domain/settings): ошибка видна сразу, без запроса.
     const parsed = parseSetting(key, value);
     if (!parsed.ok) {
-      setMessage({ tone: 'danger', text: t('invalid', { issues: parsed.issues.join('; ') }) });
+      setMessage({ tone: 'danger', text: t('invalid', { issues: issuesText(parsed.issues) }) });
       return;
     }
     setBusy(true);
@@ -125,11 +127,11 @@ function SettingRow({ setting }: { setting: Setting }) {
     } catch (err) {
       const issues =
         err instanceof ApiRequestError
-          ? (err.body.details as { issues?: string[] } | undefined)?.issues
+          ? (err.body.details as { issues?: SettingIssue[] } | undefined)?.issues
           : undefined;
       setMessage({
         tone: 'danger',
-        text: issues ? t('invalid', { issues: issues.join('; ') }) : errorText(err),
+        text: issues?.length ? t('invalid', { issues: issuesText(issues) }) : errorText(err),
       });
     } finally {
       setBusy(false);

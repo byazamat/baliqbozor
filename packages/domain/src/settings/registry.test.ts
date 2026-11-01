@@ -50,9 +50,50 @@ describe('settings registry', () => {
         freshness: 0,
         volume: 0,
       }),
-    ).toEqual({ ok: false, issues: ['Weights must sum to 1'] });
+    ).toEqual({ ok: false, issues: [{ code: 'rule', rule: 'weightsSum' }] });
     expect(parseSetting('ops.workingHours', { from: '20:00', to: '08:00' }).ok).toBe(false);
     expect(parseSetting('ops.workingHours', { from: '8:00', to: '20:00' }).ok).toBe(false);
+  });
+
+  it('reports structured issues for translation on the client (D-50)', () => {
+    const issues = (key: Parameters<typeof parseSetting>[0], value: unknown) => {
+      const res = parseSetting(key, value);
+      return res.ok ? [] : res.issues;
+    };
+    expect(issues('commission.defaultRateBps', 10_001)).toEqual([{ code: 'max', max: 10_000 }]);
+    expect(issues('commission.defaultRateBps', -1)).toEqual([{ code: 'min', min: 0 }]);
+    expect(issues('commission.defaultRateBps', 1.5)).toEqual([{ code: 'integer' }]);
+    expect(issues('commission.defaultRateBps', '5')).toEqual([
+      { code: 'type', expected: 'number' },
+    ]);
+    expect(issues('commission.billingPeriod', 'DAY')).toEqual([
+      { code: 'oneOf', values: ['WEEK', 'MONTH'] },
+    ]);
+    expect(issues('order.requireVetDocument', 'yes')).toEqual([
+      { code: 'type', expected: 'boolean' },
+    ]);
+    expect(issues('ops.workingHours', { from: '21:00', to: '20:00' })).toEqual([
+      { code: 'rule', rule: 'timeOrder' },
+    ]);
+    expect(issues('ops.workingHours', { from: '8:00', to: '20:00' })).toEqual([
+      { path: 'from', code: 'format' },
+      { code: 'rule', rule: 'timeOrder' },
+    ]);
+    expect(
+      issues('matching.weights', {
+        distance: 0.5,
+        price: 0.5,
+        reliability: 0,
+        freshness: 0,
+        volume: 0,
+        extra: 1,
+      }),
+    ).toEqual([{ code: 'unknownKeys', keys: ['extra'] }]);
+    expect(issues('matching.weights', { distance: 1 })[0]).toEqual({
+      path: 'price',
+      code: 'type',
+      expected: 'number',
+    });
   });
 
   it('overlays stored values and ignores invalid ones', () => {

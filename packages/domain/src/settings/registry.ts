@@ -38,7 +38,7 @@ export const SETTINGS = {
       .strict()
       .refine(
         (w) => Math.abs(w.distance + w.price + w.reliability + w.freshness + w.volume - 1) < 1e-9,
-        { message: 'Weights must sum to 1' },
+        { message: 'Weights must sum to 1', params: { rule: 'weightsSum' } },
       ),
     default: { distance: 0.35, price: 0.25, reliability: 0.2, freshness: 0.1, volume: 0.1 },
   },
@@ -52,7 +52,10 @@ export const SETTINGS = {
     schema: z
       .object({ from: hhmm, to: hhmm })
       .strict()
-      .refine((v) => v.from < v.to, { message: '`from` must be before `to`' }),
+      .refine((v) => v.from < v.to, {
+        message: '`from` must be before `to`',
+        params: { rule: 'timeOrder' },
+      }),
     default: { from: '08:00', to: '20:00' },
   },
   'otp.ttlSeconds': { schema: int(60, 3600), default: 300 },
@@ -74,14 +77,59 @@ export function isSettingKey(key: string): key is SettingKey {
   return Object.hasOwn(SETTINGS, key);
 }
 
+/** Правила настроек сверх типа и диапазона (`refine` в схеме). */
+export type SettingRule = 'weightsSum' | 'timeOrder';
+
+/**
+ * Проблема значения настройки — код и параметры без текста: тексты на uz/ru строит клиент
+ * (D-50). `path` — поле внутри объекта (`from`, `distance`), для простых значений нет.
+ */
+export type SettingIssue = { path?: string } & (
+  | { code: 'max'; max: number }
+  | { code: 'min'; min: number }
+  | { code: 'integer' }
+  | { code: 'type'; expected: string }
+  | { code: 'oneOf'; values: string[] }
+  | { code: 'format' }
+  | { code: 'unknownKeys'; keys: string[] }
+  | { code: 'rule'; rule: SettingRule }
+  | { code: 'invalid' }
+);
+
 export type SettingParseResult<K extends SettingKey> =
-  { ok: true; value: SettingValue<K> } | { ok: false; issues: string[] };
+  { ok: true; value: SettingValue<K> } | { ok: false; issues: SettingIssue[] };
+
+function toIssue(issue: z.core.$ZodIssue): SettingIssue {
+  const path = issue.path.length > 0 ? { path: issue.path.join('.') } : {};
+  switch (issue.code) {
+    case 'too_big':
+      return { ...path, code: 'max', max: Number(issue.maximum) };
+    case 'too_small':
+      return { ...path, code: 'min', min: Number(issue.minimum) };
+    case 'invalid_type':
+      return issue.expected === 'int'
+        ? { ...path, code: 'integer' }
+        : { ...path, code: 'type', expected: issue.expected };
+    case 'invalid_value':
+      return { ...path, code: 'oneOf', values: issue.values.map(String) };
+    case 'invalid_format':
+      return { ...path, code: 'format' };
+    case 'unrecognized_keys':
+      return { ...path, code: 'unknownKeys', keys: issue.keys };
+    case 'custom': {
+      const rule = (issue.params as { rule?: SettingRule } | undefined)?.rule;
+      return rule ? { ...path, code: 'rule', rule } : { ...path, code: 'invalid' };
+    }
+    default:
+      return { ...path, code: 'invalid' };
+  }
+}
 
 /** Проверка значения перед сохранением (админка) и при чтении из БД. */
 export function parseSetting<K extends SettingKey>(key: K, value: unknown): SettingParseResult<K> {
   const result = SETTINGS[key].schema.safeParse(value);
   if (result.success) return { ok: true, value: result.data as SettingValue<K> };
-  return { ok: false, issues: result.error.issues.map((i) => i.message) };
+  return { ok: false, issues: result.error.issues.map(toIssue) };
 }
 
 /** Значения по умолчанию, поверх которых накладываются сохранённые. Неверные сохранённые — игнорируются. */

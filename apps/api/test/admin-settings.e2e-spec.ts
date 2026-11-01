@@ -79,7 +79,11 @@ describe('admin settings (e2e)', () => {
     const unknown = await patch({ key: 'nope.key', value: 1 }).expect(400);
     expect(unknown.body.error).toMatchObject({ code: 'VALIDATION_FAILED' });
     const invalid = await patch({ key: 'commission.defaultRateBps', value: 20_000 }).expect(400);
-    expect(invalid.body.error.details).toMatchObject({ key: 'commission.defaultRateBps' });
+    // Проблемы — коды без текста: тексты на uz/ru строит админка (D-50).
+    expect(invalid.body.error.details).toEqual({
+      key: 'commission.defaultRateBps',
+      issues: [{ code: 'max', max: 10_000 }],
+    });
     await patch({ key: 'matching.weights', value: { distance: 1, price: 1 } }).expect(400);
     await patch({ key: 'otp.maxAttempts', value: '5' }).expect(400);
     await patch({ key: 'otp.maxAttempts' }).expect(400);

@@ -303,7 +303,26 @@
         }
       },
       "on": "Ha (true)",
-      "off": "Yo'q (false)"
+      "off": "Yo'q (false)",
+      "issue": {
+        "max": "{max} dan oshmasligi kerak",
+        "min": "Kamida {min}",
+        "integer": "Butun son kiriting",
+        "type": "Kutilgan qiymat: {type}",
+        "oneOf": "Mumkin bo'lgan qiymatlar: {values}",
+        "format": "Vaqtni SS:DD formatida kiriting, masalan 08:00",
+        "unknownKeys": "Ortiqcha maydonlar: {keys}",
+        "weightsSum": "Og'irliklar yig'indisi 1 ga teng bo'lishi kerak",
+        "timeOrder": "Boshlanish vaqti tugash vaqtidan oldin bo'lishi kerak",
+        "invalid": "Qiymat noto'g'ri",
+        "field": "{field}: {text}"
+      },
+      "typeName": {
+        "number": "son",
+        "string": "matn",
+        "boolean": "ha yoki yo'q",
+        "object": "obyekt (JSON)"
+      }
     }
   },
   "mobile": {

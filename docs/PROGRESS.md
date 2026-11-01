@@ -161,12 +161,12 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M1.5 Профиль, организации, участники, адреса
 
-- [ ] `GET/PATCH /me` (профиль + организации с ролями, `fullName`, `locale`)
-- [ ] `POST /orgs` (создатель — OWNER), `GET /orgs/:id` (публичный профиль), `PATCH /orgs/:id` (OWNER, O, A) + аудит
-- [ ] `GET/POST /orgs/:id/members`, `PATCH/DELETE /orgs/:id/members/:userId`; приглашение существующего пользователя — сразу членство, нового номера — `OrgInvitation` (D-11)
-- [ ] `GET/POST /orgs/:id/addresses`, `PATCH/DELETE /addresses/:id` (архивирование, один `isDefault`)
-- [ ] `GET /dict/regions`, `GET /dict/species` (с размерными классами), публичные, с кэшем
-- [ ] e2e на каждый эндпоинт: успех, валидация, права, изоляция A/B
+- [x] `GET/PATCH /me` (профиль + организации с ролями и статусом; `fullName`, `locale`; аудит)
+- [x] `POST /orgs` (создатель — OWNER, СТИР по 8.1, событие, аудит), `GET /orgs/:id` (публичный профиль + приватный блок для своих и O/A, D-43), `PATCH /orgs/:id` (OWNER, O, A; блокировка юридических полей D-30; тип неизменен)
+- [x] `GET/POST /orgs/:id/members`, `PATCH/DELETE /orgs/:id/members/:userId` (последний OWNER защищён, блокировка строки организации), `DELETE /orgs/:id/invitations/:id`; существующий пользователь — сразу участник, новый номер — `OrgInvitation` (повтор продлевает)
+- [x] `GET/POST /orgs/:id/addresses`, `PATCH/DELETE /addresses/:id` (`X-Org-Id`; архивирование; один адрес по умолчанию, первый — автоматически)
+- [x] `GET /dict/regions`, `GET /dict/species` (активные размерные классы), публичные; кэш не понадобился — запросы лёгкие (пересмотреть в M11)
+- [x] e2e на каждый эндпоинт: успех, валидация, права, изоляция A/B (15 тестов)
 
 ### M1.6 Медиа (минимум, D-12)
 

@@ -170,10 +170,10 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M1.6 Медиа (минимум, D-12)
 
-- [ ] `StorageProvider`: presigned PUT/GET, `HEAD` объекта
-- [ ] `POST /media/upload-url` (лимиты типов и размеров 10.3, `purpose = ORG_VERIFICATION`), `POST /media/:id/complete` (проверка наличия и размера объекта → `UPLOADED`), `GET /media/:id/url` (доступ — загрузивший, члены организации, O, A)
+- [x] `StorageProvider`: presigned PUT (подписаны `content-type` и `content-length` — файл другого размера хранилище не примет) и GET, `head`; подпись клиентом с `S3_PUBLIC_ENDPOINT`; заглушка в памяти для тестов
+- [x] `POST /media/upload-url` (правила 10.3 в `domain/media`, `purpose = ORG_VERIFICATION`, только OWNER, `X-Org-Id`), `POST /media/:id/complete` (наличие и размер → `UPLOADED`, иначе `REJECTED`/409), `GET /media/:id/url` (загрузивший, члены организации, O, A; остальным 404)
 - [ ] Проверка magic bytes, EXIF и превью — M2 (D-12)
-- [ ] e2e с MinIO: загрузка, неверный тип/размер, чужой файл недоступен
+- [x] e2e с MinIO: загрузка и скачивание, неверный размер отвергается хранилищем, типы и лимиты, права и изоляция (4 теста)
 
 ### M1.7 Верификация организаций
 

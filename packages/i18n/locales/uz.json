@@ -318,7 +318,6 @@
       "rating": "Reyting {value}",
       "noRating": "Hali sharhlar yo‘q",
       "order": "Buyurtma berish",
-      "orderHint": "Buyurtma berish uchun kiring",
       "soldOut": "Sotib bo‘lingan",
       "back": "Katalogga",
       "photo": "Rasm {n}",
@@ -326,7 +325,10 @@
       "region2": "Viloyat: {name}",
       "seller": "Sotuvchi",
       "privacy": "Xo‘jalikning aniq joyi va sotuvchining kontaktlari buyurtma tasdiqlangandan keyin ko‘rinadi.",
-      "notFound": "E’lon topilmadi yoki sotuvdan olingan"
+      "notFound": "E’lon topilmadi yoki sotuvdan olingan",
+      "orderSoon": "Katalogdan to‘g‘ridan-to‘g‘ri buyurtma berish tez orada paydo bo‘ladi.",
+      "orderBuyersOnly": "Buyurtmani xaridorlar beradi. Siz «{org}» sifatida kirgansiz — bu sotuvchi tashkilot.",
+      "orderNoOrg": "Buyurtma berish uchun xaridor tashkilotini yarating."
     }
   },
   "admin": {

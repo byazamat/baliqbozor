@@ -48,7 +48,7 @@ function Card({ listing }: { listing: PublicListing }) {
   const t = useTranslations('web.catalog');
   const tl = useTranslations('listing');
   const f = useListingFacts(listing);
-  const { status } = useSession();
+  const { status, currentOrg } = useSession();
   const [active, setActive] = useState(0);
   const current = listing.media[active];
 
@@ -131,7 +131,13 @@ function Card({ listing }: { listing: PublicListing }) {
               {t('order')}
             </Link>
           ) : (
-            <p className="text-ink-muted">{t('orderHint')}</p>
+            <p className="text-ink-muted" data-testid="order-note">
+              {!currentOrg
+                ? t('orderNoOrg')
+                : currentOrg.type === 'BUYER'
+                  ? t('orderSoon')
+                  : t('orderBuyersOnly', { org: currentOrg.name })}
+            </p>
           )}
         </div>
       </div>

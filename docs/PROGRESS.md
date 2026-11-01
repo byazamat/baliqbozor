@@ -185,11 +185,12 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M1.8 Уведомления in-app (D-12)
 
-- [ ] Каталог событий M1 в коде (получатели, каналы, критичность — SPEC 11.2): `org.verification.approved/rejected`, `org.member.invited`, `ops.task.created`
-- [ ] Шаблоны `packages/i18n/notifications/{uz,ru}.json` + проверка паритета в `i18n:check`
-- [ ] Worker: диспетчер outbox → `Notification(IN_APP)` на языке получателя; `org.member.invited` → SMS через `SmsProvider` (console); повторы до 3 раз
-- [ ] `GET /notifications` (пагинация + `unreadCount`), `POST /notifications/:id/read`, `POST /notifications/read-all`
-- [ ] e2e: событие → уведомление у нужных получателей и только у них
+- [x] Обработчики каталога SPEC 11.2 для событий M1 (`apps/worker/src/notifications`): `org.verification.approved/rejected` → владельцы, `ops.task.created` → активные O/A, `org.member.added` → добавленный пользователь, `org.member.invited` → SMS на номер
+- [x] Тексты — ключи `notifications.<событие>.title/body/sms` в `locales/{uz,ru}.json` (SPEC 12.5), паритет проверяет `i18n:check` (D-45)
+- [x] Worker: outbox → `Notification(IN_APP, SENT)` на языке получателя в транзакции обработки события; SMS-приглашение через `SmsSender` (console); повторы — механизм outbox (D-40)
+- [x] `GET /notifications` (курсор, `unreadOnly`, `unreadCount`), `POST /notifications/:id/read`, `POST /notifications/read-all`
+- [x] e2e: событие → уведомления нужным получателям на их языке и только им (worker, 3 теста); API: курсор, прочтение, изоляция (3 теста)
+- [x] e2e api и worker разведены по разным тестовым БД и базам Redis — параллельный прогон больше не мешает (D-45)
 
 ### M1.9 Web (apps/web)
 

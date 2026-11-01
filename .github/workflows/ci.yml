@@ -55,6 +55,10 @@ jobs:
 
       - name: Start Postgres, Redis, MinIO
         run: pnpm infra:up
+      - name: Apply migrations to a clean database
+        run: pnpm db:migrate:deploy
+      - name: Schema matches migrations (prisma migrate diff)
+        run: pnpm db:check-drift
       - name: E2E tests
         run: pnpm test:e2e
       - name: Service logs on failure

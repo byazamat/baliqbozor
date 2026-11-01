@@ -9,3 +9,18 @@ describe('createPrismaClient', () => {
     await client.$disconnect();
   });
 });
+
+describe('exports', () => {
+  it('re-exports schema enums used by domain rules', async () => {
+    const db = await import('./index.js');
+    expect(db.VerificationStatus).toEqual({
+      UNVERIFIED: 'UNVERIFIED',
+      PENDING: 'PENDING',
+      VERIFIED: 'VERIFIED',
+      REJECTED: 'REJECTED',
+      SUSPENDED: 'SUSPENDED',
+    });
+    expect(Object.keys(db.MemberRole)).toEqual(['OWNER', 'MANAGER', 'STAFF']);
+    expect(Object.keys(db.OrgType)).toEqual(['SELLER', 'BUYER', 'CARRIER']);
+  });
+});

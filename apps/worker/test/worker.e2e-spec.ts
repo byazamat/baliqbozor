@@ -18,7 +18,9 @@ describe('worker (e2e, real Postgres/Redis)', () => {
   let base: string;
 
   beforeAll(async () => {
-    app = await createWorker(loadEnv({ ...process.env, WORKER_HEALTH_PORT: '0' }));
+    app = await createWorker(
+      loadEnv({ ...process.env, WORKER_HEALTH_PORT: '0', HEARTBEAT_INTERVAL_MS: '1000' }),
+    );
     await app.init();
     base = `http://127.0.0.1:${String(app.get(HealthHttpServer).port)}`;
   });

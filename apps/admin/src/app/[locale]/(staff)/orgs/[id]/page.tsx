@@ -202,6 +202,8 @@ function OrgCard({ details }: { details: Details }) {
         </Section>
       </div>
 
+      {org.type === 'SELLER' && <FarmsSection orgId={org.id} />}
+
       <Section title={t('documents')} data-testid="documents">
         {documents.length === 0 ? (
           <p className="text-ink-muted">{t('noDocuments')}</p>
@@ -250,6 +252,89 @@ function OrgCard({ details }: { details: Details }) {
         )}
       </Dialog>
     </Page>
+  );
+}
+
+type Farm = components['schemas']['FarmDto'];
+
+/** Хозяйства продавца для проверки перед верификацией (D-28): место, водоёмы, фото, наличие. */
+function FarmsSection({ orgId }: { orgId: string }) {
+  const t = useTranslations('admin.org');
+  const api = useApi();
+  const { data: farms } = useQuery({
+    queryKey: ['admin', 'org', orgId, 'farms'],
+    queryFn: () => unwrap(api.GET('/api/v1/farms', { params: { header: { 'X-Org-Id': orgId } } })),
+  });
+  return (
+    <Section title={t('farms')} data-testid="farms">
+      {farms?.length === 0 ? (
+        <p className="text-ink-muted">{t('noFarms')}</p>
+      ) : (
+        <ul className="flex flex-col gap-4">
+          {(farms ?? []).map((f) => (
+            <FarmRow key={f.id} farm={f} />
+          ))}
+        </ul>
+      )}
+    </Section>
+  );
+}
+
+function FarmRow({ farm }: { farm: Farm }) {
+  const t = useTranslations('admin.org');
+  const tw = useTranslations('farm.waterBodyType');
+  const locale = useLocale();
+  const region = locale === 'ru' ? farm.region.nameRu : farm.region.nameUz;
+  const osm = `https://www.openstreetmap.org/?mlat=${farm.lat}&mlon=${farm.lng}#map=13/${farm.lat}/${farm.lng}`;
+  return (
+    <li className="rounded-control border border-border p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="font-semibold text-ink">{farm.name}</span>
+        <Badge tone={farm.isActive ? 'success' : 'neutral'}>
+          {farm.isActive ? t('farmActive') : t('farmInactive')}
+        </Badge>
+      </div>
+      <p className="mt-1 text-ink-muted">
+        {[region, farm.districtName, farm.addressText].filter(Boolean).join(', ')}
+      </p>
+      <p className="mt-1 text-ink-muted">
+        {farm.waterBodyTypes.map((w) => tw(w)).join(', ')}
+        {farm.areaHa ? ` · ${t('area', { value: farm.areaHa.replace('.', ',') })}` : ''}
+        {` · ${t('activeListings', { count: farm.activeListings })}`}
+      </p>
+      <a
+        href={osm}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-1 inline-flex min-h-11 items-center font-medium text-brand-700 hover:underline"
+      >
+        {t('openMap')} ({farm.lat}, {farm.lng})
+      </a>
+      {farm.photos.length > 0 && (
+        <ul className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
+          {farm.photos.map((p) => (
+            <FarmPhoto key={p.id} id={p.id} />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+}
+
+function FarmPhoto({ id }: { id: string }) {
+  const api = useApi();
+  const url = useQuery({
+    queryKey: ['admin', 'media', id],
+    queryFn: () => mediaUrl(api, id),
+    staleTime: 5 * 60_000,
+  });
+  return (
+    <li className="aspect-square overflow-hidden rounded bg-surface-muted">
+      {url.data && (
+        // eslint-disable-next-line @next/next/no-img-element -- подписанная ссылка хранилища
+        <img src={url.data} alt="" className="h-full w-full object-cover" />
+      )}
+    </li>
   );
 }
 

@@ -85,6 +85,7 @@ test('M1: seller registers and submits documents, operator verifies, seller is n
   await operator.getByRole('link', { name: orgName }).click();
 
   await expect(operator.getByRole('heading', { level: 1 })).toHaveText(orgName);
+  await expect(operator.getByTestId('farms')).toContainText(`Hovuz ${run}`);
   const documents = operator.getByTestId('documents');
   await expect(documents.getByRole('img')).toBeVisible();
   await expect(documents.getByRole('link', { name: ru.common.open })).toHaveAttribute(

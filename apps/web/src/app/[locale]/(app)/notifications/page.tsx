@@ -8,6 +8,7 @@ import { useState } from 'react';
 
 import { UNREAD_QUERY_KEY } from '@/components/notification-bell';
 import { Loading, Page } from '@/components/page';
+import { Link } from '@/i18n/navigation';
 import { useApi } from '@/lib/api';
 import { unwrap, useErrorText } from '@/lib/errors';
 import { ME_QUERY_KEY } from '@/lib/session';
@@ -101,6 +102,14 @@ export default function NotificationsPage() {
                 </div>
                 <p className="mt-1 text-ink">{n.body}</p>
                 <p className="mt-1 text-sm text-ink-muted">{formatDateTime(n.createdAt)}</p>
+                {typeof n.data?.listingId === 'string' && (
+                  <Link
+                    href={`/listings/${n.data.listingId}`}
+                    className="mt-1 inline-flex min-h-11 items-center font-medium text-brand-700 hover:underline"
+                  >
+                    {tc('open')}
+                  </Link>
+                )}
               </div>
               {!n.readAt && (
                 <Button

@@ -400,7 +400,14 @@
         "reject": "Tashkilot rad etildi",
         "suspend": "Tashkilot bloklandi",
         "unsuspend": "Tashkilot blokdan chiqarildi"
-      }
+      },
+      "farms": "Xo‘jaliklar",
+      "noFarms": "Xo‘jaliklar yo‘q — sotuvchi tekshiruvdan oldin kamida bittasini qo‘shishi kerak",
+      "openMap": "Xaritada ochish",
+      "farmActive": "Ishlayapti",
+      "farmInactive": "O‘chirilgan",
+      "activeListings": "Sotuvda: {count}",
+      "area": "{value} ga"
     },
     "settings": {
       "title": "Platforma sozlamalari",

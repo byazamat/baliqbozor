@@ -1,4 +1,5 @@
 import { jest } from '@jest/globals';
+import type { TransactionClient } from '@baliqbozor/db';
 import { Logger } from '@nestjs/common';
 
 import { OutboxPoller } from './outbox.poller.js';
@@ -23,12 +24,12 @@ function fakeSource(batches: OutboxEvent[][]) {
   const claim = jest.fn<OutboxSource['claimBatch']>(() => Promise.resolve(batches.shift() ?? []));
   const source: OutboxSource = {
     claimBatch: claim,
-    markProcessed: (id) => {
-      processed.push(id);
-      return Promise.resolve();
+    complete: async (e, handler) => {
+      await handler(e, {} as TransactionClient);
+      processed.push(e.id);
     },
-    markFailed: (id, error) => {
-      failed.push([id, error]);
+    fail: (e, error) => {
+      failed.push([e.id, error]);
       return Promise.resolve();
     },
   };

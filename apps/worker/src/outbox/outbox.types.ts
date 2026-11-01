@@ -1,22 +1,30 @@
-/** Событие из outbox (`DomainEvent`, SPEC 5.4). Таблица появляется в M1. */
+import type { TransactionClient } from '@baliqbozor/db';
+
+/** Событие из outbox (`DomainEvent`, SPEC 5.4). */
 export interface OutboxEvent {
   id: string;
   type: string;
   aggregateType: string;
   aggregateId: string;
   payload: unknown;
+  /** Номер текущей попытки (увеличивается при захвате). */
   attempts: number;
 }
 
-/** Источник событий: в M1 — Prisma с `FOR UPDATE SKIP LOCKED`. */
-export interface OutboxSource {
-  claimBatch(limit: number): Promise<OutboxEvent[]>;
-  markProcessed(id: string): Promise<void>;
-  markFailed(id: string, error: string): Promise<void>;
-}
+/**
+ * Обработчик события: уведомления по каталогу SPEC 11, позже realtime. Выполняется в транзакции,
+ * в которой событие отмечается обработанным, — записи обработчика и отметка атомарны.
+ */
+export type OutboxHandler = (event: OutboxEvent, tx: TransactionClient) => Promise<void>;
 
-/** Обработчик события: realtime, уведомления по каталогу (SPEC 11). */
-export type OutboxHandler = (event: OutboxEvent) => Promise<void>;
+export interface OutboxSource {
+  /** Захватить до `limit` готовых событий (аренда, чтобы другой worker их не взял). */
+  claimBatch(limit: number): Promise<OutboxEvent[]>;
+  /** Выполнить обработчик и отметить событие обработанным в одной транзакции. */
+  complete(event: OutboxEvent, handler: OutboxHandler): Promise<void>;
+  /** Записать ошибку и отложить следующую попытку. */
+  fail(event: OutboxEvent, error: string): Promise<void>;
+}
 
 export const OUTBOX_SOURCE = Symbol('OUTBOX_SOURCE');
 export const OUTBOX_HANDLER = Symbol('OUTBOX_HANDLER');

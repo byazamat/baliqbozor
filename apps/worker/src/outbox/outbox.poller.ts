@@ -42,12 +42,11 @@ export class OutboxPoller {
     const events = await this.source.claimBatch(this.options.batchSize);
     for (const event of events) {
       try {
-        await this.handler(event);
-        await this.source.markProcessed(event.id);
+        await this.source.complete(event, this.handler);
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         this.logger.warn(`outbox event ${event.id} (${event.type}) failed: ${message}`);
-        await this.source.markFailed(event.id, message.slice(0, MAX_ERROR_LENGTH));
+        await this.source.fail(event, message.slice(0, MAX_ERROR_LENGTH));
       }
     }
     return events.length;

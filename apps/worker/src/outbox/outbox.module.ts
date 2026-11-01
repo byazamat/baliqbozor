@@ -6,30 +6,26 @@ import {
 } from '@nestjs/common';
 
 import { ENV, type Env } from '../config/env.js';
-import { NoopOutboxSource } from './noop-outbox.source.js';
+import { OutboxDispatcher } from './outbox.dispatcher.js';
 import { OutboxPoller } from './outbox.poller.js';
-import {
-  OUTBOX_HANDLER,
-  OUTBOX_SOURCE,
-  type OutboxHandler,
-  type OutboxSource,
-} from './outbox.types.js';
+import { OUTBOX_SOURCE, type OutboxSource } from './outbox.types.js';
+import { PrismaOutboxSource } from './prisma-outbox.source.js';
 
 @Module({
   providers: [
-    { provide: OUTBOX_SOURCE, useClass: NoopOutboxSource },
-    // Диспетчер событий (realtime + уведомления) подключается в M1.
-    { provide: OUTBOX_HANDLER, useValue: (() => Promise.resolve()) satisfies OutboxHandler },
+    { provide: OUTBOX_SOURCE, useClass: PrismaOutboxSource },
+    OutboxDispatcher,
     {
       provide: OutboxPoller,
-      inject: [OUTBOX_SOURCE, OUTBOX_HANDLER, ENV],
-      useFactory: (source: OutboxSource, handler: OutboxHandler, env: Env) =>
-        new OutboxPoller(source, handler, {
+      inject: [OUTBOX_SOURCE, OutboxDispatcher, ENV],
+      useFactory: (source: OutboxSource, dispatcher: OutboxDispatcher, env: Env) =>
+        new OutboxPoller(source, dispatcher.handle, {
           intervalMs: env.OUTBOX_POLL_INTERVAL_MS,
           batchSize: env.OUTBOX_BATCH_SIZE,
         }),
     },
   ],
+  exports: [OutboxDispatcher, OutboxPoller, OUTBOX_SOURCE],
 })
 export class OutboxModule implements OnApplicationBootstrap, OnApplicationShutdown {
   constructor(@Inject(OutboxPoller) private readonly poller: OutboxPoller) {}

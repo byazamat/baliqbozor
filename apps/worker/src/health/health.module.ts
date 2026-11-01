@@ -61,7 +61,7 @@ export class HealthHttpServer implements OnApplicationBootstrap, OnApplicationSh
 
 @Module({
   imports: [HeartbeatModule],
-  providers: [PrismaService, HealthHttpServer],
+  providers: [HealthHttpServer],
   exports: [HealthHttpServer],
 })
 export class HealthModule {}

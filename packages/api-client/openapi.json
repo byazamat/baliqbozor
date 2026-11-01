@@ -1,6 +1,69 @@
 {
   "components": {
     "schemas": {
+      "AddressDto": {
+        "properties": {
+          "addressText": {
+            "type": "string"
+          },
+          "contactName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "contactPhone": {
+            "nullable": true,
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "districtName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "label": {
+            "type": "string"
+          },
+          "lat": {
+            "example": "41.2853",
+            "type": "string"
+          },
+          "lng": {
+            "example": "69.2034",
+            "type": "string"
+          },
+          "region": {
+            "$ref": "#/components/schemas/RegionRefDto"
+          },
+          "workingHours": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "addressText",
+          "region",
+          "districtName",
+          "lat",
+          "lng",
+          "contactName",
+          "contactPhone",
+          "workingHours",
+          "isDefault",
+          "createdAt"
+        ],
+        "type": "object"
+      },
       "ApiErrorBodyDto": {
         "properties": {
           "code": {
@@ -79,6 +142,125 @@
         ],
         "type": "object"
       },
+      "ChangeRoleDto": {
+        "properties": {
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MemberRole"
+              }
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "type": "object"
+      },
+      "CreateAddressDto": {
+        "properties": {
+          "addressText": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "contactName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "contactPhone": {
+            "example": "+998901234567",
+            "type": "string"
+          },
+          "districtName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "label": {
+            "example": "Ресторан на Чиланзаре",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "lat": {
+            "example": "41.285300",
+            "type": "string"
+          },
+          "lng": {
+            "example": "69.203400",
+            "type": "string"
+          },
+          "regionId": {
+            "type": "number"
+          },
+          "workingHours": {
+            "example": "08:00–11:00 приёмка",
+            "maxLength": 120,
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "addressText",
+          "regionId",
+          "lat",
+          "lng"
+        ],
+        "type": "object"
+      },
+      "CreateOrgDto": {
+        "properties": {
+          "contactPhone": {
+            "example": "+998901234567",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "districtName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "legalAddress": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "legalForm": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LegalForm"
+              }
+            ]
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 2,
+            "type": "string"
+          },
+          "regionId": {
+            "type": "number"
+          },
+          "tin": {
+            "description": "СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1)",
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrgType"
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "legalForm",
+          "name"
+        ],
+        "type": "object"
+      },
       "ErrorCode": {
         "enum": [
           "VALIDATION_FAILED",
@@ -130,6 +312,88 @@
         ],
         "type": "object"
       },
+      "InvitationDto": {
+        "properties": {
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MemberRole"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "phone",
+          "role",
+          "expiresAt"
+        ],
+        "type": "object"
+      },
+      "InviteMemberDto": {
+        "properties": {
+          "phone": {
+            "example": "+998901234567",
+            "type": "string"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MemberRole"
+              }
+            ]
+          }
+        },
+        "required": [
+          "phone",
+          "role"
+        ],
+        "type": "object"
+      },
+      "InviteResultDto": {
+        "properties": {
+          "invitation": {
+            "$ref": "#/components/schemas/InvitationDto"
+          },
+          "member": {
+            "$ref": "#/components/schemas/MemberDto"
+          },
+          "result": {
+            "description": "ADDED — пользователь уже был в системе",
+            "enum": [
+              "ADDED",
+              "INVITED"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "type": "object"
+      },
+      "LegalForm": {
+        "enum": [
+          "INDIVIDUAL",
+          "SOLE_PROPRIETOR",
+          "LLC",
+          "FARM_ENTERPRISE",
+          "DEHKAN_FARM",
+          "OTHER"
+        ],
+        "type": "string"
+      },
       "Locale": {
         "enum": [
           "uz",
@@ -166,6 +430,300 @@
           "isNewUser"
         ],
         "type": "object"
+      },
+      "MeDto": {
+        "properties": {
+          "fullName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "locale": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
+          },
+          "organizations": {
+            "items": {
+              "$ref": "#/components/schemas/MyOrganizationDto"
+            },
+            "type": "array"
+          },
+          "phone": {
+            "example": "+998901234567",
+            "type": "string"
+          },
+          "platformRole": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlatformRole"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "phone",
+          "fullName",
+          "locale",
+          "platformRole",
+          "organizations"
+        ],
+        "type": "object"
+      },
+      "MemberDto": {
+        "properties": {
+          "fullName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "joinedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MemberRole"
+              }
+            ]
+          },
+          "userId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "fullName",
+          "phone",
+          "role",
+          "joinedAt"
+        ],
+        "type": "object"
+      },
+      "MemberRole": {
+        "enum": [
+          "OWNER",
+          "MANAGER",
+          "STAFF"
+        ],
+        "type": "string"
+      },
+      "MembersDto": {
+        "properties": {
+          "invitations": {
+            "description": "Ожидающие приглашения (видит OWNER)",
+            "items": {
+              "$ref": "#/components/schemas/InvitationDto"
+            },
+            "type": "array"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/MemberDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "members",
+          "invitations"
+        ],
+        "type": "object"
+      },
+      "MyOrganizationDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MemberRole"
+              }
+            ]
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrgType"
+              }
+            ]
+          },
+          "verificationStatus": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "role",
+          "verificationStatus"
+        ],
+        "type": "object"
+      },
+      "OrgDto": {
+        "properties": {
+          "completedOrders": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "legalForm": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LegalForm"
+              }
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "private": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrgPrivateDto"
+              }
+            ],
+            "description": "Только для членов организации, оператора и администратора"
+          },
+          "ratingAvg": {
+            "example": "4.75",
+            "nullable": true,
+            "type": "string"
+          },
+          "ratingCount": {
+            "type": "number"
+          },
+          "region": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RegionRefDto"
+              }
+            ],
+            "nullable": true,
+            "type": "object"
+          },
+          "reliabilityScore": {
+            "example": "92.50",
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrgType"
+              }
+            ]
+          },
+          "verificationStatus": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationStatus"
+              }
+            ]
+          },
+          "verifiedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "legalForm",
+          "name",
+          "description",
+          "region",
+          "verificationStatus",
+          "verifiedAt",
+          "ratingAvg",
+          "ratingCount",
+          "reliabilityScore",
+          "completedOrders",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "OrgPrivateDto": {
+        "properties": {
+          "contactPhone": {
+            "nullable": true,
+            "type": "string"
+          },
+          "districtName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "legalAddress": {
+            "nullable": true,
+            "type": "string"
+          },
+          "myRole": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MemberRole"
+              }
+            ],
+            "description": "Роль текущего пользователя",
+            "nullable": true
+          },
+          "tin": {
+            "nullable": true,
+            "type": "string"
+          },
+          "verificationNote": {
+            "description": "Комментарий оператора к решению",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "tin",
+          "districtName",
+          "legalAddress",
+          "contactPhone",
+          "verificationNote",
+          "myRole"
+        ],
+        "type": "object"
+      },
+      "OrgType": {
+        "enum": [
+          "SELLER",
+          "BUYER",
+          "CARRIER"
+        ],
+        "type": "string"
       },
       "OtpRequestDto": {
         "properties": {
@@ -292,6 +850,101 @@
         ],
         "type": "object"
       },
+      "RegionRefDto": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "nameRu": {
+            "type": "string"
+          },
+          "nameUz": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "nameUz",
+          "nameRu"
+        ],
+        "type": "object"
+      },
+      "SizeClassDto": {
+        "properties": {
+          "code": {
+            "example": "1-2",
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "labelRu": {
+            "type": "string"
+          },
+          "labelUz": {
+            "type": "string"
+          },
+          "maxKg": {
+            "description": "null — «и больше»",
+            "example": "2.000",
+            "nullable": true,
+            "type": "string"
+          },
+          "minKg": {
+            "example": "1.000",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "minKg",
+          "maxKg",
+          "labelUz",
+          "labelRu"
+        ],
+        "type": "object"
+      },
+      "SpeciesDto": {
+        "properties": {
+          "code": {
+            "example": "SILVER_CARP",
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "nameLatin": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nameRu": {
+            "type": "string"
+          },
+          "nameUz": {
+            "type": "string"
+          },
+          "sizeClasses": {
+            "items": {
+              "$ref": "#/components/schemas/SizeClassDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "nameUz",
+          "nameRu",
+          "nameLatin",
+          "sizeClasses"
+        ],
+        "type": "object"
+      },
       "TokenPairDto": {
         "properties": {
           "accessToken": {
@@ -312,6 +965,117 @@
           "accessTokenExpiresIn"
         ],
         "type": "object"
+      },
+      "UpdateAddressDto": {
+        "properties": {
+          "addressText": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "contactName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "contactPhone": {
+            "example": "+998901234567",
+            "type": "string"
+          },
+          "districtName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "label": {
+            "example": "Ресторан на Чиланзаре",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "lat": {
+            "example": "41.285300",
+            "type": "string"
+          },
+          "lng": {
+            "example": "69.203400",
+            "type": "string"
+          },
+          "regionId": {
+            "type": "number"
+          },
+          "workingHours": {
+            "example": "08:00–11:00 приёмка",
+            "maxLength": 120,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateMeDto": {
+        "properties": {
+          "fullName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "locale": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "UpdateOrgDto": {
+        "properties": {
+          "contactPhone": {
+            "example": "+998901234567",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "districtName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "legalAddress": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "legalForm": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LegalForm"
+              }
+            ]
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 2,
+            "type": "string"
+          },
+          "regionId": {
+            "type": "number"
+          },
+          "tin": {
+            "description": "СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1)",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "VerificationStatus": {
+        "enum": [
+          "UNVERIFIED",
+          "PENDING",
+          "VERIFIED",
+          "REJECTED",
+          "SUSPENDED"
+        ],
+        "type": "string"
       }
     },
     "securitySchemes": {
@@ -330,6 +1094,93 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/api/v1/addresses/{addressId}": {
+      "delete": {
+        "operationId": "Addresses_archive",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "addressId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Архивирование"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "addresses"
+        ]
+      },
+      "patch": {
+        "operationId": "Addresses_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "addressId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAddressDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "addresses"
+        ]
+      }
+    },
     "/api/v1/auth/logout": {
       "post": {
         "operationId": "Auth_logout",
@@ -499,6 +1350,640 @@
         },
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/api/v1/dict/regions": {
+      "get": {
+        "operationId": "Dict_regions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RegionRefDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "dict"
+        ]
+      }
+    },
+    "/api/v1/dict/species": {
+      "get": {
+        "operationId": "Dict_species",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SpeciesDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "dict"
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "Me_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            },
+            "description": "Профиль и организации с ролями (SPEC 10.3)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "me"
+        ]
+      },
+      "patch": {
+        "operationId": "Me_update",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMeDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/api/v1/orgs": {
+      "post": {
+        "operationId": "Orgs_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrgDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgDto"
+                }
+              }
+            },
+            "description": "Создатель становится OWNER (SPEC 8.1)"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      }
+    },
+    "/api/v1/orgs/{id}": {
+      "get": {
+        "operationId": "Orgs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      },
+      "patch": {
+        "operationId": "Orgs_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrgDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "Юридические поля заблокированы на проверке и после неё (D-30)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      }
+    },
+    "/api/v1/orgs/{id}/addresses": {
+      "get": {
+        "operationId": "Addresses_list",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AddressDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "addresses"
+        ]
+      },
+      "post": {
+        "operationId": "Addresses_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAddressDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "addresses"
+        ]
+      }
+    },
+    "/api/v1/orgs/{id}/invitations/{invitationId}": {
+      "delete": {
+        "operationId": "Orgs_revokeInvitation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "invitationId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      }
+    },
+    "/api/v1/orgs/{id}/members": {
+      "get": {
+        "operationId": "Orgs_members",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembersDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      },
+      "post": {
+        "operationId": "Orgs_invite",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteMemberDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteResultDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "Уже участник"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      }
+    },
+    "/api/v1/orgs/{id}/members/{userId}": {
+      "delete": {
+        "operationId": "Orgs_removeMember",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "Нельзя исключить последнего OWNER"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      },
+      "patch": {
+        "operationId": "Orgs_changeRole",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeRoleDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "Нельзя понизить последнего OWNER"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
         ]
       }
     },

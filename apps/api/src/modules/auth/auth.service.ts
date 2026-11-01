@@ -10,7 +10,6 @@ import {
   ErrorCode,
   generateOtpCode,
   isInvitationActive,
-  normalizeUzPhone,
   type OtpPolicy,
   type PlatformRole,
   refreshExpiry,
@@ -19,6 +18,7 @@ import { type Locale, translate } from '@baliqbozor/i18n';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { hash, verify } from '@node-rs/argon2';
 
+import { requirePhone } from '../../common/phone.js';
 import { ENV, type Env } from '../../config/env.js';
 import { AuditService } from '../../infra/audit.service.js';
 import { recordEvent } from '../../infra/events.js';
@@ -50,16 +50,6 @@ export interface TokenPair {
 
 const HOUR_MS = 3_600_000;
 const blockKey = (phone: string) => `otp:block:${phone}`;
-
-function requirePhone(input: string): string {
-  const phone = normalizeUzPhone(input);
-  if (!phone) {
-    throw new DomainError(ErrorCode.VALIDATION_FAILED, 'Invalid phone', {
-      fields: [{ field: 'phone', constraints: ['isUzPhone'] }],
-    });
-  }
-  return phone;
-}
 
 const toAuthUser = (u: {
   id: string;

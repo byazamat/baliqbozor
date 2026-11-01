@@ -9,7 +9,11 @@ import { InfraModule } from './infra/infra.module.js';
 import { AccessGuard } from './modules/auth/access.guard.js';
 import { AuthGuard } from './modules/auth/auth.guard.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { AddressesModule } from './modules/addresses/addresses.module.js';
+import { DictModule } from './modules/dict/dict.module.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { MeModule } from './modules/me/me.module.js';
+import { OrgsModule } from './modules/orgs/orgs.module.js';
 import { SettingsModule } from './modules/settings/settings.module.js';
 
 @Module({})
@@ -24,6 +28,10 @@ export class AppModule {
         SettingsModule,
         AuthModule,
         HealthModule,
+        MeModule,
+        OrgsModule,
+        AddressesModule,
+        DictModule,
       ],
       providers: [
         { provide: ENV, useValue: env },

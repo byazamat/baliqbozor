@@ -4,6 +4,22 @@
  */
 
 export interface paths {
+    "/api/v1/addresses/{addressId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["Addresses_archive"];
+        options?: never;
+        head?: never;
+        patch: operations["Addresses_update"];
+        trace?: never;
+    };
     "/api/v1/auth/logout": {
         parameters: {
             query?: never;
@@ -68,6 +84,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/dict/regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Dict_regions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dict/species": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Dict_species"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Me_me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Me_update"];
+        trace?: never;
+    };
+    "/api/v1/orgs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Orgs_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Orgs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Orgs_update"];
+        trace?: never;
+    };
+    "/api/v1/orgs/{id}/addresses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Addresses_list"];
+        put?: never;
+        post: operations["Addresses_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{id}/invitations/{invitationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["Orgs_revokeInvitation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{id}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Orgs_members"];
+        put?: never;
+        post: operations["Orgs_invite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{id}/members/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["Orgs_removeMember"];
+        options?: never;
+        head?: never;
+        patch: operations["Orgs_changeRole"];
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -104,6 +264,24 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddressDto: {
+            addressText: string;
+            contactName: string | null;
+            contactPhone: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            districtName: string | null;
+            /** Format: uuid */
+            id: string;
+            isDefault: boolean;
+            label: string;
+            /** @example 41.2853 */
+            lat: string;
+            /** @example 69.2034 */
+            lng: string;
+            region: components["schemas"]["RegionRefDto"];
+            workingHours: string | null;
+        };
         ApiErrorBodyDto: {
             code: components["schemas"]["ErrorCode"];
             details?: {
@@ -126,6 +304,39 @@ export interface components {
             phone: string;
             platformRole: components["schemas"]["PlatformRole"];
         };
+        ChangeRoleDto: {
+            role: components["schemas"]["MemberRole"];
+        };
+        CreateAddressDto: {
+            addressText: string;
+            contactName?: string;
+            /** @example +998901234567 */
+            contactPhone?: string;
+            districtName?: string;
+            isDefault?: boolean;
+            /** @example Ресторан на Чиланзаре */
+            label: string;
+            /** @example 41.285300 */
+            lat: string;
+            /** @example 69.203400 */
+            lng: string;
+            regionId: number;
+            /** @example 08:00–11:00 приёмка */
+            workingHours?: string;
+        };
+        CreateOrgDto: {
+            /** @example +998901234567 */
+            contactPhone?: string;
+            description?: string;
+            districtName?: string;
+            legalAddress?: string;
+            legalForm: components["schemas"]["LegalForm"];
+            name: string;
+            regionId?: number;
+            /** @description СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1) */
+            tin?: string;
+            type: components["schemas"]["OrgType"];
+        };
         /** @enum {string} */
         ErrorCode: "VALIDATION_FAILED" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "INVALID_TRANSITION" | "INSUFFICIENT_VOLUME" | "ORG_NOT_VERIFIED" | "ORG_SUSPENDED" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_TOO_MANY_ATTEMPTS" | "RATE_LIMITED" | "COMMISSION_OVERDUE_BLOCK" | "MEDIA_TOO_LARGE" | "MEDIA_TYPE_NOT_ALLOWED" | "INTERNAL_ERROR";
         HealthDto: {
@@ -138,6 +349,30 @@ export interface components {
             /** @example 42 */
             uptimeSec: number;
         };
+        InvitationDto: {
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: uuid */
+            id: string;
+            phone: string;
+            role: components["schemas"]["MemberRole"];
+        };
+        InviteMemberDto: {
+            /** @example +998901234567 */
+            phone: string;
+            role: components["schemas"]["MemberRole"];
+        };
+        InviteResultDto: {
+            invitation?: components["schemas"]["InvitationDto"];
+            member?: components["schemas"]["MemberDto"];
+            /**
+             * @description ADDED — пользователь уже был в системе
+             * @enum {string}
+             */
+            result: "ADDED" | "INVITED";
+        };
+        /** @enum {string} */
+        LegalForm: "INDIVIDUAL" | "SOLE_PROPRIETOR" | "LLC" | "FARM_ENTERPRISE" | "DEHKAN_FARM" | "OTHER";
         /** @enum {string} */
         Locale: "uz" | "ru";
         LoginResultDto: {
@@ -152,6 +387,74 @@ export interface components {
             refreshToken: string;
             user: components["schemas"]["AuthUserDto"];
         };
+        MeDto: {
+            fullName: string | null;
+            /** Format: uuid */
+            id: string;
+            locale: components["schemas"]["Locale"];
+            organizations: components["schemas"]["MyOrganizationDto"][];
+            /** @example +998901234567 */
+            phone: string;
+            platformRole: components["schemas"]["PlatformRole"];
+        };
+        MemberDto: {
+            fullName: string | null;
+            /** Format: date-time */
+            joinedAt: string;
+            phone: string;
+            role: components["schemas"]["MemberRole"];
+            /** Format: uuid */
+            userId: string;
+        };
+        /** @enum {string} */
+        MemberRole: "OWNER" | "MANAGER" | "STAFF";
+        MembersDto: {
+            /** @description Ожидающие приглашения (видит OWNER) */
+            invitations: components["schemas"]["InvitationDto"][];
+            members: components["schemas"]["MemberDto"][];
+        };
+        MyOrganizationDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            role: components["schemas"]["MemberRole"];
+            type: components["schemas"]["OrgType"];
+            verificationStatus: components["schemas"]["VerificationStatus"];
+        };
+        OrgDto: {
+            completedOrders: number;
+            /** Format: date-time */
+            createdAt: string;
+            description: string | null;
+            /** Format: uuid */
+            id: string;
+            legalForm: components["schemas"]["LegalForm"];
+            name: string;
+            /** @description Только для членов организации, оператора и администратора */
+            private?: components["schemas"]["OrgPrivateDto"];
+            /** @example 4.75 */
+            ratingAvg: string | null;
+            ratingCount: number;
+            region: components["schemas"]["RegionRefDto"] | null;
+            /** @example 92.50 */
+            reliabilityScore: string | null;
+            type: components["schemas"]["OrgType"];
+            verificationStatus: components["schemas"]["VerificationStatus"];
+            /** Format: date-time */
+            verifiedAt: string | null;
+        };
+        OrgPrivateDto: {
+            contactPhone: string | null;
+            districtName: string | null;
+            legalAddress: string | null;
+            /** @description Роль текущего пользователя */
+            myRole: components["schemas"]["MemberRole"] | null;
+            tin: string | null;
+            /** @description Комментарий оператора к решению */
+            verificationNote: string | null;
+        };
+        /** @enum {string} */
+        OrgType: "SELLER" | "BUYER" | "CARRIER";
         OtpRequestDto: {
             /**
              * @description Номер Узбекистана; принимаются пробелы, скобки, дефисы
@@ -198,6 +501,35 @@ export interface components {
         RefreshDto: {
             refreshToken: string;
         };
+        RegionRefDto: {
+            code: string;
+            id: number;
+            nameRu: string;
+            nameUz: string;
+        };
+        SizeClassDto: {
+            /** @example 1-2 */
+            code: string;
+            id: number;
+            labelRu: string;
+            labelUz: string;
+            /**
+             * @description null — «и больше»
+             * @example 2.000
+             */
+            maxKg: string | null;
+            /** @example 1.000 */
+            minKg: string;
+        };
+        SpeciesDto: {
+            /** @example SILVER_CARP */
+            code: string;
+            id: number;
+            nameLatin: string | null;
+            nameRu: string;
+            nameUz: string;
+            sizeClasses: components["schemas"]["SizeClassDto"][];
+        };
         TokenPairDto: {
             accessToken: string;
             /**
@@ -207,6 +539,41 @@ export interface components {
             accessTokenExpiresIn: number;
             refreshToken: string;
         };
+        UpdateAddressDto: {
+            addressText?: string;
+            contactName?: string;
+            /** @example +998901234567 */
+            contactPhone?: string;
+            districtName?: string;
+            isDefault?: boolean;
+            /** @example Ресторан на Чиланзаре */
+            label?: string;
+            /** @example 41.285300 */
+            lat?: string;
+            /** @example 69.203400 */
+            lng?: string;
+            regionId?: number;
+            /** @example 08:00–11:00 приёмка */
+            workingHours?: string;
+        };
+        UpdateMeDto: {
+            fullName?: string;
+            locale?: components["schemas"]["Locale"];
+        };
+        UpdateOrgDto: {
+            /** @example +998901234567 */
+            contactPhone?: string;
+            description?: string;
+            districtName?: string;
+            legalAddress?: string;
+            legalForm?: components["schemas"]["LegalForm"];
+            name?: string;
+            regionId?: number;
+            /** @description СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1) */
+            tin?: string;
+        };
+        /** @enum {string} */
+        VerificationStatus: "UNVERIFIED" | "PENDING" | "VERIFIED" | "REJECTED" | "SUSPENDED";
     };
     responses: never;
     parameters: never;
@@ -216,6 +583,55 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    Addresses_archive: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                addressId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Архивирование */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    Addresses_update: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                addressId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAddressDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddressDto"];
+                };
+            };
+        };
+    };
     Auth_logout: {
         parameters: {
             query?: never;
@@ -345,6 +761,423 @@ export interface operations {
                 };
             };
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Dict_regions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionRefDto"][];
+                };
+            };
+        };
+    };
+    Dict_species: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SpeciesDto"][];
+                };
+            };
+        };
+    };
+    Me_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Профиль и организации с ролями (SPEC 10.3) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeDto"];
+                };
+            };
+        };
+    };
+    Me_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMeDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeDto"];
+                };
+            };
+        };
+    };
+    Orgs_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrgDto"];
+            };
+        };
+        responses: {
+            /** @description Создатель становится OWNER (SPEC 8.1) */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Orgs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Orgs_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOrgDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrgDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            /** @description Юридические поля заблокированы на проверке и после неё (D-30) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Addresses_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddressDto"][];
+                };
+            };
+        };
+    };
+    Addresses_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAddressDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AddressDto"];
+                };
+            };
+        };
+    };
+    Orgs_revokeInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                invitationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Orgs_members: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembersDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Orgs_invite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteMemberDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InviteResultDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            /** @description Уже участник */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Orgs_removeMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            /** @description Нельзя исключить последнего OWNER */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Orgs_changeRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                userId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangeRoleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MemberDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            /** @description Нельзя понизить последнего OWNER */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };

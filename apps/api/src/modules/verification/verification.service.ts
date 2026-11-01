@@ -13,6 +13,7 @@ import { AuditService } from '../../infra/audit.service.js';
 import { recordEvent } from '../../infra/events.js';
 import { PrismaService } from '../../infra/prisma.service.js';
 import { assertCanInOrg, requireOrg } from '../auth/policy.js';
+import type { MediaDto } from '../media/media.dto.js';
 import { OrgsService } from '../orgs/orgs.service.js';
 import type {
   AdminOrgDetailsDto,
@@ -209,6 +210,22 @@ export class VerificationService {
     };
   }
 
+  /** Загруженные документы организации (без незавершённых и отклонённых загрузок). */
+  async documents(orgId: string): Promise<MediaDto[]> {
+    const rows = await this.prisma.client.mediaFile.findMany({
+      where: { orgId, status: { in: ['UPLOADED', 'PROCESSED'] } },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+    });
+    return rows.map((d) => ({
+      id: d.id,
+      kind: d.kind,
+      status: d.status,
+      mimeType: d.mimeType,
+      sizeBytes: d.sizeBytes,
+      createdAt: d.createdAt,
+    }));
+  }
+
   async orgDetails(auth: AuthContext, orgId: string): Promise<AdminOrgDetailsDto> {
     const org = await this.orgs.get(auth, orgId);
     const [members, documents, tasks] = await Promise.all([
@@ -217,10 +234,7 @@ export class VerificationService {
         include: { user: { select: { fullName: true, phone: true } } },
         orderBy: { createdAt: 'asc' },
       }),
-      this.prisma.client.mediaFile.findMany({
-        where: { orgId, status: { in: ['UPLOADED', 'PROCESSED'] } },
-        orderBy: { createdAt: 'desc' },
-      }),
+      this.documents(orgId),
       this.prisma.client.opsTask.findMany({
         where: { orgId, status: 'OPEN' },
         orderBy: { createdAt: 'desc' },
@@ -235,14 +249,7 @@ export class VerificationService {
         role: m.role,
         joinedAt: m.createdAt,
       })),
-      documents: documents.map((d) => ({
-        id: d.id,
-        kind: d.kind,
-        status: d.status,
-        mimeType: d.mimeType,
-        sizeBytes: d.sizeBytes,
-        createdAt: d.createdAt,
-      })),
+      documents,
       tasks: tasks.map(toTaskDto),
     };
   }

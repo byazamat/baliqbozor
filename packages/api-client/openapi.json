@@ -2899,6 +2899,44 @@
         ]
       }
     },
+    "/api/v1/orgs/{id}/documents": {
+      "get": {
+        "operationId": "Verification_documents",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MediaDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Загруженные документы верификации, новые первыми (D-46)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      }
+    },
     "/api/v1/orgs/{id}/invitations/{invitationId}": {
       "delete": {
         "operationId": "Orgs_revokeInvitation",

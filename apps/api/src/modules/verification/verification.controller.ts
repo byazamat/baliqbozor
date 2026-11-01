@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 
 import { ApiErrorDto } from '../../common/api-error.dto.js';
+import { MediaDto } from '../media/media.dto.js';
 import type { AuthContext } from '../../common/request-context.js';
 import { OrgScoped, PlatformRoles } from '../auth/access.decorators.js';
 import { CurrentAuth } from '../auth/current-auth.decorator.js';
@@ -65,6 +66,17 @@ export class VerificationController {
     @Body() dto: SubmitVerificationDto,
   ): Promise<SubmitResultDto> {
     return this.verification.submit(auth, dto.mediaIds, dto.note);
+  }
+
+  @Get(':id/documents')
+  @OrgScoped({ fromParam: 'id', allowPlatformStaff: true })
+  @ApiOkResponse({
+    type: MediaDto,
+    isArray: true,
+    description: 'Загруженные документы верификации, новые первыми (D-46)',
+  })
+  documents(@Param('id', ParseUUIDPipe) id: string): Promise<MediaDto[]> {
+    return this.verification.documents(id);
   }
 }
 

@@ -404,6 +404,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orgs/{id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Verification_documents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orgs/{id}/invitations/{invitationId}": {
         parameters: {
             query?: never;
@@ -1776,6 +1792,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AddressDto"];
+                };
+            };
+        };
+    };
+    Verification_documents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Загруженные документы верификации, новые первыми (D-46) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaDto"][];
                 };
             };
         };

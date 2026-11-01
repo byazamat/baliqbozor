@@ -162,6 +162,31 @@ describe('organization verification (e2e)', () => {
     ).toBe('UNVERIFIED');
   });
 
+  it('lists uploaded documents to members and operators only', async () => {
+    const owner = await actor(app, sms);
+    const staff = await actor(app, sms);
+    const outsider = await actor(app, sms);
+    const operator = await actor(app, sms, 'OPERATOR');
+    const org = await createOrg(app, owner.userId);
+    await addMember(app, org.id, staff.userId, 'STAFF');
+    const first = await uploadedDoc(org.id, owner.userId);
+    const second = await uploadedDoc(org.id, owner.userId);
+    await uploadedDoc(org.id, owner.userId, 'PENDING_UPLOAD');
+    const url = `/api/v1/orgs/${org.id}/documents`;
+
+    const own = await http().get(url).set(bearer(owner)).expect(200);
+    expect((own.body as { id: string }[]).map((d) => d.id).sort()).toEqual(
+      [first.id, second.id].sort(),
+    );
+    expect(own.body[0]).toEqual(
+      expect.objectContaining({ kind: 'IMAGE', status: 'UPLOADED', sizeBytes: 1000 }),
+    );
+    await http().get(url).set(bearer(staff)).expect(200);
+    await http().get(url).set(bearer(operator)).expect(200);
+    await expectIsolated(http().get(url).set(bearer(outsider)));
+    await http().get(url).expect(401);
+  });
+
   it('lets only the owner submit and only operators decide; isolates organizations', async () => {
     const owner = await actor(app, sms);
     const manager = await actor(app, sms);

@@ -11,6 +11,7 @@ import { AuthGuard } from './modules/auth/auth.guard.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { AddressesModule } from './modules/addresses/addresses.module.js';
 import { DictModule } from './modules/dict/dict.module.js';
+import { FarmsModule } from './modules/farms/farms.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { MediaModule } from './modules/media/media.module.js';
 import { MeModule } from './modules/me/me.module.js';
@@ -37,6 +38,7 @@ export class AppModule {
         DictModule,
         MediaModule,
         VerificationModule,
+        FarmsModule,
         NotificationsModule,
       ],
       providers: [

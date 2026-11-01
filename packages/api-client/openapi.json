@@ -314,6 +314,68 @@
         ],
         "type": "object"
       },
+      "CreateFarmDto": {
+        "properties": {
+          "addressText": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "areaHa": {
+            "description": "Площадь, га",
+            "example": "12.50",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "districtName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "lat": {
+            "description": "Точка на карте (в зоне сервиса)",
+            "example": "39.654200",
+            "type": "string"
+          },
+          "lng": {
+            "example": "66.959700",
+            "type": "string"
+          },
+          "mediaIds": {
+            "description": "Фото хозяйства (назначение FARM_PHOTO) в порядке показа",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 10,
+            "type": "array"
+          },
+          "name": {
+            "example": "Pond farm «Zarafshon»",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "regionId": {
+            "type": "number"
+          },
+          "waterBodyTypes": {
+            "items": {
+              "$ref": "#/components/schemas/WaterBodyType"
+            },
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "regionId",
+          "lat",
+          "lng",
+          "waterBodyTypes"
+        ],
+        "type": "object"
+      },
       "CreateOrgDto": {
         "properties": {
           "contactPhone": {
@@ -414,6 +476,94 @@
           "INTERNAL_ERROR"
         ],
         "type": "string"
+      },
+      "FarmDto": {
+        "properties": {
+          "activeListings": {
+            "description": "Позиций наличия в статусе ACTIVE",
+            "type": "number"
+          },
+          "addressText": {
+            "nullable": true,
+            "type": "string"
+          },
+          "areaHa": {
+            "nullable": true,
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "districtName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "lat": {
+            "example": "39.654200",
+            "type": "string"
+          },
+          "lng": {
+            "example": "66.959700",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "photos": {
+            "items": {
+              "$ref": "#/components/schemas/MediaDto"
+            },
+            "type": "array"
+          },
+          "region": {
+            "$ref": "#/components/schemas/RegionRefDto"
+          },
+          "sellerOrgId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "waterBodyTypes": {
+            "items": {
+              "$ref": "#/components/schemas/WaterBodyType"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "sellerOrgId",
+          "name",
+          "region",
+          "districtName",
+          "addressText",
+          "lat",
+          "lng",
+          "waterBodyTypes",
+          "areaHa",
+          "description",
+          "isActive",
+          "photos",
+          "activeListings",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object"
       },
       "HealthDto": {
         "properties": {
@@ -1526,6 +1676,65 @@
         },
         "type": "object"
       },
+      "UpdateFarmDto": {
+        "properties": {
+          "addressText": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "areaHa": {
+            "description": "Площадь, га",
+            "example": "12.50",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "districtName": {
+            "maxLength": 120,
+            "type": "string"
+          },
+          "isActive": {
+            "description": "false — деактивация: активное наличие хозяйства уходит в PAUSED (SPEC 8.2)",
+            "type": "boolean"
+          },
+          "lat": {
+            "description": "Точка на карте (в зоне сервиса)",
+            "example": "39.654200",
+            "type": "string"
+          },
+          "lng": {
+            "example": "66.959700",
+            "type": "string"
+          },
+          "mediaIds": {
+            "description": "Фото хозяйства (назначение FARM_PHOTO) в порядке показа",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 10,
+            "type": "array"
+          },
+          "name": {
+            "example": "Pond farm «Zarafshon»",
+            "maxLength": 120,
+            "type": "string"
+          },
+          "regionId": {
+            "type": "number"
+          },
+          "waterBodyTypes": {
+            "items": {
+              "$ref": "#/components/schemas/WaterBodyType"
+            },
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
       "UpdateMeDto": {
         "properties": {
           "fullName": {
@@ -1720,6 +1929,16 @@
           "status"
         ],
         "type": "object"
+      },
+      "WaterBodyType": {
+        "enum": [
+          "POND",
+          "RAS",
+          "CAGE",
+          "RACEWAY",
+          "OTHER"
+        ],
+        "type": "string"
       }
     },
     "securitySchemes": {
@@ -2523,6 +2742,241 @@
         },
         "tags": [
           "dict"
+        ]
+      }
+    },
+    "/api/v1/farms": {
+      "get": {
+        "operationId": "Farms_list",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FarmDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "farms"
+        ]
+      },
+      "post": {
+        "operationId": "Farms_create",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFarmDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "farms"
+        ]
+      }
+    },
+    "/api/v1/farms/{id}": {
+      "get": {
+        "operationId": "Farms_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "farms"
+        ]
+      },
+      "patch": {
+        "operationId": "Farms_update",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFarmDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FarmDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "farms"
         ]
       }
     },

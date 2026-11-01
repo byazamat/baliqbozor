@@ -68,3 +68,28 @@ export async function expectIsolated(response: request.Test): Promise<void> {
   }
   if (!('error' in (res.body as object))) throw new Error('Expected an error body');
 }
+
+/** Активное хозяйство продавца (нужно до верификации, D-28). */
+export async function addFarm(
+  app: INestApplication,
+  orgId: string,
+  options: { name?: string; lat?: string; lng?: string; regionCode?: string } = {},
+) {
+  const prisma = prismaOf(app);
+  const code = options.regionCode ?? 'SAMARKAND';
+  const region = await prisma.region.upsert({
+    where: { code },
+    create: { code, nameUz: code, nameRu: code },
+    update: {},
+  });
+  return prisma.farm.create({
+    data: {
+      sellerOrgId: orgId,
+      name: options.name ?? 'Test Farm',
+      regionId: region.id,
+      lat: options.lat ?? '39.654200',
+      lng: options.lng ?? '66.959700',
+      waterBodyTypes: ['POND'],
+    },
+  });
+}

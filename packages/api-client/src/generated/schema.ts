@@ -260,6 +260,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/farms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Farms_list"];
+        put?: never;
+        post: operations["Farms_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/farms/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Farms_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Farms_update"];
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -636,6 +668,29 @@ export interface components {
             /** @example 08:00–11:00 приёмка */
             workingHours?: string;
         };
+        CreateFarmDto: {
+            addressText?: string;
+            /**
+             * @description Площадь, га
+             * @example 12.50
+             */
+            areaHa?: string;
+            description?: string;
+            districtName?: string;
+            /**
+             * @description Точка на карте (в зоне сервиса)
+             * @example 39.654200
+             */
+            lat: string;
+            /** @example 66.959700 */
+            lng: string;
+            /** @description Фото хозяйства (назначение FARM_PHOTO) в порядке показа */
+            mediaIds?: string[];
+            /** @example Pond farm «Zarafshon» */
+            name: string;
+            regionId: number;
+            waterBodyTypes: components["schemas"]["WaterBodyType"][];
+        };
         CreateOrgDto: {
             /** @example +998901234567 */
             contactPhone?: string;
@@ -661,6 +716,31 @@ export interface components {
         };
         /** @enum {string} */
         ErrorCode: "VALIDATION_FAILED" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "INVALID_TRANSITION" | "INSUFFICIENT_VOLUME" | "ORG_NOT_VERIFIED" | "ORG_SUSPENDED" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_TOO_MANY_ATTEMPTS" | "RATE_LIMITED" | "COMMISSION_OVERDUE_BLOCK" | "MEDIA_TOO_LARGE" | "MEDIA_TYPE_NOT_ALLOWED" | "INTERNAL_ERROR";
+        FarmDto: {
+            /** @description Позиций наличия в статусе ACTIVE */
+            activeListings: number;
+            addressText: string | null;
+            areaHa: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            description: string | null;
+            districtName: string | null;
+            /** Format: uuid */
+            id: string;
+            isActive: boolean;
+            /** @example 39.654200 */
+            lat: string;
+            /** @example 66.959700 */
+            lng: string;
+            name: string;
+            photos: components["schemas"]["MediaDto"][];
+            region: components["schemas"]["RegionRefDto"];
+            /** Format: uuid */
+            sellerOrgId: string;
+            /** Format: date-time */
+            updatedAt: string;
+            waterBodyTypes: components["schemas"]["WaterBodyType"][];
+        };
         HealthDto: {
             /** @example api */
             service: string;
@@ -986,6 +1066,31 @@ export interface components {
             /** @example 08:00–11:00 приёмка */
             workingHours?: string;
         };
+        UpdateFarmDto: {
+            addressText?: string;
+            /**
+             * @description Площадь, га
+             * @example 12.50
+             */
+            areaHa?: string;
+            description?: string;
+            districtName?: string;
+            /** @description false — деактивация: активное наличие хозяйства уходит в PAUSED (SPEC 8.2) */
+            isActive?: boolean;
+            /**
+             * @description Точка на карте (в зоне сервиса)
+             * @example 39.654200
+             */
+            lat?: string;
+            /** @example 66.959700 */
+            lng?: string;
+            /** @description Фото хозяйства (назначение FARM_PHOTO) в порядке показа */
+            mediaIds?: string[];
+            /** @example Pond farm «Zarafshon» */
+            name?: string;
+            regionId?: number;
+            waterBodyTypes?: components["schemas"]["WaterBodyType"][];
+        };
         UpdateMeDto: {
             fullName?: string;
             locale?: components["schemas"]["Locale"];
@@ -1045,6 +1150,8 @@ export interface components {
         VerificationStatusDto: {
             status: components["schemas"]["VerificationStatus"];
         };
+        /** @enum {string} */
+        WaterBodyType: "POND" | "RAS" | "CAGE" | "RACEWAY" | "OTHER";
     };
     responses: never;
     parameters: never;
@@ -1533,6 +1640,150 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SpeciesDto"][];
+                };
+            };
+        };
+    };
+    Farms_list: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FarmDto"][];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Farms_create: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFarmDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FarmDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Farms_get: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FarmDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Farms_update: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFarmDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FarmDto"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
                 };
             };
         };

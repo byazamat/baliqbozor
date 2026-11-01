@@ -57,6 +57,15 @@ export class VerificationService {
         orgType: org.type,
         wasVerified: !!org.verifiedAt,
       });
+      // D-28: продавец сначала добавляет хотя бы одно активное хозяйство (SPEC 8.1 п. 3).
+      if (
+        org.type === 'SELLER' &&
+        (await tx.farm.count({ where: { sellerOrgId: orgId, isActive: true } })) === 0
+      ) {
+        throw new DomainError(ErrorCode.VALIDATION_FAILED, 'Add a farm before verification', {
+          fields: [{ field: 'farms', constraints: ['farmRequired'] }],
+        });
+      }
       const media = await tx.mediaFile.findMany({
         where: {
           id: { in: ids },

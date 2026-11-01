@@ -5,7 +5,7 @@ import { SMS_PROVIDER } from '../src/providers/sms/sms.provider.js';
 import { bearer, FakeSms } from './auth-helpers.js';
 import { createTestApp } from './create-test-app.js';
 import { prismaOf, resetState } from './db.js';
-import { actor, addMember, createOrg, expectIsolated } from './fixtures.js';
+import { actor, addFarm, addMember, createOrg, expectIsolated } from './fixtures.js';
 
 describe('organization verification (e2e)', () => {
   let app: NestExpressApplication;
@@ -45,6 +45,7 @@ describe('organization verification (e2e)', () => {
     const owner = await actor(app, sms);
     const operator = await actor(app, sms, 'OPERATOR');
     const org = await createOrg(app, owner.userId, { type: 'SELLER', name: 'Samarqand Baliq' });
+    await addFarm(app, org.id);
     const doc = await uploadedDoc(org.id, owner.userId);
 
     const submitted = await http()
@@ -148,6 +149,7 @@ describe('organization verification (e2e)', () => {
     const owner = await actor(app, sms);
     const other = await actor(app, sms);
     const org = await createOrg(app, owner.userId);
+    await addFarm(app, org.id);
     const foreignOrg = await createOrg(app, other.userId);
     const foreign = await uploadedDoc(foreignOrg.id, other.userId);
     const pending = await uploadedDoc(org.id, owner.userId, 'PENDING_UPLOAD');
@@ -169,6 +171,7 @@ describe('organization verification (e2e)', () => {
     const outsider = await actor(app, sms);
     const operator = await actor(app, sms, 'OPERATOR');
     const org = await createOrg(app, owner.userId);
+    await addFarm(app, org.id);
     await addMember(app, org.id, staff.userId, 'STAFF');
     const first = await uploadedDoc(org.id, owner.userId);
     const second = await uploadedDoc(org.id, owner.userId);
@@ -193,6 +196,7 @@ describe('organization verification (e2e)', () => {
     const manager = await actor(app, sms);
     const outsider = await actor(app, sms);
     const org = await createOrg(app, owner.userId);
+    await addFarm(app, org.id);
     await addMember(app, org.id, manager.userId, 'MANAGER');
     const doc = await uploadedDoc(org.id, owner.userId);
 
@@ -223,6 +227,7 @@ describe('organization verification (e2e)', () => {
     const operator = await actor(app, sms, 'OPERATOR');
     const admin = await actor(app, sms, 'ADMIN');
     const org = await createOrg(app, owner.userId, { name: 'Forel Chorvoq' });
+    await addFarm(app, org.id);
     await prismaOf(app).organization.update({ where: { id: org.id }, data: { tin: '305123456' } });
     await createOrg(app, owner.userId, { name: 'Boshqa' });
 

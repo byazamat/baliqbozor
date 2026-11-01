@@ -105,6 +105,31 @@ describe('M1 acceptance: seller verification end to end (e2e)', () => {
       .expect(200);
     expect(docs.body).toEqual([expect.objectContaining({ id: mediaId, status: 'UPLOADED' })]);
 
+    // 3a. Хозяйство до верификации (D-28): без него отправка отклоняется.
+    const noFarm = await http()
+      .post(`/api/v1/orgs/${orgId}/verification`)
+      .set(bearer(seller))
+      .send({ mediaIds: [mediaId] })
+      .expect(400);
+    expect(noFarm.body.error.details.fields).toEqual([
+      { field: 'farms', constraints: ['farmRequired'] },
+    ]);
+    const samarkand = await prismaOf(app).region.findUniqueOrThrow({
+      where: { code: 'SAMARKAND' },
+    });
+    await http()
+      .post('/api/v1/farms')
+      .set(bearer(seller))
+      .set('X-Org-Id', orgId)
+      .send({
+        name: 'Zarafshon hovuzlari',
+        regionId: samarkand.id,
+        lat: '39.654200',
+        lng: '66.959700',
+        waterBodyTypes: ['POND'],
+      })
+      .expect(201);
+
     // 4. Отправка на проверку → PENDING и задача оператору.
     const submitted = await http()
       .post(`/api/v1/orgs/${orgId}/verification`)

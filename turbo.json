@@ -5,27 +5,31 @@
   "globalEnv": ["NODE_ENV", "APP_ENV"],
   "envMode": "loose",
   "tasks": {
+    "generate": {
+      "cache": false,
+      "outputs": ["src/generated/**", ".next/types/**", "next-env.d.ts"]
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", "generated/**"]
     },
     "dev": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate"],
       "cache": false,
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "generate"]
     },
     "typecheck": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "generate"]
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate"],
       "outputs": ["coverage/**"]
     },
     "test:e2e": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate"],
       "cache": false
     }
   }

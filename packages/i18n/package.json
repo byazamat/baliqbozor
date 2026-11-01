@@ -17,11 +17,11 @@
   ],
   "scripts": {
     "generate": "node scripts/generate-messages.js",
-    "build": "pnpm generate && tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-    "lint": "pnpm generate && eslint .",
-    "typecheck": "pnpm generate && tsc --noEmit",
-    "test": "pnpm generate && vitest run --coverage",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage",
     "i18n:check": "node scripts/check.js"
   },
   "dependencies": {

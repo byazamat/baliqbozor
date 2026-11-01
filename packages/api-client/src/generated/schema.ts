@@ -20,6 +20,134 @@ export interface paths {
         patch: operations["Addresses_update"];
         trace?: never;
     };
+    "/api/v1/admin/orgs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminVerification_listOrgs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orgs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminVerification_orgDetails"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orgs/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminVerification_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orgs/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminVerification_suspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orgs/{id}/unsuspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminVerification_unsuspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orgs/{id}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminVerification_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminVerification_tasks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/tasks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminVerification_updateTask"];
+        trace?: never;
+    };
     "/api/v1/auth/logout": {
         parameters: {
             query?: never;
@@ -276,6 +404,22 @@ export interface paths {
         patch: operations["Orgs_changeRole"];
         trace?: never;
     };
+    "/api/v1/orgs/{id}/verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Verification_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -329,6 +473,30 @@ export interface components {
             lng: string;
             region: components["schemas"]["RegionRefDto"];
             workingHours: string | null;
+        };
+        AdminOrgDetailsDto: {
+            /** @description Документы верификации */
+            documents: components["schemas"]["MediaDto"][];
+            members: components["schemas"]["MemberDto"][];
+            org: components["schemas"]["OrgDto"];
+            /** @description Открытые задачи по организации */
+            tasks: components["schemas"]["OpsTaskDto"][];
+        };
+        AdminOrgRowDto: {
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            id: string;
+            name: string;
+            regionNameRu: string | null;
+            regionNameUz: string | null;
+            tin: string | null;
+            type: components["schemas"]["OrgType"];
+            verificationStatus: components["schemas"]["VerificationStatus"];
+        };
+        AdminOrgRowPageDto: {
+            items: components["schemas"]["AdminOrgRowDto"][];
+            nextCursor: string | null;
         };
         ApiErrorBodyDto: {
             code: components["schemas"]["ErrorCode"];
@@ -384,6 +552,10 @@ export interface components {
             /** @description СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1) */
             tin?: string;
             type: components["schemas"]["OrgType"];
+        };
+        DecisionDto: {
+            /** @description Обязателен для отказа и блокировки */
+            note?: string;
         };
         DownloadUrlDto: {
             /** Format: date-time */
@@ -493,6 +665,28 @@ export interface components {
             type: components["schemas"]["OrgType"];
             verificationStatus: components["schemas"]["VerificationStatus"];
         };
+        OpsTaskDto: {
+            /** Format: uuid */
+            assigneeId: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            description: string | null;
+            /** Format: date-time */
+            dueAt: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            orgId: string | null;
+            /** @enum {string} */
+            status: "OPEN" | "DONE" | "CANCELLED";
+            title: string;
+            /** @example VERIFY_ORG */
+            type: string;
+        };
+        OpsTaskPageDto: {
+            items: components["schemas"]["OpsTaskDto"][];
+            nextCursor: string | null;
+        };
         OrgDto: {
             completedOrders: number;
             /** Format: date-time */
@@ -579,6 +773,9 @@ export interface components {
             nameRu: string;
             nameUz: string;
         };
+        RequiredNoteDto: {
+            note: string;
+        };
         SizeClassDto: {
             /** @example 1-2 */
             code: string;
@@ -601,6 +798,15 @@ export interface components {
             nameRu: string;
             nameUz: string;
             sizeClasses: components["schemas"]["SizeClassDto"][];
+        };
+        SubmitResultDto: {
+            status: components["schemas"]["VerificationStatus"];
+            /** Format: uuid */
+            taskId: string;
+        };
+        SubmitVerificationDto: {
+            mediaIds: string[];
+            note?: string;
         };
         TokenPairDto: {
             accessToken: string;
@@ -644,6 +850,15 @@ export interface components {
             /** @description СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1) */
             tin?: string;
         };
+        UpdateTaskDto: {
+            /**
+             * Format: uuid
+             * @description Назначить; null — снять
+             */
+            assigneeId?: string | null;
+            /** @enum {string} */
+            status?: "OPEN" | "DONE" | "CANCELLED";
+        };
         UploadUrlDto: {
             /** Format: date-time */
             expiresAt: string;
@@ -667,6 +882,9 @@ export interface components {
         };
         /** @enum {string} */
         VerificationStatus: "UNVERIFIED" | "PENDING" | "VERIFIED" | "REJECTED" | "SUSPENDED";
+        VerificationStatusDto: {
+            status: components["schemas"]["VerificationStatus"];
+        };
     };
     responses: never;
     parameters: never;
@@ -721,6 +939,213 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AddressDto"];
+                };
+            };
+        };
+    };
+    AdminVerification_listOrgs: {
+        parameters: {
+            query?: {
+                /** @description Курсор из `nextCursor` предыдущей страницы */
+                cursor?: string;
+                limit?: number;
+                /** @description Название, СТИР или телефон участника */
+                q?: string;
+                status?: components["schemas"]["VerificationStatus"];
+                type?: components["schemas"]["OrgType"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrgRowPageDto"];
+                };
+            };
+        };
+    };
+    AdminVerification_orgDetails: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrgDetailsDto"];
+                };
+            };
+        };
+    };
+    AdminVerification_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequiredNoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationStatusDto"];
+                };
+            };
+        };
+    };
+    AdminVerification_suspend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequiredNoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationStatusDto"];
+                };
+            };
+        };
+    };
+    AdminVerification_unsuspend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationStatusDto"];
+                };
+            };
+        };
+    };
+    AdminVerification_verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationStatusDto"];
+                };
+            };
+            /** @description INVALID_TRANSITION */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    AdminVerification_tasks: {
+        parameters: {
+            query?: {
+                /** @description Курсор из `nextCursor` предыдущей страницы */
+                cursor?: string;
+                limit?: number;
+                status?: "OPEN" | "DONE" | "CANCELLED";
+                type?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpsTaskPageDto"];
+                };
+            };
+        };
+    };
+    AdminVerification_updateTask: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTaskDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpsTaskDto"];
                 };
             };
         };
@@ -1380,6 +1805,41 @@ export interface operations {
                 };
             };
             /** @description Нельзя понизить последнего OWNER */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Verification_submit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitVerificationDto"];
+            };
+        };
+        responses: {
+            /** @description UNVERIFIED/REJECTED → PENDING, задача VERIFY_ORG (SPEC 8.1) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmitResultDto"];
+                };
+            };
+            /** @description INVALID_TRANSITION */
             409: {
                 headers: {
                     [name: string]: unknown;

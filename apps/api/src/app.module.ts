@@ -15,6 +15,7 @@ import { HealthModule } from './modules/health/health.module.js';
 import { MediaModule } from './modules/media/media.module.js';
 import { MeModule } from './modules/me/me.module.js';
 import { OrgsModule } from './modules/orgs/orgs.module.js';
+import { VerificationModule } from './modules/verification/verification.module.js';
 import { SettingsModule } from './modules/settings/settings.module.js';
 
 @Module({})
@@ -34,6 +35,7 @@ export class AppModule {
         AddressesModule,
         DictModule,
         MediaModule,
+        VerificationModule,
       ],
       providers: [
         { provide: ENV, useValue: env },

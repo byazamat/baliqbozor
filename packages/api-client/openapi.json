@@ -64,6 +64,111 @@
         ],
         "type": "object"
       },
+      "AdminOrgDetailsDto": {
+        "properties": {
+          "documents": {
+            "description": "Документы верификации",
+            "items": {
+              "$ref": "#/components/schemas/MediaDto"
+            },
+            "type": "array"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/MemberDto"
+            },
+            "type": "array"
+          },
+          "org": {
+            "$ref": "#/components/schemas/OrgDto"
+          },
+          "tasks": {
+            "description": "Открытые задачи по организации",
+            "items": {
+              "$ref": "#/components/schemas/OpsTaskDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "org",
+          "members",
+          "documents",
+          "tasks"
+        ],
+        "type": "object"
+      },
+      "AdminOrgRowDto": {
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "regionNameRu": {
+            "nullable": true,
+            "type": "string"
+          },
+          "regionNameUz": {
+            "nullable": true,
+            "type": "string"
+          },
+          "tin": {
+            "nullable": true,
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrgType"
+              }
+            ]
+          },
+          "verificationStatus": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "verificationStatus",
+          "tin",
+          "regionNameRu",
+          "regionNameUz",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "AdminOrgRowPageDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AdminOrgRowDto"
+            },
+            "type": "array"
+          },
+          "nextCursor": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "type": "object"
+      },
       "ApiErrorBodyDto": {
         "properties": {
           "code": {
@@ -259,6 +364,16 @@
           "legalForm",
           "name"
         ],
+        "type": "object"
+      },
+      "DecisionDto": {
+        "properties": {
+          "note": {
+            "description": "Обязателен для отказа и блокировки",
+            "maxLength": 1000,
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "DownloadUrlDto": {
@@ -656,6 +771,83 @@
         ],
         "type": "object"
       },
+      "OpsTaskDto": {
+        "properties": {
+          "assigneeId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "dueAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "orgId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "DONE",
+              "CANCELLED"
+            ],
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "example": "VERIFY_ORG",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "description",
+          "status",
+          "orgId",
+          "assigneeId",
+          "dueAt",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "OpsTaskPageDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OpsTaskDto"
+            },
+            "type": "array"
+          },
+          "nextCursor": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "type": "object"
+      },
       "OrgDto": {
         "properties": {
           "completedOrders": {
@@ -949,6 +1141,18 @@
         ],
         "type": "object"
       },
+      "RequiredNoteDto": {
+        "properties": {
+          "note": {
+            "maxLength": 1000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "note"
+        ],
+        "type": "object"
+      },
       "SizeClassDto": {
         "properties": {
           "code": {
@@ -1018,6 +1222,47 @@
           "nameRu",
           "nameLatin",
           "sizeClasses"
+        ],
+        "type": "object"
+      },
+      "SubmitResultDto": {
+        "properties": {
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationStatus"
+              }
+            ]
+          },
+          "taskId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "taskId"
+        ],
+        "type": "object"
+      },
+      "SubmitVerificationDto": {
+        "properties": {
+          "mediaIds": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "type": "array"
+          },
+          "note": {
+            "maxLength": 1000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "mediaIds"
         ],
         "type": "object"
       },
@@ -1143,6 +1388,25 @@
         },
         "type": "object"
       },
+      "UpdateTaskDto": {
+        "properties": {
+          "assigneeId": {
+            "description": "Назначить; null — снять",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "OPEN",
+              "DONE",
+              "CANCELLED"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "UploadUrlDto": {
         "properties": {
           "expiresAt": {
@@ -1216,6 +1480,21 @@
           "SUSPENDED"
         ],
         "type": "string"
+      },
+      "VerificationStatusDto": {
+        "properties": {
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VerificationStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -1318,6 +1597,417 @@
         ],
         "tags": [
           "addresses"
+        ]
+      }
+    },
+    "/api/v1/admin/orgs": {
+      "get": {
+        "operationId": "AdminVerification_listOrgs",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Курсор из `nextCursor` предыдущей страницы",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/VerificationStatus"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/OrgType"
+            }
+          },
+          {
+            "description": "Название, СТИР или телефон участника",
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrgRowPageDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/orgs/{id}": {
+      "get": {
+        "operationId": "AdminVerification_orgDetails",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminOrgDetailsDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/orgs/{id}/reject": {
+      "post": {
+        "operationId": "AdminVerification_reject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequiredNoteDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationStatusDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/orgs/{id}/suspend": {
+      "post": {
+        "operationId": "AdminVerification_suspend",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequiredNoteDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationStatusDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/orgs/{id}/unsuspend": {
+      "post": {
+        "operationId": "AdminVerification_unsuspend",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationStatusDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/orgs/{id}/verify": {
+      "post": {
+        "operationId": "AdminVerification_verify",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationStatusDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "INVALID_TRANSITION"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/tasks": {
+      "get": {
+        "operationId": "AdminVerification_tasks",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Курсор из `nextCursor` предыдущей страницы",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "enum": [
+                "OPEN",
+                "DONE",
+                "CANCELLED"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "example": "VERIFY_ORG",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpsTaskPageDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/tasks/{id}": {
+      "patch": {
+        "operationId": "AdminVerification_updateTask",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaskDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpsTaskDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
         ]
       }
     },
@@ -2280,6 +2970,61 @@
               }
             },
             "description": "Нельзя понизить последнего OWNER"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "orgs"
+        ]
+      }
+    },
+    "/api/v1/orgs/{id}/verification": {
+      "post": {
+        "operationId": "Verification_submit",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitVerificationDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitResultDto"
+                }
+              }
+            },
+            "description": "UNVERIFIED/REJECTED → PENDING, задача VERIFY_ORG (SPEC 8.1)"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "INVALID_TRANSITION"
           }
         },
         "security": [

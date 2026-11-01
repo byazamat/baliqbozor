@@ -9,10 +9,44 @@
     "loading": "Yuklanmoqda…",
     "retry": "Qayta urinish",
     "currency": "so'm",
-    "kg": "kg"
+    "kg": "kg",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "close": "Yopish",
+    "back": "Orqaga",
+    "edit": "Tahrirlash",
+    "loadMore": "Yana ko'rsatish",
+    "optional": "ixtiyoriy",
+    "saved": "Saqlandi",
+    "notSet": "Ko'rsatilmagan",
+    "invalidValue": "Qiymat noto'g'ri",
+    "requiredField": "To'ldirish shart",
+    "megabytes": "{value} MB",
+    "open": "Ochish",
+    "search": "Qidirish",
+    "login": "Kirish",
+    "logout": "Chiqish",
+    "menu": "Menyu",
+    "skipToContent": "Asosiy mazmunga o'tish"
   },
   "auth": {
-    "otpSms": "{brand}: kirish kodi {code}. Uni hech kimga bermang."
+    "otpSms": "{brand}: kirish kodi {code}. Uni hech kimga bermang.",
+    "login": {
+      "title": "Kirish",
+      "subtitle": "Telefon raqamingizni kiriting — SMS orqali kod yuboramiz",
+      "phoneLabel": "Telefon raqami",
+      "sendCode": "Kod olish",
+      "codeLabel": "SMS-kod",
+      "codeSent": "{phone} raqamiga 6 xonali kod yubordik",
+      "submit": "Kirish",
+      "resendIn": "Kodni {sec} soniyadan keyin qayta yuborish mumkin",
+      "resend": "Kodni qayta yuborish",
+      "changePhone": "Boshqa raqam",
+      "invalidPhone": "Raqamni to'liq kiriting: +998 va 9 ta raqam",
+      "invalidCode": "6 ta raqamdan iborat kodni kiriting",
+      "retryAfter": "{sec} soniyadan keyin qayta urinib ko'ring",
+      "attemptsLeft": "Qolgan urinishlar: {count}"
+    }
   },
   "health": {
     "title": "Tizim holati",
@@ -26,12 +60,248 @@
     "home": {
       "title": "Baliq savdosi — to'g'ridan-to'g'ri xo'jalikdan",
       "subtitle": "Restoranlar, do'konlar va ulgurji xaridorlar uchun"
-    }
+    },
+    "nav": {
+      "org": "Tashkilot",
+      "team": "Jamoa",
+      "notifications": "Bildirishnomalar",
+      "account": "Profil",
+      "currentOrg": "Joriy tashkilot",
+      "newOrg": "Yangi tashkilot",
+      "main": "Bo'limlar"
+    },
+    "onboarding": {
+      "title": "Tashkilot yaratish",
+      "subtitle": "Platformada ishlash uchun tashkilotingiz haqida ma'lumot kerak",
+      "chooseType": "Siz kimsiz?",
+      "typeLocked": "Turni keyin o'zgartirib bo'lmaydi. Boshqa tur uchun yangi tashkilot yarating.",
+      "changeType": "Turni o'zgartirish",
+      "submit": "Tashkilot yaratish",
+      "created": "Tashkilot yaratildi"
+    },
+    "org": {
+      "title": "Tashkilot profili",
+      "data": "Ma'lumotlar",
+      "readOnly": "Ma'lumotlarni faqat tashkilot egasi o'zgartiradi",
+      "legalLocked": "Tekshiruv vaqtida va undan keyin rekvizitlarni (shakl, nom, STIR) faqat operator o'zgartiradi",
+      "suspended": "Tashkilot bloklangan: ma'lumotlarni o'zgartirib bo'lmaydi",
+      "verification": "Tekshiruv",
+      "statusText": {
+        "UNVERIFIED": "Hujjatlarni yuklang va tekshiruvga yuboring. Tekshiruvdan so'ng xaridorlar sizni ko'radi.",
+        "PENDING": "Hujjatlar tekshiruvda. Operator siz bilan bog'lanadi.",
+        "VERIFIED": "Tashkilot tekshiruvdan o'tgan. Platformaning barcha imkoniyatlari ochiq.",
+        "REJECTED": "Tekshiruvdan o'tmadi. Ma'lumotlarni tuzating va qayta yuboring.",
+        "SUSPENDED": "Tashkilot ishi to'xtatilgan. Batafsil ma'lumot uchun operatorga murojaat qiling."
+      },
+      "buyerOptional": "Xaridor uchun tekshiruv majburiy emas, lekin u ishonchni oshiradi.",
+      "rejectReason": "Operator izohi: {note}",
+      "documents": "Hujjatlar",
+      "documentsHint": "Ro'yxatdan o'tganlik guvohnomasi yoki boshqa tasdiqlovchi hujjat, xo'jalik yoki mashina surati. JPG, PNG, WEBP, HEIC yoki PDF, 15 MB gacha.",
+      "upload": "Fayl tanlash",
+      "uploading": "Yuklanmoqda: {name}",
+      "uploadFailed": "«{name}» yuklanmadi: {reason}",
+      "noDocuments": "Hali hujjat yuklanmagan",
+      "noDocumentsHint": "Kamida bitta hujjat yuklang — shunda uni tekshiruvga yuborish mumkin bo'ladi",
+      "document": "{kind}, {size}, {date}",
+      "include": "Tekshiruvga yuborish: {name}",
+      "note": "Operator uchun izoh",
+      "submit": "Tekshiruvga yuborish",
+      "submitted": "Hujjatlar tekshiruvga yuborildi",
+      "selectOne": "Kamida bitta hujjatni belgilang"
+    },
+    "team": {
+      "title": "Jamoa",
+      "members": "A'zolar",
+      "invitations": "Kutilayotgan takliflar",
+      "invitationsHint": "Bu raqamlar birinchi marta kirganda jamoaga avtomatik qo'shiladi",
+      "invite": "Jamoaga taklif qilish",
+      "inviteSubmit": "Taklif qilish",
+      "added": "{phone} jamoaga qo'shildi",
+      "invited": "{phone} raqamiga SMS-taklif yuborildi",
+      "you": "siz",
+      "noName": "Ism ko'rsatilmagan",
+      "roleOf": "{name} roli",
+      "remove": "Chiqarish",
+      "removeTitle": "{name} jamoadan chiqarilsinmi?",
+      "removeBody": "U tashkilot ma'lumotlarini ko'ra olmaydi. Keyin yana taklif qilish mumkin.",
+      "removed": "Jamoadan chiqarildi",
+      "revoke": "Taklifni bekor qilish",
+      "expires": "{date} gacha",
+      "onlyOwner": "Jamoani faqat tashkilot egasi boshqaradi",
+      "roleChanged": "Rol o'zgartirildi",
+      "phone": "Telefon raqami",
+      "role": "Rol",
+      "revoked": "Taklif bekor qilindi"
+    },
+    "inbox": {
+      "title": "Bildirishnomalar",
+      "bell": "Bildirishnomalar: {count} ta o'qilmagan",
+      "markRead": "O'qildi",
+      "markAllRead": "Hammasini o'qildi deb belgilash",
+      "empty": "Bildirishnomalar yo'q",
+      "emptyHint": "Tekshiruv natijalari va jamoa o'zgarishlari shu yerda paydo bo'ladi",
+      "unread": "Yangi",
+      "unreadOnly": "Faqat o'qilmaganlar"
+    },
+    "account": {
+      "title": "Profil",
+      "fullName": "Ism va familiya",
+      "phone": "Telefon raqami",
+      "phoneHint": "Raqam kirish uchun ishlatiladi va o'zgartirilmaydi",
+      "language": "Interfeys tili",
+      "organizations": "Mening tashkilotlarim"
+    },
+    "loadingSession": "Sessiya tekshirilmoqda…"
   },
   "admin": {
     "home": {
       "title": "Operator paneli",
       "subtitle": "Buyurtmalar, tekshiruvlar va topshiriqlar"
+    },
+    "nav": {
+      "queue": "Tekshiruv navbati",
+      "settings": "Sozlamalar",
+      "main": "Bo'limlar"
+    },
+    "login": {
+      "title": "Operator paneliga kirish",
+      "noAccess": "Kirish taqiqlangan",
+      "noAccessBody": "Panel faqat operatorlar va administratorlar uchun. Siz {phone} raqami bilan kirdingiz.",
+      "switchAccount": "Boshqa raqam bilan kirish"
+    },
+    "platformRole": {
+      "USER": "Foydalanuvchi",
+      "OPERATOR": "Operator",
+      "ADMIN": "Administrator"
+    },
+    "queue": {
+      "title": "Tashkilotlarni tekshirish",
+      "search": "Qidiruv",
+      "searchHint": "Nomi, STIR yoki a'zoning telefoni",
+      "status": "Holat",
+      "type": "Turi",
+      "allStatuses": "Barcha holatlar",
+      "allTypes": "Barcha turlar",
+      "name": "Nomi",
+      "tin": "STIR",
+      "region": "Viloyat",
+      "createdAt": "Yaratilgan",
+      "empty": "Tekshiruvni kutayotgan tashkilotlar yo'q",
+      "emptyFiltered": "Hech narsa topilmadi. Filtrlarni o'zgartirib ko'ring.",
+      "caption": "Tashkilotlar ro'yxati"
+    },
+    "org": {
+      "back": "Ro'yxatga qaytish",
+      "data": "Ma'lumotlar",
+      "members": "A'zolar",
+      "documents": "Tekshiruv hujjatlari",
+      "noDocuments": "Hujjatlar yuklanmagan",
+      "tasks": "Ochiq topshiriqlar",
+      "note": "Operator izohi",
+      "submitterNote": "Arizachi izohi",
+      "verifiedAt": "Tasdiqlangan sana",
+      "actions": "Amallar",
+      "verify": "Tasdiqlash",
+      "reject": "Rad etish",
+      "suspend": "Bloklash",
+      "unsuspend": "Blokdan chiqarish",
+      "confirm": {
+        "verify": "«{org}» tasdiqlansinmi?",
+        "reject": "«{org}» rad etilsinmi?",
+        "suspend": "«{org}» bloklansinmi?",
+        "unsuspend": "«{org}» blokdan chiqarilsinmi?"
+      },
+      "confirmBody": {
+        "verify": "Egasi bildirishnoma oladi. Tashkilot platformada to'liq ishlay oladi.",
+        "reject": "Sababni yozing — uni egasi ko'radi va ma'lumotlarni tuzatadi.",
+        "suspend": "Tashkilot yangi e'lon, ariza va buyurtma yarata olmaydi. Joriy buyurtmalar oxirigacha yetkaziladi.",
+        "unsuspend": "Tashkilot oldingi holatiga qaytadi."
+      },
+      "noteLabel": "Izoh",
+      "noteRequired": "Kamida 3 ta belgi",
+      "done": {
+        "verify": "Tashkilot tasdiqlandi",
+        "reject": "Tashkilot rad etildi",
+        "suspend": "Tashkilot bloklandi",
+        "unsuspend": "Tashkilot blokdan chiqarildi"
+      }
+    },
+    "settings": {
+      "title": "Platforma sozlamalari",
+      "caption": "Sozlamalar jadvali",
+      "key": "Kalit",
+      "value": "Qiymat",
+      "default": "Standart",
+      "description": "Tavsif",
+      "editLabel": "{key} qiymati",
+      "jsonHint": "JSON formatida",
+      "invalidJson": "JSON noto'g'ri",
+      "invalid": "Qiymat noto'g'ri: {issues}",
+      "saved": "«{key}» saqlandi",
+      "onlyAdmin": "Sozlamalarni faqat administrator ko'radi va o'zgartiradi",
+      "changed": "O'zgartirilgan",
+      "desc": {
+        "commission": {
+          "defaultRateBps": "Sotuvchidan komissiya, bazis punktlarda (200 = 2%)",
+          "billingPeriod": "Komissiya hisob davri: WEEK yoki MONTH",
+          "paymentDueDays": "Komissiya hisobini to'lash muddati, kun",
+          "blockAfterOverdueDays": "Necha kun kechikishdan keyin sotuvchi bloklanadi"
+        },
+        "order": {
+          "minOrderKg": "Buyurtma qatorining minimal hajmi, kg",
+          "sellerConfirmationTimeoutHours": "Sotuvchi qatorni tasdiqlashi uchun vaqt, soat; keyin operatorga topshiriq",
+          "acceptanceTimeoutHours": "Qabul qilishni rasmiylashtirish muddati, soat",
+          "weightToleranceBps": "Vazn og'ishiga ruxsat, bazis punktlarda (1000 = 10%)",
+          "deadFishPolicy": "Tirik baliqdagi o'lik baliq: NOT_PAID — to'lanmaydi, PAID — to'lanadi",
+          "requireVetDocument": "Yuklashda veterinariya hujjati majburiy"
+        },
+        "listing": {
+          "freshnessDays": "Mavjudlik dolzarbligi tasdiqlanmasa, necha kundan keyin pauza",
+          "nowMaxDaysAhead": "«Hozir» mavjudligi uchun ovlash oynasi necha kun oldinga"
+        },
+        "request": {
+          "defaultExpiryDays": "Xaridor arizasining standart amal qilish muddati, kun",
+          "defaultRadiusKm": "Sotuvchilarni qidirishning standart radiusi, km"
+        },
+        "offer": {
+          "defaultValidityHours": "Taklifning standart amal qilish muddati, soat"
+        },
+        "matching": {
+          "maxNotify": "Ariza haqida nechta sotuvchiga xabar beriladi",
+          "maxLinesPerOrder": "Yig'ma buyurtmadagi maksimal qatorlar",
+          "weights": "Saralash og'irliklari (yig'indisi 1): masofa, narx, ishonchlilik, yangilik, hajm"
+        },
+        "logistics": {
+          "roadFactor": "To'g'ri chiziqdan yo'l masofasiga koeffitsient"
+        },
+        "payment": {
+          "overdueDays": "Necha kundan keyin to'lov kechikkan hisoblanadi"
+        },
+        "dispute": {
+          "windowHours": "Qabul qilishdan keyin nizo ochish uchun vaqt, soat"
+        },
+        "review": {
+          "blindPeriodDays": "Sharhlar ikkala tomon yozguncha yoki shu muddatgacha yashirin, kun"
+        },
+        "priceIndex": {
+          "minDeals": "Narx indeksini ko'rsatish uchun minimal bitimlar"
+        },
+        "ops": {
+          "unmatchedRequestHours": "Takliflarsiz ariza necha soatdan keyin operatorga topshiriq bo'ladi",
+          "workingHours": "Ish vaqti (Toshkent): SLA va jim soatlar uchun"
+        },
+        "otp": {
+          "ttlSeconds": "SMS-kod amal qilish muddati, soniya",
+          "maxAttempts": "Bitta kod uchun urinishlar soni",
+          "resendCooldownSeconds": "Kodni qayta yuborishgacha pauza, soniya",
+          "maxPerPhonePerHour": "Bir raqamga soatiga kodlar soni",
+          "maxPerIpPerHour": "Bitta IP-manzildan soatiga kodlar soni",
+          "blockMinutes": "Limitdan oshganda raqamni bloklash, daqiqa"
+        },
+        "org": {
+          "invitationTtlDays": "Jamoaga taklifning amal qilish muddati, kun"
+        }
+      }
     }
   },
   "mobile": {
@@ -68,6 +338,62 @@
           "body": "«{org}» tashkilotini tekshirish kerak."
         }
       }
+    }
+  },
+  "org": {
+    "type": {
+      "SELLER": "Sotuvchi",
+      "BUYER": "Xaridor",
+      "CARRIER": "Tashuvchi"
+    },
+    "typeHint": {
+      "SELLER": "Baliq xo'jaligi: baliq yetishtiraman va sotaman",
+      "BUYER": "Restoran, do'kon yoki ulgurji xaridor",
+      "CARRIER": "Baliqni, shu jumladan tirik baliqni tashiyman"
+    },
+    "legalForm": {
+      "INDIVIDUAL": "Jismoniy shaxs",
+      "SOLE_PROPRIETOR": "Yakka tartibdagi tadbirkor",
+      "LLC": "MChJ",
+      "FARM_ENTERPRISE": "Fermer xo'jaligi",
+      "DEHKAN_FARM": "Dehqon xo'jaligi",
+      "OTHER": "Boshqa"
+    },
+    "status": {
+      "UNVERIFIED": "Tekshirilmagan",
+      "PENDING": "Tekshiruvda",
+      "VERIFIED": "Tasdiqlangan",
+      "REJECTED": "Rad etilgan",
+      "SUSPENDED": "Bloklangan"
+    },
+    "role": {
+      "OWNER": "Egasi",
+      "MANAGER": "Menejer",
+      "STAFF": "Xodim"
+    },
+    "roleHint": {
+      "OWNER": "Hamma narsani boshqaradi, jamoani ham",
+      "MANAGER": "Ish jarayonlarini yuritadi",
+      "STAFF": "Faqat o'z vazifalari: yuklash, qabul qilish"
+    },
+    "fields": {
+      "type": "Tashkilot turi",
+      "legalForm": "Tashkiliy-huquqiy shakl",
+      "name": "Nomi",
+      "tin": "STIR",
+      "tinHint": "9 ta raqam; jismoniy shaxs uchun shart emas",
+      "region": "Viloyat",
+      "regionPlaceholder": "Viloyatni tanlang",
+      "district": "Tuman",
+      "legalAddress": "Yuridik manzil",
+      "description": "Tavsif",
+      "contactPhone": "Aloqa telefoni"
+    },
+    "mediaKind": {
+      "IMAGE": "Rasm",
+      "PDF": "PDF hujjat",
+      "VIDEO": "Video",
+      "OTHER": "Fayl"
     }
   },
   "errors": {

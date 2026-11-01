@@ -74,12 +74,16 @@ export class SessionManager {
     return this.state;
   }
 
-  async login(phone: string, code: string): Promise<SessionResult<SessionLogin>> {
+  /** `locale` — язык интерфейса: с ним создаётся новый пользователь (`Accept-Language`). */
+  async login(phone: string, code: string, locale?: string): Promise<SessionResult<SessionLogin>> {
     let res: Response;
     try {
       res = await this.baseFetch(`${this.base}/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(locale ? { 'Accept-Language': locale } : {}),
+        },
         body: JSON.stringify({ phone, code }),
         credentials: 'same-origin',
       });

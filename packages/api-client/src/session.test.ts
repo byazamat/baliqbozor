@@ -95,11 +95,12 @@ describe('SessionManager', () => {
   });
 
   it('login: success stores token; errors are returned with code', async () => {
-    const ok = new SessionManager({
-      fetch: routes({ '/api/session/login': () => jsonRes(200, LOGIN) }),
-    });
-    const res = await ok.login('+998901234567', '000000');
+    const loginFetch = routes({ '/api/session/login': () => jsonRes(200, LOGIN) });
+    const ok = new SessionManager({ fetch: loginFetch });
+    const res = await ok.login('+998901234567', '000000', 'ru');
     expect(res).toEqual({ ok: true, data: LOGIN });
+    const [, loginInit] = loginFetch.mock.calls[0] ?? [];
+    expect(new Headers(loginInit?.headers).get('Accept-Language')).toBe('ru');
     expect(ok.getState()).toBe('authenticated');
     expect(await ok.getAccessToken()).toBe('a1');
 

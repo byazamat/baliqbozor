@@ -2,6 +2,7 @@
 
 import type { components, SessionLogin, SessionResult } from '@baliqbozor/api-client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useLocale } from 'next-intl';
 import {
   createContext,
   type ReactNode,
@@ -58,6 +59,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const manager = useSessionManager();
   const api = useApi();
   const queryClient = useQueryClient();
+  const locale = useLocale();
   const state = useSyncExternalStore(
     (cb) => manager.subscribe(cb),
     () => manager.getState(),
@@ -92,11 +94,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (phone: string, code: string) => {
-      const result = await manager.login(phone, code);
+      const result = await manager.login(phone, code, locale);
       if (result.ok) await queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
       return result;
     },
-    [manager, queryClient],
+    [manager, queryClient, locale],
   );
 
   const logout = useCallback(async () => {

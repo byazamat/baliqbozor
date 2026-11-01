@@ -15,3 +15,4 @@ export {
   type SessionResult,
   type SessionState,
 } from './session.js';
+export { ApiRequestError, clientError, errorCode, invalidFields, unwrap } from './errors.js';

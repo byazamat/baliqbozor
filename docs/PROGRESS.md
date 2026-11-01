@@ -223,7 +223,7 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 - [x] e2e API сценария M1 целиком (`apps/api/test/m1-acceptance.e2e-spec.ts`): новый номер → OTP → организация → загрузка в MinIO → отправка → очередь и карточка оператора, документ по подписанной ссылке → верификация → статус у владельца, событие outbox, аудит, изоляция (D-49)
 - [x] Playwright (`pnpm test:acceptance`, живые api, worker, web, admin): продавец входит → создаёт организацию → загружает документ → отправляет; оператор в админке находит, смотрит документ и верифицирует; у продавца уведомление in-app и статус «Проверена»; в CI — job `web-e2e` после `db:migrate:deploy` и `db:seed` на чистой БД
-- [x] Чистая БД → `db:migrate` → `db:seed` (повторно — без дублей) → `db:check-drift` → сценарий и ручная проверка демо-продавца (uz) и оператора; CI зелёный (прогон 41321176823: checks, e2e, Playwright smoke + приёмка); PROGRESS и DECISIONS обновлены
+- [x] Чистая БД → `db:migrate` → `db:seed` (повторно — без дублей) → `db:check-drift` → сценарий и ручная проверка демо-продавца (uz) и оператора; CI зелёный ([прогон 41321176823](https://github.com/byazamat/baliqbozor/actions/runs/41321176823): checks, e2e, Playwright smoke + приёмка); PROGRESS и DECISIONS обновлены
 
 **M1 закрыт 2026-11-01.**
 

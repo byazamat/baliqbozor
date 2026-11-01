@@ -11,8 +11,9 @@ const OPERATOR_DIGITS = '900000001';
 const ru = messages.ru;
 
 const PNG = Buffer.from(
-  '89504e470d0a1a0a0000000d4948445200000001000000010806000000' +
-    '1f15c4890000000d49444154789c6360000002000154a24f5d0000000049454e44ae426082',
+  // Корректный PNG 2×2: worker проверяет содержимое и битый файл отклонит (D-52).
+  '89504e470d0a1a0a0000000d494844520000000200000002080600000072b60d240000000970485973000003e8' +
+    '000003e801b57b526b0000001149444154089963505a55fe1f8419600c004c9209093d223d910000000049454e44ae426082',
   'hex',
 );
 
@@ -51,6 +52,18 @@ test('M1: seller registers and submits documents, operator verifies, seller is n
     'data-status',
     'UNVERIFIED',
   );
+
+  // Хозяйство до проверки (D-28): точка на карте, тип водоёма.
+  await expect(seller.getByText(ru.web.farms.needFarm)).toBeVisible();
+  await seller.getByRole('link', { name: ru.web.farms.goFarms }).click();
+  await expect(seller).toHaveURL(/\/ru\/farms\/new$/);
+  await seller.getByLabel(ru.web.farms.name).fill(`Hovuz ${run}`);
+  await seller.getByLabel(ru.web.farms.region).selectOption({ label: 'Самаркандская область' });
+  await seller.getByTestId('location-map').click();
+  await seller.getByLabel(ru.farm.waterBodyType.POND).check();
+  await seller.getByRole('button', { name: ru.common.save }).click();
+  await expect(seller.getByText(ru.web.farms.created)).toBeVisible();
+  await seller.goto(`${WEB}/ru/org`);
 
   // Документ: presigned PUT в хранилище → complete; затем отправка на проверку.
   await seller

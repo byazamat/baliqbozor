@@ -61,8 +61,9 @@ export async function processMedia(
 
 async function processImage(input: Buffer, mimeType: string): Promise<ProcessResult> {
   try {
-    // sharp не переносит метаданные (EXIF, GPS, XMP), если их не попросить явно.
-    const pipeline = sharp(input, { failOn: 'error' }).rotate().resize({
+    // sharp не переносит метаданные (EXIF, GPS, XMP), если их не попросить явно. Обрезанный файл —
+    // отказ; мелкие ошибки формата (контрольные суммы служебных блоков) телефоны допускают.
+    const pipeline = sharp(input, { failOn: 'truncated' }).rotate().resize({
       width: MAX_IMAGE_SIDE,
       height: MAX_IMAGE_SIDE,
       fit: 'inside',

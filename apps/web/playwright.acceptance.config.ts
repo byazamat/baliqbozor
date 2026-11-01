@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Сквозная приёмка M1 (SPEC 14.1, 14.3): настоящие api, worker, web и admin поверх БД после
+ * Сквозная приёмка M1 и M2 (SPEC 14.1, 14.3): настоящие api, worker, web и admin поверх БД после
  * `db:migrate` и `db:seed`. Сначала нужны `pnpm infra:up` и `pnpm build`; локально
  * переиспользуются уже запущенные серверы.
  */

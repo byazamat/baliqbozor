@@ -7,10 +7,12 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { Section } from '@/components/page';
+import { Link } from '@/i18n/navigation';
 import { useApi } from '@/lib/api';
 import { unwrap, useErrorText } from '@/lib/errors';
 import { documentsQueryKey, openMedia, type Org, orgQueryKey } from '@/lib/org';
-import { ME_QUERY_KEY } from '@/lib/session';
+import { farmsQueryKey } from '@/lib/listings';
+import { ME_QUERY_KEY, orgHeaders } from '@/lib/session';
 import { formatMegabytes, uploadOrgDocument } from '@/lib/upload';
 
 const STATUS_TONE: Record<Org['verificationStatus'], AlertTone> = {
@@ -26,11 +28,20 @@ export function VerificationSection({ org, canSubmit }: { org: Org; canSubmit: b
   const t = useTranslations('web.org');
   const tOrg = useTranslations('org');
   const tc = useTranslations('common');
+  const tf = useTranslations('web.farms');
   const errorText = useErrorText();
   const api = useApi();
   const queryClient = useQueryClient();
   const status = org.verificationStatus;
   const editable = canSubmit && (status === 'UNVERIFIED' || status === 'REJECTED');
+
+  // D-28: продавцу до проверки нужно хотя бы одно активное хозяйство.
+  const { data: farms } = useQuery({
+    queryKey: farmsQueryKey(org.id),
+    enabled: org.type === 'SELLER',
+    queryFn: () => unwrap(api.GET('/api/v1/farms', { params: { header: orgHeaders(org.id) } })),
+  });
+  const needFarm = org.type === 'SELLER' && !!farms && !farms.some((f) => f.isActive);
 
   const { data: documents = [] } = useQuery({
     queryKey: documentsQueryKey(org.id),
@@ -107,6 +118,18 @@ export function VerificationSection({ org, canSubmit }: { org: Org; canSubmit: b
             </p>
           )}
         </Alert>
+        {needFarm && editable && (
+          <Alert
+            tone="warning"
+            action={
+              <Link href="/farms/new" className="font-medium text-brand-700 underline">
+                {tf('goFarms')}
+              </Link>
+            }
+          >
+            {tf('needFarm')}
+          </Alert>
+        )}
         {org.type === 'BUYER' && status === 'UNVERIFIED' && (
           <p className="text-ink-muted">{t('buyerOptional')}</p>
         )}

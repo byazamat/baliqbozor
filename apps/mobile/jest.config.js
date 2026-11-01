@@ -1,6 +1,7 @@
 module.exports = {
   preset: '@react-native/jest-preset',
   setupFiles: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup-after-env.js'],
   testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
   // Пакеты RN и ESM-пакеты монорепозитория нужно прогнать через Babel.
   transformIgnorePatterns: [

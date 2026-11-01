@@ -27,9 +27,16 @@ async function renderApp(fetchImpl: typeof fetch) {
 
 describe('App', () => {
   it('renders uz by default and shows API ok', async () => {
-    await renderApp(jest.fn(okResponse));
+    // Ответ API придерживаем, пока проверяем состояние «проверка»: иначе await render
+    // может успеть получить ответ (зависит от скорости машины) — тест был нестабилен в CI.
+    let respond: () => void = () => undefined;
+    const pending = new Promise<void>((resolve) => {
+      respond = resolve;
+    });
+    await renderApp(jest.fn(() => pending.then(okResponse)));
     expect(screen.getByText(messages.uz.mobile.home.title)).toBeTruthy();
     expect(screen.getByTestId('api-status')).toHaveTextContent(messages.uz.health.checking);
+    respond();
     await waitFor(() =>
       expect(screen.getByTestId('api-status')).toHaveTextContent(messages.uz.health.ok),
     );

@@ -5,7 +5,7 @@ export default [
   ...react({ tsconfigRootDir: import.meta.dirname }),
   {
     // CommonJS-конфиги, которых требуют Metro, Babel и Jest.
-    files: ['*.config.js', 'jest.setup.js'],
+    files: ['*.config.js', 'jest.setup.js', 'jest.setup-after-env.js'],
     languageOptions: {
       sourceType: 'commonjs',
       globals: { module: 'writable', require: 'readonly', __dirname: 'readonly', jest: 'readonly' },

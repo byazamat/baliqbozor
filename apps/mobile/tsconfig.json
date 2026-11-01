@@ -1,5 +1,5 @@
 {
   "extends": "@baliqbozor/config/tsconfig/react-native.json",
-  "include": ["index.js", "src", "*.config.js", "jest.setup.js"],
+  "include": ["index.js", "src", "*.config.js", "jest.setup.js", "jest.setup-after-env.js"],
   "exclude": ["node_modules", "android", "ios"]
 }

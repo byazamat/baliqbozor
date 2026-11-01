@@ -177,11 +177,11 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M1.7 Верификация организаций
 
-- [ ] `POST /orgs/:id/verification` (OWNER; `{ mediaIds[], note }`) → `PENDING`, `OpsTask(VERIFY_ORG)`, событие `org.verification.submitted`, аудит; повторная отправка после `REJECTED` (D-29, D-30)
-- [ ] `GET /admin/orgs` (поиск по названию, телефону, СТИР; фильтр по статусу), `GET /admin/orgs/:id` (данные, участники, документы верификации)
-- [ ] `POST /admin/orgs/:id/verify` / `reject` / `suspend` / `unsuspend` с комментарием → события `org.verification.approved/rejected`, закрытие задачи, аудит
-- [ ] `GET /admin/tasks`, `PATCH /admin/tasks/:id` (минимум для очереди верификации; пульт — M9)
-- [ ] e2e: полный цикл, неверные переходы (`INVALID_TRANSITION`), права (не O/A → 403)
+- [x] `POST /orgs/:id/verification` (OWNER; документы своей организации и загруженные) → `PENDING`, `OpsTask(VERIFY_ORG)`, события `org.verification.submitted` и `ops.task.created`, аудит; повтор после `REJECTED`; блокировка строки организации
+- [x] `GET /admin/orgs` (поиск по названию, СТИР, телефону участника; фильтры статуса и типа; курсор), `GET /admin/orgs/:id` (профиль с приватными полями, участники, документы, открытые задачи)
+- [x] `POST /admin/orgs/:id/verify` / `reject` / `suspend` / `unsuspend` (комментарий обязателен для отказа и блокировки) → события, закрытие задач `VERIFY_ORG`, аудит
+- [x] `GET /admin/tasks` (статус, тип, курсор), `PATCH /admin/tasks/:id` (статус, назначение только на O/A, аудит)
+- [x] e2e: полный цикл M1, отказ и повторная отправка, блокировка, неверные переходы, проверка документов, права и изоляция, поиск и задачи (5 тестов)
 
 ### M1.8 Уведомления in-app (D-12)
 

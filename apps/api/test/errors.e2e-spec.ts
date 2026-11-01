@@ -1,3 +1,4 @@
+import { Public } from '../src/modules/auth/public.decorator.js';
 import { Decimal, DomainError, ErrorCode } from '@baliqbozor/domain';
 import { Body, Controller, Get, Module, Post } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -15,6 +16,7 @@ class EchoDto {
   volumeKg: number;
 }
 
+@Public()
 @Controller('__test')
 class FixtureController {
   @Get('domain-error')

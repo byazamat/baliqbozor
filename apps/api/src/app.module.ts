@@ -6,6 +6,8 @@ import { loggerParams } from './common/logger.js';
 import { RateLimitGuard } from './common/rate-limit.guard.js';
 import { ENV, type Env } from './config/env.js';
 import { InfraModule } from './infra/infra.module.js';
+import { AuthGuard } from './modules/auth/auth.guard.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { SettingsModule } from './modules/settings/settings.module.js';
 
@@ -15,10 +17,17 @@ export class AppModule {
     return {
       module: AppModule,
       global: true,
-      imports: [LoggerModule.forRoot(loggerParams(env)), InfraModule, SettingsModule, HealthModule],
+      imports: [
+        LoggerModule.forRoot(loggerParams(env)),
+        InfraModule,
+        SettingsModule,
+        AuthModule,
+        HealthModule,
+      ],
       providers: [
         { provide: ENV, useValue: env },
-        // Порядок глобальных guard'ов: аутентификация (M1.4) регистрируется перед лимитом.
+        // Порядок глобальных guard'ов: сначала аутентификация, затем лимит (ключ — пользователь).
+        { provide: APP_GUARD, useExisting: AuthGuard },
         { provide: APP_GUARD, useClass: RateLimitGuard },
       ],
       exports: [ENV],

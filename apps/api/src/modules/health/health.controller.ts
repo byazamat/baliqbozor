@@ -3,11 +3,13 @@ import { ApiOkResponse, ApiServiceUnavailableResponse, ApiTags } from '@nestjs/s
 import type { Response } from 'express';
 
 import { SkipRateLimit } from '../../common/rate-limit.guard.js';
+import { Public } from '../auth/public.decorator.js';
 import { HealthDto, ReadinessDto } from './health.dto.js';
 import { HealthService } from './health.service.js';
 
 /** `/health` и `/ready` — вне префикса `/api/v1` (DECISIONS D-05). */
 @ApiTags('health')
+@Public()
 @SkipRateLimit()
 @Controller()
 export class HealthController {

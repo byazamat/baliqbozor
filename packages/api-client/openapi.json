@@ -41,6 +41,44 @@
         ],
         "type": "object"
       },
+      "AuthUserDto": {
+        "properties": {
+          "fullName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "locale": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Locale"
+              }
+            ]
+          },
+          "phone": {
+            "example": "+998901234567",
+            "type": "string"
+          },
+          "platformRole": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlatformRole"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "phone",
+          "fullName",
+          "locale",
+          "platformRole"
+        ],
+        "type": "object"
+      },
       "ErrorCode": {
         "enum": [
           "VALIDATION_FAILED",
@@ -91,6 +129,95 @@
           "time"
         ],
         "type": "object"
+      },
+      "Locale": {
+        "enum": [
+          "uz",
+          "ru"
+        ],
+        "type": "string"
+      },
+      "LoginResultDto": {
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "accessTokenExpiresIn": {
+            "description": "Срок жизни access-токена, с",
+            "example": 900,
+            "type": "number"
+          },
+          "isNewUser": {
+            "description": "Пользователь создан этим входом — нужен онбординг",
+            "type": "boolean"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUserDto"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "accessTokenExpiresIn",
+          "user",
+          "isNewUser"
+        ],
+        "type": "object"
+      },
+      "OtpRequestDto": {
+        "properties": {
+          "phone": {
+            "description": "Номер Узбекистана; принимаются пробелы, скобки, дефисы",
+            "example": "+998901234567",
+            "type": "string"
+          }
+        },
+        "required": [
+          "phone"
+        ],
+        "type": "object"
+      },
+      "OtpRequestResultDto": {
+        "properties": {
+          "resendAfterSec": {
+            "description": "Через сколько секунд можно запросить код снова",
+            "example": 60,
+            "type": "number"
+          }
+        },
+        "required": [
+          "resendAfterSec"
+        ],
+        "type": "object"
+      },
+      "OtpVerifyDto": {
+        "properties": {
+          "code": {
+            "example": "123456",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Номер Узбекистана; принимаются пробелы, скобки, дефисы",
+            "example": "+998901234567",
+            "type": "string"
+          }
+        },
+        "required": [
+          "phone",
+          "code"
+        ],
+        "type": "object"
+      },
+      "PlatformRole": {
+        "enum": [
+          "USER",
+          "OPERATOR",
+          "ADMIN"
+        ],
+        "type": "string"
       },
       "ReadinessCheckDto": {
         "properties": {
@@ -153,6 +280,38 @@
           "checks"
         ],
         "type": "object"
+      },
+      "RefreshDto": {
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ],
+        "type": "object"
+      },
+      "TokenPairDto": {
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "accessTokenExpiresIn": {
+            "description": "Срок жизни access-токена, с",
+            "example": 900,
+            "type": "number"
+          },
+          "refreshToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "accessTokenExpiresIn"
+        ],
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -171,6 +330,178 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "Auth_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/otp/request": {
+      "post": {
+        "operationId": "Auth_requestOtp",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OtpRequestResultDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "VALIDATION_FAILED"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "RATE_LIMITED (details.retryAfterSec)"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/otp/verify": {
+      "post": {
+        "operationId": "Auth_verifyOtp",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpVerifyDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResultDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "OTP_INVALID, OTP_EXPIRED, VALIDATION_FAILED"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "OTP_TOO_MANY_ATTEMPTS"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "Auth_refresh",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPairDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/health": {
       "get": {
         "operationId": "Health_getHealth",

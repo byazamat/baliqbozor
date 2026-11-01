@@ -1,3 +1,4 @@
+import { Public } from '../src/modules/auth/public.decorator.js';
 import { defaultSettings } from '@baliqbozor/domain';
 import { Controller, Get, Module } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -135,6 +136,7 @@ describe('API infrastructure (e2e, real Postgres/Redis)', () => {
   });
 });
 
+@Public()
 @Controller('test')
 class PingController {
   @Get('ping')

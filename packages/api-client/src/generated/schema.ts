@@ -4,6 +4,70 @@
  */
 
 export interface paths {
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Auth_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/otp/request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Auth_requestOtp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/otp/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Auth_verifyOtp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Auth_refresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -53,6 +117,15 @@ export interface components {
         ApiErrorDto: {
             error: components["schemas"]["ApiErrorBodyDto"];
         };
+        AuthUserDto: {
+            fullName: string | null;
+            /** Format: uuid */
+            id: string;
+            locale: components["schemas"]["Locale"];
+            /** @example +998901234567 */
+            phone: string;
+            platformRole: components["schemas"]["PlatformRole"];
+        };
         /** @enum {string} */
         ErrorCode: "VALIDATION_FAILED" | "UNAUTHORIZED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "INVALID_TRANSITION" | "INSUFFICIENT_VOLUME" | "ORG_NOT_VERIFIED" | "ORG_SUSPENDED" | "OTP_INVALID" | "OTP_EXPIRED" | "OTP_TOO_MANY_ATTEMPTS" | "RATE_LIMITED" | "COMMISSION_OVERDUE_BLOCK" | "MEDIA_TOO_LARGE" | "MEDIA_TYPE_NOT_ALLOWED" | "INTERNAL_ERROR";
         HealthDto: {
@@ -65,6 +138,45 @@ export interface components {
             /** @example 42 */
             uptimeSec: number;
         };
+        /** @enum {string} */
+        Locale: "uz" | "ru";
+        LoginResultDto: {
+            accessToken: string;
+            /**
+             * @description Срок жизни access-токена, с
+             * @example 900
+             */
+            accessTokenExpiresIn: number;
+            /** @description Пользователь создан этим входом — нужен онбординг */
+            isNewUser: boolean;
+            refreshToken: string;
+            user: components["schemas"]["AuthUserDto"];
+        };
+        OtpRequestDto: {
+            /**
+             * @description Номер Узбекистана; принимаются пробелы, скобки, дефисы
+             * @example +998901234567
+             */
+            phone: string;
+        };
+        OtpRequestResultDto: {
+            /**
+             * @description Через сколько секунд можно запросить код снова
+             * @example 60
+             */
+            resendAfterSec: number;
+        };
+        OtpVerifyDto: {
+            /** @example 123456 */
+            code: string;
+            /**
+             * @description Номер Узбекистана; принимаются пробелы, скобки, дефисы
+             * @example +998901234567
+             */
+            phone: string;
+        };
+        /** @enum {string} */
+        PlatformRole: "USER" | "OPERATOR" | "ADMIN";
         ReadinessCheckDto: {
             /** @example timeout */
             error?: string;
@@ -83,6 +195,18 @@ export interface components {
             /** @enum {string} */
             status: "ok" | "error";
         };
+        RefreshDto: {
+            refreshToken: string;
+        };
+        TokenPairDto: {
+            accessToken: string;
+            /**
+             * @description Срок жизни access-токена, с
+             * @example 900
+             */
+            accessTokenExpiresIn: number;
+            refreshToken: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -92,6 +216,144 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    Auth_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Auth_requestOtp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OtpRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OtpRequestResultDto"];
+                };
+            };
+            /** @description VALIDATION_FAILED */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            /** @description RATE_LIMITED (details.retryAfterSec) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Auth_verifyOtp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OtpVerifyDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResultDto"];
+                };
+            };
+            /** @description OTP_INVALID, OTP_EXPIRED, VALIDATION_FAILED */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+            /** @description OTP_TOO_MANY_ATTEMPTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Auth_refresh: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefreshDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenPairDto"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
     Health_getHealth: {
         parameters: {
             query?: never;

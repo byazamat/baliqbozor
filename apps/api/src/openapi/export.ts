@@ -30,6 +30,7 @@ const env = loadEnv({
   S3_ACCESS_KEY: 'openapi',
   S3_SECRET_KEY: 'openapi',
   LOG_LEVEL: 'silent',
+  JWT_ACCESS_SECRET: 'openapi-export-only',
 });
 
 const app = await NestFactory.create<NestExpressApplication>(AppModule.forRoot(env), {

@@ -16,6 +16,7 @@ const env = loadEnv({
   S3_BUCKET: 'b',
   S3_ACCESS_KEY: 'a',
   S3_SECRET_KEY: 's',
+  JWT_ACCESS_SECRET: 'test-secret',
 });
 
 describe('loggerParams', () => {

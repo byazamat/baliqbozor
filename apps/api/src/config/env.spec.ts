@@ -11,6 +11,7 @@ const valid = {
   S3_BUCKET: 'baliqbozor-private',
   S3_ACCESS_KEY: 'minio',
   S3_SECRET_KEY: 'minio123',
+  JWT_ACCESS_SECRET: 'change-me',
 };
 
 describe('loadEnv', () => {
@@ -33,6 +34,23 @@ describe('loadEnv', () => {
   it('lists every invalid variable', () => {
     expect(() => loadEnv({ ...valid, APP_ENV: 'dev', WEB_URL: 'nope', DATABASE_URL: '' })).toThrow(
       /APP_ENV[\s\S]*WEB_URL[\s\S]*DATABASE_URL/,
+    );
+  });
+
+  it('allows a weak JWT secret and the OTP bypass only locally', () => {
+    expect(loadEnv({ ...valid, OTP_DEV_BYPASS_CODE: '000000' }).OTP_DEV_BYPASS_CODE).toBe('000000');
+    expect(() => loadEnv({ ...valid, APP_ENV: 'staging' })).toThrow(/JWT_ACCESS_SECRET/);
+    const strong = 'x'.repeat(40);
+    expect(() =>
+      loadEnv({
+        ...valid,
+        APP_ENV: 'production',
+        JWT_ACCESS_SECRET: strong,
+        OTP_DEV_BYPASS_CODE: '000000',
+      }),
+    ).toThrow(/OTP_DEV_BYPASS_CODE/);
+    expect(loadEnv({ ...valid, APP_ENV: 'production', JWT_ACCESS_SECRET: strong }).APP_ENV).toBe(
+      'production',
     );
   });
 });

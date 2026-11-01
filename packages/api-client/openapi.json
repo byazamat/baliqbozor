@@ -528,6 +528,79 @@
         ],
         "type": "object"
       },
+      "CreateRequestDto": {
+        "properties": {
+          "acceptAdjacentSizes": {
+            "description": "Готов на соседний размерный класс",
+            "type": "boolean"
+          },
+          "deliveryAddressId": {
+            "description": "Адрес доставки организации",
+            "format": "uuid",
+            "type": "string"
+          },
+          "deliveryDateFrom": {
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "deliveryDateTo": {
+            "example": "2026-11-06",
+            "type": "string"
+          },
+          "form": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProductForm"
+              }
+            ]
+          },
+          "isRecurringInterest": {
+            "description": "«Нужно регулярно» (информативно в MVP)",
+            "type": "boolean"
+          },
+          "minAcceptableKg": {
+            "description": "Минимальный приемлемый объём; по умолчанию — весь объём",
+            "example": "1000",
+            "nullable": true,
+            "type": "string"
+          },
+          "notes": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "radiusKm": {
+            "description": "По умолчанию `request.defaultRadiusKm`",
+            "maximum": 2000,
+            "minimum": 1,
+            "type": "number"
+          },
+          "sizeClassId": {
+            "type": "number"
+          },
+          "speciesId": {
+            "type": "number"
+          },
+          "targetPricePerKg": {
+            "example": "26000",
+            "nullable": true,
+            "type": "string"
+          },
+          "volumeKg": {
+            "example": "2500",
+            "type": "string"
+          }
+        },
+        "required": [
+          "speciesId",
+          "sizeClassId",
+          "form",
+          "volumeKg",
+          "deliveryAddressId",
+          "deliveryDateFrom",
+          "deliveryDateTo"
+        ],
+        "type": "object"
+      },
       "DecisionDto": {
         "properties": {
           "note": {
@@ -1959,6 +2032,211 @@
         ],
         "type": "object"
       },
+      "RequestAddressDto": {
+        "properties": {
+          "addressText": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "lat": {
+            "example": "41.285300",
+            "type": "string"
+          },
+          "lng": {
+            "example": "69.203400",
+            "type": "string"
+          },
+          "region": {
+            "$ref": "#/components/schemas/RegionRefDto"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "addressText",
+          "region",
+          "lat",
+          "lng"
+        ],
+        "type": "object"
+      },
+      "RequestDto": {
+        "properties": {
+          "acceptAdjacentSizes": {
+            "type": "boolean"
+          },
+          "buyerName": {
+            "type": "string"
+          },
+          "buyerOrgId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deliveryAddress": {
+            "$ref": "#/components/schemas/RequestAddressDto"
+          },
+          "deliveryDateFrom": {
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "deliveryDateTo": {
+            "example": "2026-11-06",
+            "type": "string"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "form": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProductForm"
+              }
+            ]
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "isRecurringInterest": {
+            "type": "boolean"
+          },
+          "minAcceptableKg": {
+            "nullable": true,
+            "type": "string"
+          },
+          "notes": {
+            "nullable": true,
+            "type": "string"
+          },
+          "number": {
+            "example": "RQ-2026-000123",
+            "type": "string"
+          },
+          "openedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "pendingOffers": {
+            "description": "Предложений в статусе PENDING",
+            "type": "number"
+          },
+          "radiusKm": {
+            "type": "number"
+          },
+          "reviewNote": {
+            "description": "Причина отказа модерации",
+            "nullable": true,
+            "type": "string"
+          },
+          "sizeClass": {
+            "$ref": "#/components/schemas/SizeClassRefDto"
+          },
+          "species": {
+            "$ref": "#/components/schemas/SpeciesRefDto"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RequestStatus"
+              }
+            ]
+          },
+          "submittedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "targetPricePerKg": {
+            "nullable": true,
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "volumeKg": {
+            "example": "2500.000",
+            "type": "string"
+          },
+          "volumeRemaining": {
+            "description": "Остаток: объём минус активные строки заказов",
+            "example": "2500.000",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "buyerOrgId",
+          "buyerName",
+          "status",
+          "species",
+          "sizeClass",
+          "acceptAdjacentSizes",
+          "form",
+          "volumeKg",
+          "minAcceptableKg",
+          "volumeRemaining",
+          "deliveryAddress",
+          "deliveryDateFrom",
+          "deliveryDateTo",
+          "targetPricePerKg",
+          "radiusKm",
+          "isRecurringInterest",
+          "notes",
+          "reviewNote",
+          "pendingOffers",
+          "expiresAt",
+          "submittedAt",
+          "openedAt",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "RequestPageDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RequestDto"
+            },
+            "type": "array"
+          },
+          "nextCursor": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "type": "object"
+      },
+      "RequestStatus": {
+        "enum": [
+          "DRAFT",
+          "PENDING_REVIEW",
+          "OPEN",
+          "OFFERS_RECEIVED",
+          "ORDERED",
+          "CANCELLED",
+          "EXPIRED"
+        ],
+        "type": "string"
+      },
       "RequiredNoteDto": {
         "properties": {
           "note": {
@@ -1969,6 +2247,16 @@
         "required": [
           "note"
         ],
+        "type": "object"
+      },
+      "ReviewRequestDto": {
+        "properties": {
+          "note": {
+            "description": "Обязателен при отказе",
+            "maxLength": 1000,
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "SettingDto": {
@@ -2462,6 +2750,70 @@
           },
           "tin": {
             "description": "СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1)",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateRequestDto": {
+        "properties": {
+          "acceptAdjacentSizes": {
+            "description": "Готов на соседний размерный класс",
+            "type": "boolean"
+          },
+          "deliveryAddressId": {
+            "description": "Адрес доставки организации",
+            "format": "uuid",
+            "type": "string"
+          },
+          "deliveryDateFrom": {
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "deliveryDateTo": {
+            "example": "2026-11-06",
+            "type": "string"
+          },
+          "form": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProductForm"
+              }
+            ]
+          },
+          "isRecurringInterest": {
+            "description": "«Нужно регулярно» (информативно в MVP)",
+            "type": "boolean"
+          },
+          "minAcceptableKg": {
+            "description": "Минимальный приемлемый объём; по умолчанию — весь объём",
+            "example": "1000",
+            "nullable": true,
+            "type": "string"
+          },
+          "notes": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "radiusKm": {
+            "description": "По умолчанию `request.defaultRadiusKm`",
+            "maximum": 2000,
+            "minimum": 1,
+            "type": "number"
+          },
+          "sizeClassId": {
+            "type": "number"
+          },
+          "speciesId": {
+            "type": "number"
+          },
+          "targetPricePerKg": {
+            "example": "26000",
+            "nullable": true,
+            "type": "string"
+          },
+          "volumeKg": {
+            "example": "2500",
             "type": "string"
           }
         },
@@ -3005,6 +3357,186 @@
               }
             },
             "description": "INVALID_TRANSITION"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/requests": {
+      "get": {
+        "operationId": "AdminRequests_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Курсор из `nextCursor` предыдущей страницы",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/RequestStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestPageDto"
+                }
+              }
+            },
+            "description": "По умолчанию — PENDING_REVIEW"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/requests/{id}": {
+      "get": {
+        "operationId": "AdminRequests_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/requests/{id}/approve": {
+      "post": {
+        "operationId": "AdminRequests_approve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/requests/{id}/reject": {
+      "post": {
+        "operationId": "AdminRequests_reject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            },
+            "description": "Комментарий обязателен"
           }
         },
         "security": [
@@ -5181,6 +5713,304 @@
         ],
         "tags": [
           "orgs"
+        ]
+      }
+    },
+    "/api/v1/requests": {
+      "post": {
+        "operationId": "Requests_create",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            },
+            "description": "Черновик (DRAFT)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/my": {
+      "get": {
+        "operationId": "Requests_my",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Курсор из `nextCursor` предыдущей страницы",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/RequestStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestPageDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}": {
+      "get": {
+        "operationId": "Requests_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      },
+      "patch": {
+        "operationId": "Requests_update",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            },
+            "description": "Только DRAFT"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}/cancel": {
+      "post": {
+        "operationId": "Requests_cancel",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}/submit": {
+      "post": {
+        "operationId": "Requests_submit",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            },
+            "description": "→ OPEN или PENDING_REVIEW (первая заявка)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
         ]
       }
     },

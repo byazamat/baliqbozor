@@ -116,6 +116,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminRequests_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminRequests_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/requests/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminRequests_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/requests/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminRequests_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/settings": {
         parameters: {
             query?: never;
@@ -660,6 +724,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Requests_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Requests_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["Requests_update"];
+        trace?: never;
+    };
+    "/api/v1/requests/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Requests_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests/{id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Requests_submit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Requests_my"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/seller/listings": {
         parameters: {
             query?: never;
@@ -893,6 +1037,36 @@ export interface components {
             /** @description СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1) */
             tin?: string;
             type: components["schemas"]["OrgType"];
+        };
+        CreateRequestDto: {
+            /** @description Готов на соседний размерный класс */
+            acceptAdjacentSizes?: boolean;
+            /**
+             * Format: uuid
+             * @description Адрес доставки организации
+             */
+            deliveryAddressId: string;
+            /** @example 2026-11-05 */
+            deliveryDateFrom: string;
+            /** @example 2026-11-06 */
+            deliveryDateTo: string;
+            form: components["schemas"]["ProductForm"];
+            /** @description «Нужно регулярно» (информативно в MVP) */
+            isRecurringInterest?: boolean;
+            /**
+             * @description Минимальный приемлемый объём; по умолчанию — весь объём
+             * @example 1000
+             */
+            minAcceptableKg?: string | null;
+            notes?: string;
+            /** @description По умолчанию `request.defaultRadiusKm` */
+            radiusKm?: number;
+            sizeClassId: number;
+            speciesId: number;
+            /** @example 26000 */
+            targetPricePerKg?: string | null;
+            /** @example 2500 */
+            volumeKg: string;
         };
         DecisionDto: {
             /** @description Обязателен для отказа и блокировки */
@@ -1299,8 +1473,74 @@ export interface components {
             nameRu: string;
             nameUz: string;
         };
+        RequestAddressDto: {
+            addressText: string;
+            /** Format: uuid */
+            id: string;
+            label: string;
+            /** @example 41.285300 */
+            lat: string;
+            /** @example 69.203400 */
+            lng: string;
+            region: components["schemas"]["RegionRefDto"];
+        };
+        RequestDto: {
+            acceptAdjacentSizes: boolean;
+            buyerName: string;
+            /** Format: uuid */
+            buyerOrgId: string;
+            /** Format: date-time */
+            createdAt: string;
+            deliveryAddress: components["schemas"]["RequestAddressDto"];
+            /** @example 2026-11-05 */
+            deliveryDateFrom: string;
+            /** @example 2026-11-06 */
+            deliveryDateTo: string;
+            /** Format: date-time */
+            expiresAt: string;
+            form: components["schemas"]["ProductForm"];
+            /** Format: uuid */
+            id: string;
+            isRecurringInterest: boolean;
+            minAcceptableKg: string | null;
+            notes: string | null;
+            /** @example RQ-2026-000123 */
+            number: string;
+            /** Format: date-time */
+            openedAt: string | null;
+            /** @description Предложений в статусе PENDING */
+            pendingOffers: number;
+            radiusKm: number;
+            /** @description Причина отказа модерации */
+            reviewNote: string | null;
+            sizeClass: components["schemas"]["SizeClassRefDto"];
+            species: components["schemas"]["SpeciesRefDto"];
+            status: components["schemas"]["RequestStatus"];
+            /** Format: date-time */
+            submittedAt: string | null;
+            targetPricePerKg: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+            /** @example 2500.000 */
+            volumeKg: string;
+            /**
+             * @description Остаток: объём минус активные строки заказов
+             * @example 2500.000
+             */
+            volumeRemaining: string;
+        };
+        RequestPageDto: {
+            items: components["schemas"]["RequestDto"][];
+            nextCursor: string | null;
+        };
+        /** @enum {string} */
+        RequestStatus: "DRAFT" | "PENDING_REVIEW" | "OPEN" | "OFFERS_RECEIVED" | "ORDERED" | "CANCELLED" | "EXPIRED";
         RequiredNoteDto: {
             note: string;
+        };
+        ReviewRequestDto: {
+            /** @description Обязателен при отказе */
+            note?: string;
         };
         SettingDto: {
             /** @description Отличается от значения по умолчанию */
@@ -1467,6 +1707,36 @@ export interface components {
             regionId?: number;
             /** @description СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1) */
             tin?: string;
+        };
+        UpdateRequestDto: {
+            /** @description Готов на соседний размерный класс */
+            acceptAdjacentSizes?: boolean;
+            /**
+             * Format: uuid
+             * @description Адрес доставки организации
+             */
+            deliveryAddressId?: string;
+            /** @example 2026-11-05 */
+            deliveryDateFrom?: string;
+            /** @example 2026-11-06 */
+            deliveryDateTo?: string;
+            form?: components["schemas"]["ProductForm"];
+            /** @description «Нужно регулярно» (информативно в MVP) */
+            isRecurringInterest?: boolean;
+            /**
+             * @description Минимальный приемлемый объём; по умолчанию — весь объём
+             * @example 1000
+             */
+            minAcceptableKg?: string | null;
+            notes?: string;
+            /** @description По умолчанию `request.defaultRadiusKm` */
+            radiusKm?: number;
+            sizeClassId?: number;
+            speciesId?: number;
+            /** @example 26000 */
+            targetPricePerKg?: string | null;
+            /** @example 2500 */
+            volumeKg?: string;
         };
         UpdateSettingDto: {
             /** @example commission.defaultRateBps */
@@ -1724,6 +1994,107 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    AdminRequests_list: {
+        parameters: {
+            query?: {
+                /** @description Курсор из `nextCursor` предыдущей страницы */
+                cursor?: string;
+                limit?: number;
+                status?: components["schemas"]["RequestStatus"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description По умолчанию — PENDING_REVIEW */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestPageDto"];
+                };
+            };
+        };
+    };
+    AdminRequests_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    AdminRequests_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDto"];
+                };
+            };
+        };
+    };
+    AdminRequests_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Комментарий обязателен */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDto"];
                 };
             };
         };
@@ -3038,6 +3409,164 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Requests_create: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Черновик (DRAFT) */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDto"];
+                };
+            };
+        };
+    };
+    Requests_get: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Requests_update: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Только DRAFT */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDto"];
+                };
+            };
+        };
+    };
+    Requests_cancel: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDto"];
+                };
+            };
+        };
+    };
+    Requests_submit: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description → OPEN или PENDING_REVIEW (первая заявка) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestDto"];
+                };
+            };
+        };
+    };
+    Requests_my: {
+        parameters: {
+            query?: {
+                /** @description Курсор из `nextCursor` предыдущей страницы */
+                cursor?: string;
+                limit?: number;
+                status?: components["schemas"]["RequestStatus"];
+            };
+            header: {
+                "X-Org-Id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RequestPageDto"];
                 };
             };
         };

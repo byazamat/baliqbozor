@@ -1231,6 +1231,87 @@
         ],
         "type": "object"
       },
+      "SettingDto": {
+        "properties": {
+          "changed": {
+            "description": "Отличается от значения по умолчанию",
+            "type": "boolean"
+          },
+          "defaultValue": {
+            "description": "Значение по умолчанию (SPEC 8.13)",
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ]
+          },
+          "key": {
+            "example": "commission.defaultRateBps",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "updatedById": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "Действующее значение",
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value",
+          "defaultValue",
+          "changed",
+          "updatedAt",
+          "updatedById"
+        ],
+        "type": "object"
+      },
+      "SettingsListDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SettingDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
       "SizeClassDto": {
         "properties": {
           "code": {
@@ -1464,6 +1545,37 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "UpdateSettingDto": {
+        "properties": {
+          "key": {
+            "example": "commission.defaultRateBps",
+            "type": "string"
+          },
+          "value": {
+            "description": "Проверяется схемой настройки",
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "value"
+        ],
         "type": "object"
       },
       "UpdateTaskDto": {
@@ -1963,6 +2075,76 @@
               }
             },
             "description": "INVALID_TRANSITION"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/settings": {
+      "get": {
+        "operationId": "AdminSettings_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsListDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      },
+      "patch": {
+        "operationId": "AdminSettings_update",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": "VALIDATION_FAILED: неизвестный ключ или значение не проходит схему"
           }
         },
         "security": [

@@ -116,6 +116,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminSettings_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["AdminSettings_update"];
+        trace?: never;
+    };
     "/api/v1/admin/tasks": {
         parameters: {
             query?: never;
@@ -865,6 +881,27 @@ export interface components {
         RequiredNoteDto: {
             note: string;
         };
+        SettingDto: {
+            /** @description Отличается от значения по умолчанию */
+            changed: boolean;
+            /** @description Значение по умолчанию (SPEC 8.13) */
+            defaultValue: number | string | boolean | {
+                [key: string]: unknown;
+            };
+            /** @example commission.defaultRateBps */
+            key: string;
+            /** Format: date-time */
+            updatedAt: string | null;
+            /** Format: uuid */
+            updatedById: string | null;
+            /** @description Действующее значение */
+            value: number | string | boolean | {
+                [key: string]: unknown;
+            };
+        };
+        SettingsListDto: {
+            items: components["schemas"]["SettingDto"][];
+        };
         SizeClassDto: {
             /** @example 1-2 */
             code: string;
@@ -938,6 +975,14 @@ export interface components {
             regionId?: number;
             /** @description СТИР, 9 цифр; обязателен, кроме INDIVIDUAL (SPEC 8.1) */
             tin?: string;
+        };
+        UpdateSettingDto: {
+            /** @example commission.defaultRateBps */
+            key: string;
+            /** @description Проверяется схемой настройки */
+            value: number | string | boolean | {
+                [key: string]: unknown;
+            };
         };
         UpdateTaskDto: {
             /**
@@ -1180,6 +1225,57 @@ export interface operations {
             };
             /** @description INVALID_TRANSITION */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    AdminSettings_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingsListDto"];
+                };
+            };
+        };
+    };
+    AdminSettings_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSettingDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingDto"];
+                };
+            };
+            /** @description VALIDATION_FAILED: неизвестный ключ или значение не проходит схему */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -20,6 +20,8 @@ describe('domain enums match the Prisma schema', () => {
     assertTrue<Equals<domain.ListingPauseReason, db.ListingPauseReason>>(true);
     assertTrue<Equals<domain.MediaPurpose, db.MediaPurpose>>(true);
     assertTrue<Equals<domain.MediaKind, db.MediaKind>>(true);
+    assertTrue<Equals<domain.RequestStatus, db.RequestStatus>>(true);
+    assertTrue<Equals<domain.OfferStatus, db.OfferStatus>>(true);
   });
 
   it('has identical runtime values', () => {
@@ -37,6 +39,8 @@ describe('domain enums match the Prisma schema', () => {
       'ListingPauseReason',
       'MediaPurpose',
       'MediaKind',
+      'RequestStatus',
+      'OfferStatus',
     ] as const) {
       expect(domain[name]).toEqual(db[name]);
     }

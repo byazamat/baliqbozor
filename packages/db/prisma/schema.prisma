@@ -611,6 +611,11 @@ model BuyerRequest {
   status              RequestStatus         @default(DRAFT)
   expiresAt           DateTime
   submittedAt         DateTime?
+  openedAt            DateTime? // служебное: переход в OPEN (отсчёт «нет предложений», D-58)
+  reviewedAt          DateTime? // служебное: решение оператора по первой заявке
+  reviewedById        String?               @db.Uuid
+  reviewNote          String? // служебное: причина отказа
+  unmatchedTaskAt     DateTime? // служебное: создана задача UNMATCHED_REQUEST
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   buyer               Organization          @relation(fields: [buyerOrgId], references: [id])
@@ -623,6 +628,7 @@ model BuyerRequest {
 
   @@index([status, speciesId])
   @@index([buyerOrgId, status])
+  @@index([status, expiresAt])
 }
 
 /// Кому из продавцов и когда разослана заявка (чтобы не спамить повторно)
@@ -634,6 +640,7 @@ model RequestNotification {
   score       Decimal      @db.Decimal(6, 3)
   notifiedAt  DateTime     @default(now())
   viewedAt    DateTime?
+  invitedById String?      @db.Uuid // служебное: приглашение оператором вне топа (D-58)
   request     BuyerRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
   @@unique([requestId, sellerOrgId])
@@ -663,6 +670,7 @@ model Offer {
 
   @@index([requestId, status])
   @@index([sellerOrgId, status])
+  @@index([status, validUntil])
 }
 
 // ===================== ORDERS =====================

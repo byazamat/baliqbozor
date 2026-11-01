@@ -13,9 +13,14 @@ export type OrgAction =
   | 'FARMS_MANAGE'
   | 'LISTINGS_VIEW'
   | 'LISTINGS_MANAGE'
-  | 'LISTING_CONFIRM';
+  | 'LISTING_CONFIRM'
+  | 'REQUESTS_VIEW'
+  | 'REQUESTS_MANAGE'
+  | 'OFFERS_VIEW'
+  | 'OFFERS_MANAGE';
 
 export type PlatformAction =
+  | 'REQUEST_REVIEW'
   | 'ORG_VERIFY'
   | 'OPS_TASKS'
   | 'ADMIN_ORGS_VIEW'
@@ -48,6 +53,11 @@ const ORG_RULES: Readonly<Record<OrgAction, Rule>> = {
   LISTINGS_VIEW: (m) => m.orgType === 'SELLER',
   LISTINGS_MANAGE: (m) => m.orgType === 'SELLER' && m.role !== 'STAFF',
   LISTING_CONFIRM: (m) => m.orgType === 'SELLER',
+  // Заявки — покупатель, предложения — продавец (SPEC 9): STAFF только смотрит.
+  REQUESTS_VIEW: (m) => m.orgType === 'BUYER',
+  REQUESTS_MANAGE: (m) => m.orgType === 'BUYER' && m.role !== 'STAFF',
+  OFFERS_VIEW: (m) => m.orgType === 'SELLER',
+  OFFERS_MANAGE: (m) => m.orgType === 'SELLER' && m.role !== 'STAFF',
 };
 
 /** Права внутри организации; оператор и администратор допускаются ко всем действиям. */
@@ -59,6 +69,7 @@ export function canInOrg(subject: AccessSubject, action: OrgAction): boolean {
 }
 
 const PLATFORM_RULES: Readonly<Record<PlatformAction, readonly PlatformRole[]>> = {
+  REQUEST_REVIEW: ['OPERATOR', 'ADMIN'],
   ORG_VERIFY: ['OPERATOR', 'ADMIN'],
   OPS_TASKS: ['OPERATOR', 'ADMIN'],
   ADMIN_ORGS_VIEW: ['OPERATOR', 'ADMIN'],

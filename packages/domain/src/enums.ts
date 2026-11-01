@@ -68,3 +68,24 @@ export const ListingPauseReason = {
   FARM_INACTIVE: 'FARM_INACTIVE',
 } as const;
 export type ListingPauseReason = (typeof ListingPauseReason)[keyof typeof ListingPauseReason];
+
+export const RequestStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  OPEN: 'OPEN',
+  OFFERS_RECEIVED: 'OFFERS_RECEIVED',
+  ORDERED: 'ORDERED',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED',
+} as const;
+export type RequestStatus = (typeof RequestStatus)[keyof typeof RequestStatus];
+
+export const OfferStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  PARTIALLY_ACCEPTED: 'PARTIALLY_ACCEPTED',
+  REJECTED: 'REJECTED',
+  WITHDRAWN: 'WITHDRAWN',
+  EXPIRED: 'EXPIRED',
+} as const;
+export type OfferStatus = (typeof OfferStatus)[keyof typeof OfferStatus];

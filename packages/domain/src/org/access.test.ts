@@ -72,3 +72,23 @@ describe('canOnPlatform', () => {
     expect(canOnPlatform(role, action)).toBe(expected);
   });
 });
+
+describe('M3 actions', () => {
+  it.each([
+    ['REQUESTS_VIEW', 'STAFF', 'BUYER', true],
+    ['REQUESTS_MANAGE', 'MANAGER', 'BUYER', true],
+    ['REQUESTS_MANAGE', 'STAFF', 'BUYER', false],
+    ['REQUESTS_MANAGE', 'OWNER', 'SELLER', false],
+    ['OFFERS_VIEW', 'STAFF', 'SELLER', true],
+    ['OFFERS_MANAGE', 'OWNER', 'SELLER', true],
+    ['OFFERS_MANAGE', 'STAFF', 'SELLER', false],
+    ['OFFERS_MANAGE', 'OWNER', 'BUYER', false],
+  ] as const)('%s for %s of %s → %s', (action, role, type, expected) => {
+    expect(canInOrg(member(role, type), action)).toBe(expected);
+  });
+
+  it('lets operators review requests', () => {
+    expect(canOnPlatform('OPERATOR', 'REQUEST_REVIEW')).toBe(true);
+    expect(canOnPlatform('USER', 'REQUEST_REVIEW')).toBe(false);
+  });
+});

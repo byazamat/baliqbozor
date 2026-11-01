@@ -3,6 +3,7 @@ import type {
   ListingStatus,
   MemberRole,
   OrgType,
+  RequestStatus,
   VerificationStatus,
 } from '../enums.js';
 
@@ -48,6 +49,20 @@ export interface DomainEventPayloads {
   'listing.freshness_reminder': { listingId: string; orgId: string; dueAt: string };
   'listing.auto_paused': { listingId: string; orgId: string; freshnessDays: number };
   'listing.expired': { listingId: string; orgId: string };
+  'request.created': { requestId: string; orgId: string; actorUserId: string };
+  'request.updated': { requestId: string; orgId: string; fields: string[]; actorUserId: string };
+  'request.submitted': { requestId: string; orgId: string; status: RequestStatus; taskId?: string };
+  'request.approved': { requestId: string; orgId: string; operatorId: string };
+  'request.rejected': { requestId: string; orgId: string; operatorId: string; note: string };
+  'request.opened': { requestId: string; orgId: string };
+  'request.cancelled': { requestId: string; orgId: string; actorUserId: string | null };
+  'request.expired': { requestId: string; orgId: string };
+  /** Продавцы, которым по заявке отправлено «Новая заявка для вас» (RequestNotification). */
+  'request.matched': { requestId: string; sellerOrgIds: string[]; invitedById?: string };
+  'offer.created': { offerId: string; requestId: string; sellerOrgId: string; buyerOrgId: string };
+  'offer.updated': { offerId: string; requestId: string; sellerOrgId: string; fields: string[] };
+  'offer.withdrawn': { offerId: string; requestId: string; sellerOrgId: string };
+  'offer.expired': { offerId: string; requestId: string; sellerOrgId: string };
 }
 
 export type DomainEventType = keyof DomainEventPayloads;
@@ -78,6 +93,19 @@ export const AGGREGATE_OF: Readonly<Record<DomainEventType, string>> = {
   'listing.freshness_reminder': 'Listing',
   'listing.auto_paused': 'Listing',
   'listing.expired': 'Listing',
+  'request.created': 'BuyerRequest',
+  'request.updated': 'BuyerRequest',
+  'request.submitted': 'BuyerRequest',
+  'request.approved': 'BuyerRequest',
+  'request.rejected': 'BuyerRequest',
+  'request.opened': 'BuyerRequest',
+  'request.cancelled': 'BuyerRequest',
+  'request.expired': 'BuyerRequest',
+  'request.matched': 'BuyerRequest',
+  'offer.created': 'Offer',
+  'offer.updated': 'Offer',
+  'offer.withdrawn': 'Offer',
+  'offer.expired': 'Offer',
 };
 
 export const DOMAIN_EVENT_TYPES = Object.keys(AGGREGATE_OF) as DomainEventType[];

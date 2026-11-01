@@ -322,19 +322,19 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M3.0 Решения и схема
 
-- [ ] DECISIONS: решения владельца по границам M3 (D-57); номер заявки `RQ-ГГГГ-NNNNNN`, видимость заявки для продавца, правила предложений и подбора (D-58 и далее)
-- [ ] Миграция при необходимости: служебные поля (например, `BuyerRequest.reviewedAt/reviewedById`, `Offer.withdrawnAt`), счётчик номеров заявок, индексы для подбора; `db:check-drift`
+- [x] DECISIONS: решения владельца по границам M3 (D-57); номер заявки `RQ-ГГГГ-NNNNNN`, видимость заявки для продавца, правила предложений и подбора (D-58 и далее)
+- [x] Миграция `m3_request_service_fields`: `BuyerRequest.openedAt/reviewedAt/reviewedById/reviewNote/unmatchedTaskAt`, `RequestNotification.invitedById`, индексы `BuyerRequest(status, expiresAt)` и `Offer(status, validUntil)`; номера — существующая модель `NumberSequence`; `db:check-drift`
 
 ### M3.1 Домен (`packages/domain`, покрытие ≥ 90%)
 
-- [ ] `request/rules`: проверки 8.4 (объём ≥ `order.minOrderKg`, `minAcceptableKg ≤ volumeKg`, окно доставки, радиус, ориентир цены), `expiresAt` (начало окна или `submittedAt + request.defaultExpiryDays`, что раньше), `volumeRemaining`
-- [ ] `request/status`: машина статусов (submit → `PENDING_REVIEW`/`OPEN`, approve, reject, первое предложение → `OFFERS_RECEIVED`, cancel, expire)
-- [ ] `matching/filter`: фильтр кандидатов 8.5 (вид, размер и соседний по `sort`, форма, объём со `splitFactor` 0,2, окно вылова с `transitDays = ceil(distance/400)`, радиус)
-- [ ] `matching/score`: скоринг с весами `matching.weights` (расстояние, цена, надёжность, свежесть, объём)
-- [ ] `matching/suggestSplit`: жадный подбор до `volumeRemaining`, не больше `matching.maxLinesPerOrder`
-- [ ] `offer/rules` и `offer/status`: объём в пределах доступного и минимальной партии, одно активное предложение от хозяйства, `validUntil` (24 ч, не позже `expiresAt` заявки), правка только в `PENDING`, withdraw, expire
-- [ ] `org/access`: действия покупателя и продавца M3 по матрице SPEC 9 (заявки — OWNER/MANAGER покупателя, предложения — OWNER/MANAGER продавца, STAFF — просмотр)
-- [ ] События: `request.created/updated/submitted/approved/rejected/opened/cancelled/expired`, `request.matched`, `offer.created/updated/withdrawn/expired`
+- [x] `request/rules`: проверки 8.4 (объём ≥ `order.minOrderKg`, `minAcceptableKg ≤ volumeKg`, окно доставки, радиус, ориентир цены), `expiresAt` (начало окна или `submittedAt + request.defaultExpiryDays`, что раньше), `volumeRemaining`
+- [x] `request/status`: машина статусов (submit → `PENDING_REVIEW`/`OPEN`, approve, reject, первое предложение → `OFFERS_RECEIVED`, cancel, expire)
+- [x] `matching/filter`: фильтр кандидатов 8.5 (вид, размер и соседний по `sort`, форма, объём со `splitFactor` 0,2, окно вылова с `transitDays = ceil(distance/400)`, радиус)
+- [x] `matching/score`: скоринг с весами `matching.weights` (расстояние, цена, надёжность, свежесть, объём)
+- [x] `matching/suggestSplit`: жадный подбор до `volumeRemaining`, не больше `matching.maxLinesPerOrder`
+- [x] `offer/rules` и `offer/status`: объём в пределах доступного и минимальной партии, одно активное предложение от хозяйства, `validUntil` (24 ч, не позже `expiresAt` заявки), правка только в `PENDING`, withdraw, expire
+- [x] `org/access`: действия покупателя и продавца M3 по матрице SPEC 9 (заявки — OWNER/MANAGER покупателя, предложения — OWNER/MANAGER продавца, STAFF — просмотр)
+- [x] События: `request.created/updated/submitted/approved/rejected/opened/cancelled/expired`, `request.matched`, `offer.created/updated/withdrawn/expired`; enum-ы `RequestStatus`/`OfferStatus` в домене + тест совместимости; 189 тестов, покрытие 99,5%
 
 ### M3.2 Заявки покупателя (API)
 

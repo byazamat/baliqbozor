@@ -11,6 +11,9 @@
     "currency": "so'm",
     "kg": "kg"
   },
+  "auth": {
+    "otpSms": "{brand}: kirish kodi {code}. Uni hech kimga bermang."
+  },
   "health": {
     "title": "Tizim holati",
     "api": "API serveri",

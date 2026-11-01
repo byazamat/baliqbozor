@@ -23,6 +23,7 @@
     "db:migrate:deploy": "pnpm --filter @baliqbozor/db db:migrate:deploy",
     "db:check-drift": "pnpm --filter @baliqbozor/db db:check-drift",
     "db:seed": "turbo run generate --filter=@baliqbozor/db && pnpm --filter @baliqbozor/db db:seed",
+    "admin:grant": "turbo run generate --filter=@baliqbozor/db && pnpm --filter @baliqbozor/db admin:grant",
     "db:generate": "pnpm --filter @baliqbozor/db db:generate",
     "db:validate": "pnpm --filter @baliqbozor/db db:validate",
     "api:generate": "turbo run build --filter=@baliqbozor/api... && pnpm --filter @baliqbozor/api openapi:export && pnpm --filter @baliqbozor/api-client generate:types",

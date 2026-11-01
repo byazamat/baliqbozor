@@ -454,6 +454,9 @@ importers:
       '@baliqbozor/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@baliqbozor/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@baliqbozor/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
@@ -643,6 +646,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@baliqbozor/domain':
+        specifier: workspace:*
+        version: link:../domain
       '@prisma/adapter-pg':
         specifier: 7.10.1
         version: 7.10.1

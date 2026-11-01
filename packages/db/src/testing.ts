@@ -21,35 +21,43 @@ const REPO_ROOT = path.resolve(DB_PACKAGE_DIR, '../..');
  * `NODE_ENV=test`, логи выключены. Jest подменяет process.env копией для каждого файла,
  * поэтому значения присваиваются явно.
  */
-export function loadTestEnv(env: NodeJS.ProcessEnv = process.env): void {
+export function loadTestEnv(scope: TestScope, env: NodeJS.ProcessEnv = process.env): void {
   const rootEnv = path.join(REPO_ROOT, '.env');
   if (existsSync(rootEnv)) {
     for (const [key, value] of Object.entries(parseEnv(readFileSync(rootEnv, 'utf8')))) {
       env[key] ??= value;
     }
   }
-  env.DATABASE_URL = testDatabaseUrl(env);
-  if (env.REDIS_URL) env.REDIS_URL = testRedisUrl(env.REDIS_URL);
+  env.DATABASE_URL = testDatabaseUrl(env, scope);
+  if (env.REDIS_URL) env.REDIS_URL = testRedisUrl(env.REDIS_URL, scope);
   env.NODE_ENV = 'test';
   env.LOG_LEVEL = 'silent';
 }
 
-/** Отдельная база Redis для тестов (`/1`), чтобы `flushdb` и очереди тестов не трогали разработку. */
-export function testRedisUrl(redisUrl: string): string {
+/**
+ * e2e api и worker идут параллельно, поэтому у каждого своя БД и своя база Redis — иначе
+ * очистка в одном прогоне ломает другой (D-45).
+ */
+export type TestScope = 'api' | 'worker';
+const REDIS_DB: Readonly<Record<TestScope, string>> = { api: '/1', worker: '/2' };
+
+/** Отдельная база Redis для тестов, чтобы `flushdb` и очереди тестов не трогали разработку. */
+export function testRedisUrl(redisUrl: string, scope: TestScope): string {
   const url = new URL(redisUrl);
   const db = url.pathname.replace(/^\//, '');
-  if (db === '' || db === '0') url.pathname = '/1';
+  if (db === '' || db === '0') url.pathname = REDIS_DB[scope];
   return url.toString();
 }
 
-/** `DATABASE_URL_TEST`, иначе `DATABASE_URL` с суффиксом `_test` у имени базы. */
-export function testDatabaseUrl(env: NodeJS.ProcessEnv = process.env): string {
-  if (env.DATABASE_URL_TEST) return env.DATABASE_URL_TEST;
+/** `DATABASE_URL_TEST`, иначе `DATABASE_URL` с суффиксом `_test_<scope>` у имени базы. */
+export function testDatabaseUrl(env: NodeJS.ProcessEnv, scope: TestScope): string {
+  if (env.DATABASE_URL_TEST)
+    return env.DATABASE_URL_TEST.replace(/(\/[^/?]+)(\?|$)/, `$1_${scope}$2`);
   if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
   const url = new URL(env.DATABASE_URL);
   const name = url.pathname.replace(/^\//, '');
   if (!name) throw new Error('DATABASE_URL has no database name');
-  if (!name.endsWith('_test')) url.pathname = `/${name}_test`;
+  if (!/_test(_\w+)?$/.test(name)) url.pathname = `/${name}_test_${scope}`;
   return url.toString();
 }
 
@@ -87,7 +95,7 @@ export async function prepareTestDatabase(databaseUrl: string): Promise<void> {
 export async function truncateAll(prisma: PrismaClient): Promise<void> {
   const rows = await prisma.$queryRaw<{ db: string }[]>`SELECT current_database() AS db`;
   const db = rows[0]?.db ?? '';
-  if (!db.endsWith('_test')) throw new Error(`Refusing to truncate non-test database ${db}`);
+  if (!/_test(_\w+)?$/.test(db)) throw new Error(`Refusing to truncate non-test database ${db}`);
   const tables = await prisma.$queryRaw<{ tablename: string }[]>`
     SELECT tablename FROM pg_tables
     WHERE schemaname = 'public' AND tablename <> '_prisma_migrations'`;

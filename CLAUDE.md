@@ -22,10 +22,12 @@ nvm use                                             # Node из .nvmrc (24.x); p
 pnpm i
 pnpm infra:up                                       # Postgres, Redis, MinIO + бакет; ждёт готовности
 pnpm db:migrate                                     # prisma migrate dev
-pnpm db:seed
+pnpm db:seed                                        # справочники, настройки 8.13; демо — при APP_ENV=local|staging
+pnpm admin:grant <phone> <OPERATOR|ADMIN|USER>      # платформенная роль (staging/production, D-36)
 pnpm dev                                            # api, worker, web, admin (turbo), без mobile
 pnpm test                                           # unit + e2e (нужен pnpm infra:up)
-pnpm test:web-e2e                                   # Playwright smoke web
+pnpm test:web-e2e                                   # Playwright smoke web (API подменяется)
+pnpm test:acceptance                                # Playwright: сквозной сценарий M1 на живых api/worker/web/admin (нужны infra, migrate, seed, build)
 pnpm lint && pnpm typecheck
 pnpm i18n:check                                     # паритет ключей uz/ru
 pnpm api:generate                                   # OpenAPI → packages/api-client (закоммитить результат)

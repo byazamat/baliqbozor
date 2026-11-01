@@ -10,7 +10,8 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "*.ts",
-    "e2e"
+    "e2e",
+    "e2e-acceptance"
   ],
   "exclude": ["node_modules", ".next"]
 }

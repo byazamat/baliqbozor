@@ -74,19 +74,30 @@ jobs:
         run: docker compose -f infra/docker-compose.yml logs --no-color --tail=200
 
   web-e2e:
-    name: Web smoke (Playwright)
+    name: Web smoke and M1 acceptance (Playwright)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
-      - name: Build workspace packages
-        run: pnpm turbo run build --filter=@baliqbozor/web^...
+      - name: Start Postgres, Redis, MinIO
+        run: pnpm infra:up
+      - name: Clean database → migrations → seed
+        run: |
+          pnpm db:migrate:deploy
+          pnpm db:seed
+      - name: Build api, worker, web, admin
+        run: pnpm build
       - name: Install Chromium
         run: pnpm --filter @baliqbozor/web exec playwright install --with-deps chromium
-      - name: Playwright
+      - name: Playwright smoke (web, API mocked)
         run: pnpm test:web-e2e
+      - name: Playwright M1 acceptance (api, worker, web, admin)
+        run: pnpm test:acceptance
+      - name: Service logs on failure
+        if: failure()
+        run: docker compose -f infra/docker-compose.yml logs --no-color --tail=200
       - name: Upload report
         if: failure()
         uses: actions/upload-artifact@v7

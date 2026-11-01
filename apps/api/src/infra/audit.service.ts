@@ -25,7 +25,7 @@ export class AuditService {
       entry.actor === undefined
         ? auth && {
             userId: auth.userId,
-            role: auth.org ? `${auth.platformRole}/${auth.org.role}` : auth.platformRole,
+            role: auth.org?.role ? `${auth.platformRole}/${auth.org.role}` : auth.platformRole,
             impersonatorId: auth.impersonatorId,
           }
         : entry.actor;

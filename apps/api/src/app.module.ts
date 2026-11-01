@@ -6,6 +6,7 @@ import { loggerParams } from './common/logger.js';
 import { RateLimitGuard } from './common/rate-limit.guard.js';
 import { ENV, type Env } from './config/env.js';
 import { InfraModule } from './infra/infra.module.js';
+import { AccessGuard } from './modules/auth/access.guard.js';
 import { AuthGuard } from './modules/auth/auth.guard.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { HealthModule } from './modules/health/health.module.js';
@@ -26,8 +27,9 @@ export class AppModule {
       ],
       providers: [
         { provide: ENV, useValue: env },
-        // Порядок глобальных guard'ов: сначала аутентификация, затем лимит (ключ — пользователь).
+        // Порядок guard'ов: аутентификация → роль и членство → лимит (ключ — пользователь).
         { provide: APP_GUARD, useExisting: AuthGuard },
+        { provide: APP_GUARD, useExisting: AccessGuard },
         { provide: APP_GUARD, useClass: RateLimitGuard },
       ],
       exports: [ENV],

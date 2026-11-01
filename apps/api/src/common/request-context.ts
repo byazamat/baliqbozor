@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-import type { MemberRole, OrgType, PlatformRole } from '@baliqbozor/domain';
+import type { MemberRole, OrgType, PlatformRole, VerificationStatus } from '@baliqbozor/domain';
 import type { NextFunction, Request, Response } from 'express';
 
 /** Кто выполняет запрос — заполняется guard'ом аутентификации (M1.4). */
@@ -8,8 +8,13 @@ export interface AuthContext {
   userId: string;
   platformRole: PlatformRole;
   sessionId: string;
-  /** Текущая организация из `X-Org-Id`, если запрос на уровне организации. */
-  org?: { id: string; type: OrgType; role: MemberRole } | undefined;
+  /**
+   * Текущая организация из `X-Org-Id` (или пути), если запрос на уровне организации.
+   * `role: null` — доступ оператора/администратора без членства.
+   */
+  org?:
+    | { id: string; type: OrgType; role: MemberRole | null; verificationStatus: VerificationStatus }
+    | undefined;
   /** Оператор, действующий «от имени» (SPEC 9), — для аудита. */
   impersonatorId?: string | undefined;
 }

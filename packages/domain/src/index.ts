@@ -5,6 +5,7 @@ export * from './matching/index.js';
 export * from './pii.js';
 export * from './enums.js';
 export * from './events/index.js';
+export * from './media/index.js';
 export * from './identity/index.js';
 export * from './org/index.js';
 export * from './settings/index.js';

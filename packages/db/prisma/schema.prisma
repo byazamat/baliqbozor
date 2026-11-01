@@ -1124,7 +1124,11 @@ model DomainEvent {
   attempts      Int       @default(0)
   lastError     String?
 
+  /// Служебное (D-40): не обрабатывать раньше — аренда при захвате worker'ом и пауза перед повтором.
+  availableAt DateTime @default(now())
+
   @@index([processedAt, createdAt])
+  @@index([processedAt, availableAt])
 }
 
 /// Сквозная нумерация документов

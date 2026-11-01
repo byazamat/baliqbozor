@@ -235,19 +235,20 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M2.0 Решения и схема
 
-- [ ] DECISIONS: границы M2, обработка медиа и видео, служебные поля наличия, правила статусов и свежести, приватность каталога
-- [ ] Миграция `m2_listing_media_service_fields`: `Listing.pauseReason`, `Listing.freshnessRemindedAt`, `MediaFile.purpose`, `MediaFile.rejectReason` (служебные), индексы для каталога (`Farm(lat, lng)`, `Listing(status, availableFrom)`); перенос `purpose = ORG_VERIFICATION` для существующих файлов; `db:check-drift`
+- [x] DECISIONS: границы M2, обработка медиа и видео, служебные поля наличия, правила статусов и свежести, приватность каталога
+- [x] Миграция `m2_listing_media_service_fields`: `Listing.pauseReason`, `Listing.freshnessRemindedAt`, `MediaFile.purpose`, `MediaFile.rejectReason` (служебные), `MediaFile.sortOrder` (порядок фото), индексы для каталога и планировщика (`Farm(lat, lng)`, `Listing(status, lastConfirmedAt)`, `Listing(status, availableTo)`, `MediaFile(orgId, purpose)`); перенос `purpose = ORG_VERIFICATION` для существующих файлов; `db:check-drift`
 
 ### M2.1 Домен (`packages/domain`, покрытие ≥ 90%)
 
-- [ ] `listing/rules`: проверки 8.3 (объёмы, минимальная партия ≥ `order.minOrderKg`, цена по `priceType`, окно вылова и `kind` по `listing.nowMaxDaysAhead`, `volumeKg ≥ reservedKg + soldKg`), `availableKg`
-- [ ] `listing/status`: машина статусов (publish, pause, resume, archive, confirm, expire, autopause, farm-deactivate) с причинами паузы; условия публикации (верификация, фото, объёмы, даты)
-- [ ] `listing/freshness`: срок подтверждения, момент напоминания (за 1 день), автопауза, истечение по дате в Asia/Tashkent
-- [ ] `geo`: гаверсинус, ограничивающий прямоугольник, округление расстояния для публичной выдачи
-- [ ] `farm/rules`: обязательные поля и координаты в пределах Узбекистана (с запасом)
-- [ ] `org/access`: действия `FARMS_VIEW`, `FARMS_MANAGE`, `LISTINGS_VIEW`, `LISTINGS_MANAGE`, `LISTING_CONFIRM` по матрице SPEC 9 и D-15
-- [ ] `media`: назначения `FARM_PHOTO`, `LISTING_MEDIA`; лимит длительности видео; сверка magic bytes с заявленным типом
-- [ ] События: `farm.created/updated/deactivated`, `listing.created/published/paused/resumed/archived/confirmed/expired`, `listing.freshness_reminder`, `listing.auto_paused`, `media.uploaded`
+- [x] `listing/rules`: проверки 8.3 (объёмы, минимальная партия ≥ `order.minOrderKg`, цена по `priceType`, окно вылова и `kind` по `listing.nowMaxDaysAhead`, `volumeKg ≥ reservedKg + soldKg`), `availableKg`
+- [x] `listing/status`: машина статусов (publish, pause, resume, archive, confirm, expire, autopause, farm-deactivate) с причинами паузы; условия публикации (верификация, фото, объёмы, даты)
+- [x] `listing/freshness`: срок подтверждения, момент напоминания (за 1 день), автопауза, истечение по дате в Asia/Tashkent
+- [x] `geo`: гаверсинус, ограничивающий прямоугольник, округление расстояния для публичной выдачи
+- [x] `farm/rules`: обязательные поля и координаты в пределах Узбекистана (с запасом)
+- [x] `org/access`: действия `FARMS_VIEW`, `FARMS_MANAGE`, `LISTINGS_VIEW`, `LISTINGS_MANAGE`, `LISTING_CONFIRM` по матрице SPEC 9 и D-15
+- [x] `media`: назначения `FARM_PHOTO`, `LISTING_MEDIA`; лимит длительности видео; сверка magic bytes с заявленным типом
+- [x] `time`: дата и минуты суток по Ташкенту без `Intl` (UTC+5), рабочие часы
+- [x] События: `farm.created/updated/deactivated`, `listing.created/updated/status_changed/confirmed/expired`, `listing.freshness_reminder`, `listing.auto_paused`, `media.uploaded`; enum-ы наличия и медиа в домене + тест совместимости с Prisma; 165 тестов, покрытие 99,7%
 
 ### M2.2 Обработка медиа (api + worker)
 

@@ -1,6 +1,6 @@
 import type { MemberRole, OrgType, PlatformRole } from '../enums.js';
 
-/** Действия M1 из матрицы прав SPEC 9 (дополняется в следующих milestone). */
+/** Действия из матрицы прав SPEC 9 (M1 и M2; дополняется в следующих milestone). */
 export type OrgAction =
   | 'ORG_VIEW_PRIVATE'
   | 'ORG_EDIT'
@@ -8,7 +8,12 @@ export type OrgAction =
   | 'MEMBERS_VIEW'
   | 'MEMBERS_MANAGE'
   | 'ADDRESSES_VIEW'
-  | 'ADDRESSES_MANAGE';
+  | 'ADDRESSES_MANAGE'
+  | 'FARMS_VIEW'
+  | 'FARMS_MANAGE'
+  | 'LISTINGS_VIEW'
+  | 'LISTINGS_MANAGE'
+  | 'LISTING_CONFIRM';
 
 export type PlatformAction =
   | 'ORG_VERIFY'
@@ -37,9 +42,15 @@ const ORG_RULES: Readonly<Record<OrgAction, Rule>> = {
   // Адреса доставки — покупатель (D-39): все члены видят, OWNER/MANAGER меняют.
   ADDRESSES_VIEW: (m) => m.orgType === 'BUYER',
   ADDRESSES_MANAGE: (m) => m.orgType === 'BUYER' && m.role !== 'STAFF',
+  // Хозяйства и наличие (SPEC 9): STAFF продавца только смотрит и подтверждает свежесть (D-15).
+  FARMS_VIEW: (m) => m.orgType === 'SELLER',
+  FARMS_MANAGE: (m) => m.orgType === 'SELLER' && m.role !== 'STAFF',
+  LISTINGS_VIEW: (m) => m.orgType === 'SELLER',
+  LISTINGS_MANAGE: (m) => m.orgType === 'SELLER' && m.role !== 'STAFF',
+  LISTING_CONFIRM: (m) => m.orgType === 'SELLER',
 };
 
-/** Права внутри организации; оператор и администратор допускаются ко всем действиям M1. */
+/** Права внутри организации; оператор и администратор допускаются ко всем действиям. */
 export function canInOrg(subject: AccessSubject, action: OrgAction): boolean {
   if (isStaffPlatform(subject.platformRole)) {
     return action !== 'ORG_SUBMIT_VERIFICATION' || subject.membership?.role === 'OWNER';

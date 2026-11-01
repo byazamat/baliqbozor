@@ -12,6 +12,14 @@ describe('domain enums match the Prisma schema', () => {
     assertTrue<Equals<domain.MemberRole, db.MemberRole>>(true);
     assertTrue<Equals<domain.VerificationStatus, db.VerificationStatus>>(true);
     assertTrue<Equals<domain.LegalForm, db.LegalForm>>(true);
+    assertTrue<Equals<domain.ProductForm, db.ProductForm>>(true);
+    assertTrue<Equals<domain.WaterBodyType, db.WaterBodyType>>(true);
+    assertTrue<Equals<domain.PriceType, db.PriceType>>(true);
+    assertTrue<Equals<domain.ListingKind, db.ListingKind>>(true);
+    assertTrue<Equals<domain.ListingStatus, db.ListingStatus>>(true);
+    assertTrue<Equals<domain.ListingPauseReason, db.ListingPauseReason>>(true);
+    assertTrue<Equals<domain.MediaPurpose, db.MediaPurpose>>(true);
+    assertTrue<Equals<domain.MediaKind, db.MediaKind>>(true);
   });
 
   it('has identical runtime values', () => {
@@ -21,6 +29,14 @@ describe('domain enums match the Prisma schema', () => {
       'MemberRole',
       'VerificationStatus',
       'LegalForm',
+      'ProductForm',
+      'WaterBodyType',
+      'PriceType',
+      'ListingKind',
+      'ListingStatus',
+      'ListingPauseReason',
+      'MediaPurpose',
+      'MediaKind',
     ] as const) {
       expect(domain[name]).toEqual(db[name]);
     }

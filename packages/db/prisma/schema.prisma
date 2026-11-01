@@ -104,6 +104,13 @@ enum ListingStatus {
   ARCHIVED
 }
 
+// Служебное (D-51): почему наличие на паузе.
+enum ListingPauseReason {
+  MANUAL
+  FRESHNESS
+  FARM_INACTIVE
+}
+
 enum RequestStatus {
   DRAFT
   PENDING_REVIEW
@@ -260,6 +267,13 @@ enum MediaKind {
   VIDEO
   PDF
   OTHER
+}
+
+// Служебное (D-44, D-52): назначение загрузки.
+enum MediaPurpose {
+  ORG_VERIFICATION
+  FARM_PHOTO
+  LISTING_MEDIA
 }
 
 enum MediaStatus {
@@ -530,6 +544,7 @@ model Farm {
 
   @@index([sellerOrgId])
   @@index([regionId])
+  @@index([lat, lng])
 }
 
 model Listing {
@@ -551,6 +566,8 @@ model Listing {
   description     String?
   status          ListingStatus @default(DRAFT)
   lastConfirmedAt DateTime? // последнее подтверждение актуальности
+  pauseReason         ListingPauseReason? // служебное (D-51)
+  freshnessRemindedAt DateTime? // служебное: напоминание о свежести в текущем цикле (D-51)
   publishedAt     DateTime?
   createdById     String        @db.Uuid
   createdAt       DateTime      @default(now())
@@ -566,6 +583,8 @@ model Listing {
   @@index([status, speciesId, sizeClassId, form])
   @@index([sellerOrgId, status])
   @@index([farmId])
+  @@index([status, lastConfirmedAt])
+  @@index([status, availableTo])
 }
 
 // ===================== DEMAND =====================
@@ -992,6 +1011,9 @@ model MediaFile {
   height       Int?
   durationSec  Int?
   thumbnailKey String?
+  purpose      MediaPurpose? // служебное (D-52)
+  rejectReason String? // служебное: причина отказа при обработке (D-52)
+  sortOrder    Int           @default(0) // служебное: порядок фото в карточке
   orgId        String?       @db.Uuid // документы верификации
   farmId       String?       @db.Uuid
   listingId    String?       @db.Uuid
@@ -1007,6 +1029,10 @@ model MediaFile {
   acceptance   Acceptance?   @relation(fields: [acceptanceId], references: [id])
   dispute      Dispute?      @relation(fields: [disputeId], references: [id])
   documents    Document[]
+
+  @@index([orgId, purpose])
+  @@index([listingId])
+  @@index([farmId])
 }
 
 // ===================== NOTIFICATIONS =====================

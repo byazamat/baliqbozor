@@ -29,3 +29,42 @@ export const LegalForm = {
   OTHER: 'OTHER',
 } as const;
 export type LegalForm = (typeof LegalForm)[keyof typeof LegalForm];
+
+export const ProductForm = { LIVE: 'LIVE', CHILLED: 'CHILLED' } as const;
+export type ProductForm = (typeof ProductForm)[keyof typeof ProductForm];
+
+export const WaterBodyType = {
+  POND: 'POND',
+  RAS: 'RAS',
+  CAGE: 'CAGE',
+  RACEWAY: 'RACEWAY',
+  OTHER: 'OTHER',
+} as const;
+export type WaterBodyType = (typeof WaterBodyType)[keyof typeof WaterBodyType];
+
+export const PriceType = { FIXED: 'FIXED', NEGOTIABLE: 'NEGOTIABLE' } as const;
+export type PriceType = (typeof PriceType)[keyof typeof PriceType];
+
+export const ListingKind = {
+  AVAILABLE_NOW: 'AVAILABLE_NOW',
+  FUTURE_HARVEST: 'FUTURE_HARVEST',
+} as const;
+export type ListingKind = (typeof ListingKind)[keyof typeof ListingKind];
+
+export const ListingStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  SOLD_OUT: 'SOLD_OUT',
+  EXPIRED: 'EXPIRED',
+  ARCHIVED: 'ARCHIVED',
+} as const;
+export type ListingStatus = (typeof ListingStatus)[keyof typeof ListingStatus];
+
+/** Служебное (D-51): причина паузы наличия. */
+export const ListingPauseReason = {
+  MANUAL: 'MANUAL',
+  FRESHNESS: 'FRESHNESS',
+  FARM_INACTIVE: 'FARM_INACTIVE',
+} as const;
+export type ListingPauseReason = (typeof ListingPauseReason)[keyof typeof ListingPauseReason];

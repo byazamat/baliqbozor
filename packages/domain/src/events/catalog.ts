@@ -1,4 +1,10 @@
-import type { MemberRole, OrgType, VerificationStatus } from '../enums.js';
+import type {
+  ListingPauseReason,
+  ListingStatus,
+  MemberRole,
+  OrgType,
+  VerificationStatus,
+} from '../enums.js';
 
 /**
  * Доменные события (outbox, SPEC 5.4) и их payload. Пишутся в `DomainEvent` в транзакции
@@ -19,6 +25,29 @@ export interface DomainEventPayloads {
   'org.member.role_changed': { orgId: string; userId: string; role: MemberRole; byUserId: string };
   'org.member.removed': { orgId: string; userId: string; byUserId: string };
   'ops.task.created': { taskId: string; type: string; orgId?: string };
+  'media.uploaded': { mediaId: string };
+  'farm.created': { farmId: string; orgId: string; actorUserId: string };
+  'farm.updated': { farmId: string; orgId: string; fields: string[]; actorUserId: string };
+  'farm.deactivated': {
+    farmId: string;
+    orgId: string;
+    pausedListingIds: string[];
+    actorUserId: string;
+  };
+  'listing.created': { listingId: string; orgId: string; actorUserId: string };
+  'listing.updated': { listingId: string; orgId: string; fields: string[]; actorUserId: string };
+  'listing.status_changed': {
+    listingId: string;
+    orgId: string;
+    from: ListingStatus;
+    to: ListingStatus;
+    pauseReason: ListingPauseReason | null;
+    actorUserId: string | null;
+  };
+  'listing.confirmed': { listingId: string; orgId: string; actorUserId: string };
+  'listing.freshness_reminder': { listingId: string; orgId: string; dueAt: string };
+  'listing.auto_paused': { listingId: string; orgId: string };
+  'listing.expired': { listingId: string; orgId: string };
 }
 
 export type DomainEventType = keyof DomainEventPayloads;
@@ -38,6 +67,17 @@ export const AGGREGATE_OF: Readonly<Record<DomainEventType, string>> = {
   'org.member.role_changed': 'Organization',
   'org.member.removed': 'Organization',
   'ops.task.created': 'OpsTask',
+  'media.uploaded': 'MediaFile',
+  'farm.created': 'Farm',
+  'farm.updated': 'Farm',
+  'farm.deactivated': 'Farm',
+  'listing.created': 'Listing',
+  'listing.updated': 'Listing',
+  'listing.status_changed': 'Listing',
+  'listing.confirmed': 'Listing',
+  'listing.freshness_reminder': 'Listing',
+  'listing.auto_paused': 'Listing',
+  'listing.expired': 'Listing',
 };
 
 export const DOMAIN_EVENT_TYPES = Object.keys(AGGREGATE_OF) as DomainEventType[];

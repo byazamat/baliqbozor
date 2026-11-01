@@ -24,6 +24,16 @@ describe('canInOrg (SPEC 9)', () => {
     ['ADDRESSES_MANAGE', 'MANAGER', 'BUYER', true],
     ['ADDRESSES_MANAGE', 'STAFF', 'BUYER', false],
     ['ADDRESSES_MANAGE', 'OWNER', 'CARRIER', false],
+    ['FARMS_VIEW', 'STAFF', 'SELLER', true],
+    ['FARMS_VIEW', 'OWNER', 'BUYER', false],
+    ['FARMS_MANAGE', 'MANAGER', 'SELLER', true],
+    ['FARMS_MANAGE', 'STAFF', 'SELLER', false],
+    ['LISTINGS_VIEW', 'STAFF', 'SELLER', true],
+    ['LISTINGS_MANAGE', 'OWNER', 'SELLER', true],
+    ['LISTINGS_MANAGE', 'STAFF', 'SELLER', false],
+    ['LISTINGS_MANAGE', 'OWNER', 'CARRIER', false],
+    ['LISTING_CONFIRM', 'STAFF', 'SELLER', true],
+    ['LISTING_CONFIRM', 'OWNER', 'BUYER', false],
   ] as const)('%s for %s of %s → %s', (action, role, type, expected) => {
     expect(canInOrg(member(role, type), action)).toBe(expected);
   });

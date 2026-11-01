@@ -11,6 +11,9 @@ export const envSchema = z.object({
   HEARTBEAT_INTERVAL_MS: z.coerce.number().int().min(1000).default(60_000),
   OUTBOX_POLL_INTERVAL_MS: z.coerce.number().int().min(100).default(1000),
   OUTBOX_BATCH_SIZE: z.coerce.number().int().min(1).max(1000).default(100),
+  /** Адрес веба для ссылок в SMS и уведомлениях (D-10). */
+  WEB_URL: z.url().default('http://localhost:3000'),
+  BRAND_NAME: z.string().min(1).default('BaliqBozor'),
 });
 
 export type Env = z.infer<typeof envSchema>;

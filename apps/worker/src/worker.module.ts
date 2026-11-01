@@ -9,6 +9,7 @@ import { HeartbeatModule } from './heartbeat/heartbeat.module.js';
 import { InfraModule } from './infra/infra.module.js';
 import { REDIS, RedisModule } from './infra/redis.js';
 import { loggerParams } from './logger.js';
+import { NotificationsModule } from './notifications/notifications.module.js';
 import { OutboxModule } from './outbox/outbox.module.js';
 
 @Global()
@@ -39,6 +40,7 @@ export class WorkerModule {
         }),
         HeartbeatModule,
         OutboxModule,
+        NotificationsModule,
         HealthModule,
       ],
     };

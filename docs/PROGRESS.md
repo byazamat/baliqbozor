@@ -132,13 +132,14 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M1.2 Инфраструктура API
 
-- [ ] `settings`: чтение из БД с кэшем Redis, сброс кэша при изменении; `GET/PATCH /admin/settings` (A) с аудитом
-- [ ] `audit`: сервис записи `AuditLog` (актор, роль, ip, user-agent, before/after) в транзакции действия
-- [ ] `events`: запись `DomainEvent` в транзакции (хелпер `withEvents(tx)`); `PrismaOutboxSource` в worker (`FOR UPDATE SKIP LOCKED`, попытки, `lastError`)
-- [ ] Rate limiting: глобально 100 запросов/мин на пользователя/IP, хранилище Redis (SPEC 10.1); `RATE_LIMITED`
-- [ ] Тест совместимости enum-ов `@baliqbozor/domain` и Prisma (типы)
-- [ ] Пагинация курсором (`limit`, `cursor` → `{ items, nextCursor }`) — общий хелпер и DTO
-- [ ] Логи: `userId`, `orgId` в контексте запроса (SPEC 13.3)
+- [x] `SettingsService`: БД + кэш Redis (5 мин), сброс при изменении, неверные сохранённые значения игнорируются, без Redis — чтение из БД; изменение с аудитом. Эндпоинты `GET/PATCH /admin/settings` — после guard'ов (M1.10)
+- [x] `AuditService`: запись в транзакции действия; актор, роль (`PLATFORM/ORG`), `impersonatorId`, IP, user-agent из контекста запроса (`AsyncLocalStorage`); BigInt/Decimal сериализуются
+- [x] Каталог событий M1 с типизированными payload (`domain/events`); `recordEvent(tx, …)` в api; worker: `PrismaOutboxSource` (`FOR UPDATE SKIP LOCKED`, аренда и пауза через служебное `availableAt`, миграция `outbox_available_at`), обработчик и отметка «обработано» в одной транзакции, экспоненциальные повторы, остановка после 10 попыток; `OutboxDispatcher` (D-40)
+- [x] Лимит запросов: глобальный guard, фиксированное окно в Redis, пользователь или IP, `RATE_LIMIT_PER_MINUTE` (100), заголовки `X-RateLimit-*` и `Retry-After`; health не считается; без Redis — пропускает (D-40)
+- [x] Тест совместимости enum-ов `@baliqbozor/domain` и Prisma (типы и значения)
+- [x] Пагинация курсором: `CursorPageQueryDto`, курсор `createdAt+id`, `afterCursor`, `toPage`, `PageDto(T)` для OpenAPI
+- [x] Логи: `userId`, `orgId` в строке запроса (заполнятся guard'ом аутентификации в M1.4)
+- [x] Тестовое окружение e2e: отдельная БД `<имя>_test` (создаётся и мигрируется в Jest globalSetup) и Redis `/1`; очистка между тестами; `TRUST_PROXY_HOPS` для реального IP
 
 ### M1.3 Auth
 

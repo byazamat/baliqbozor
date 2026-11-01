@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@baliqbozor/api-client": "workspace:*",
+    "@baliqbozor/domain": "workspace:*",
     "@baliqbozor/i18n": "workspace:*",
     "@baliqbozor/ui": "workspace:*",
     "@tanstack/react-query": "5.105.0",

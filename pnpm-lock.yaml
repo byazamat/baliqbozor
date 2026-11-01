@@ -199,6 +199,9 @@ importers:
       '@baliqbozor/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@baliqbozor/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@baliqbozor/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n

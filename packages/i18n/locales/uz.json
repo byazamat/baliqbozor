@@ -301,7 +301,9 @@
         "org": {
           "invitationTtlDays": "Jamoaga taklifning amal qilish muddati, kun"
         }
-      }
+      },
+      "on": "Ha (true)",
+      "off": "Yo'q (false)"
     }
   },
   "mobile": {

@@ -1,27 +1,55 @@
 'use client';
 
-import { type ApiClient, createApiClient } from '@baliqbozor/api-client';
+import { type ApiClient, createApiClient, SessionManager } from '@baliqbozor/api-client';
 import { useLocale } from 'next-intl';
-import { createContext, type ReactNode, useContext, useMemo } from 'react';
+import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
 
-const ApiContext = createContext<ApiClient | null>(null);
+interface ApiContextValue {
+  client: ApiClient;
+  session: SessionManager;
+}
 
-export function ApiProvider({ client, children }: { client?: ApiClient; children: ReactNode }) {
+const ApiContext = createContext<ApiContextValue | null>(null);
+
+/** Клиент API и сессия (D-31): access-токен из памяти, при 401 — обновление и повтор. */
+export function ApiProvider({
+  client,
+  session: sessionProp,
+  children,
+}: {
+  client?: ApiClient;
+  session?: SessionManager;
+  children: ReactNode;
+}) {
   const locale = useLocale();
+  const [session] = useState(() => sessionProp ?? new SessionManager({ lockName: 'bb-admin' }));
   const value = useMemo(
-    () =>
-      client ??
-      createApiClient({
-        baseUrl: process.env.NEXT_PUBLIC_API_URL ?? '',
-        getLocale: () => locale,
-      }),
-    [client, locale],
+    () => ({
+      session,
+      client:
+        client ??
+        createApiClient({
+          baseUrl: process.env.NEXT_PUBLIC_API_URL ?? '',
+          getLocale: () => locale,
+          getAccessToken: () => session.getAccessToken(),
+          fetch: session.fetch,
+        }),
+    }),
+    [client, locale, session],
   );
   return <ApiContext value={value}>{children}</ApiContext>;
 }
 
+function useApiContext(): ApiContextValue {
+  const value = useContext(ApiContext);
+  if (!value) throw new Error('useApi must be used inside <ApiProvider>');
+  return value;
+}
+
 export function useApi(): ApiClient {
-  const client = useContext(ApiContext);
-  if (!client) throw new Error('useApi must be used inside <ApiProvider>');
-  return client;
+  return useApiContext().client;
+}
+
+export function useSessionManager(): SessionManager {
+  return useApiContext().session;
 }

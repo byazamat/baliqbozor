@@ -22,7 +22,7 @@ export function LanguageSwitcher() {
               lang={locale}
               aria-current={locale === current ? 'true' : undefined}
               className={cn(
-                'inline-flex min-h-11 items-center rounded-control px-3 font-medium',
+                'inline-flex min-h-11 items-center rounded-control px-2 font-medium sm:px-3',
                 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600',
                 locale === current ? 'bg-brand-700 text-white' : 'text-brand-700 hover:bg-brand-50',
               )}

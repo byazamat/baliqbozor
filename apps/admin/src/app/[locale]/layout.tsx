@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { LanguageSwitcher } from '@/components/language-switcher';
+import { AdminHeader } from '@/components/admin-header';
 import { routing } from '@/i18n/routing';
 
 import { Providers } from '../providers';
@@ -35,12 +35,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
       <body>
         <NextIntlClientProvider>
           <Providers>
-            <header className="border-b border-border bg-surface">
-              <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-                <span className="text-xl font-bold text-brand-700">{BRAND}</span>
-                <LanguageSwitcher />
-              </div>
-            </header>
+            <AdminHeader />
             {children}
           </Providers>
         </NextIntlClientProvider>

@@ -24,7 +24,9 @@ import { OrgScoped, PlatformRoles } from '../auth/access.decorators.js';
 import { CurrentAuth } from '../auth/current-auth.decorator.js';
 import {
   AdminRequestsQueryDto,
+  CandidatesDto,
   CreateRequestDto,
+  InviteSellerDto,
   MyRequestsQueryDto,
   RequestDto,
   RequestPageDto,
@@ -87,6 +89,16 @@ export class RequestsController {
     return this.requests.submit(auth, id);
   }
 
+  @Get(':id/candidates')
+  @OrgScoped(BUYER_SCOPE)
+  @ApiOkResponse({
+    type: CandidatesDto,
+    description: 'Кандидаты подбора и подсказка сборного заказа',
+  })
+  candidates(@CurrentAuth() auth: AuthContext, @Param('id', ParseUUIDPipe) id: string) {
+    return this.requests.candidates(auth, id);
+  }
+
   @Post(':id/cancel')
   @HttpCode(200)
   @OrgScoped(BUYER_SCOPE)
@@ -121,6 +133,23 @@ export class AdminRequestsController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<RequestDto> {
     return this.requests.getForStaff(auth, id);
+  }
+
+  @Get(':id/candidates')
+  @ApiOkResponse({ type: CandidatesDto })
+  candidates(@CurrentAuth() auth: AuthContext, @Param('id', ParseUUIDPipe) id: string) {
+    return this.requests.candidates(auth, id);
+  }
+
+  @Post(':id/invite')
+  @HttpCode(204)
+  @ApiOkResponse({ description: 'Продавец вне топа получит «Новая заявка для вас»' })
+  async invite(
+    @CurrentAuth() auth: AuthContext,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: InviteSellerDto,
+  ): Promise<void> {
+    await this.requests.invite(auth, id, dto.sellerOrgId);
   }
 
   @Post(':id/approve')

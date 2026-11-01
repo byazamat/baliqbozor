@@ -24,6 +24,7 @@ import { recordEvent } from '../../infra/events.js';
 import { PrismaService } from '../../infra/prisma.service.js';
 import { assertCanInOrg, assertOrgStatusAllows, requireOrg } from '../auth/policy.js';
 import { attachMedia } from '../media/media-attach.js';
+import { MatchingService } from '../matching/matching.service.js';
 import { SettingsService } from '../settings/settings.service.js';
 import { LISTING_INCLUDE, type ListingRow, toListingDto, volumesOf } from './listing-view.js';
 import type {
@@ -65,6 +66,7 @@ export class ListingsService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly settings: SettingsService,
+    private readonly matching: MatchingService,
   ) {}
 
   async list(auth: AuthContext, query: SellerListingsQueryDto): Promise<ListingPageDto> {
@@ -304,6 +306,8 @@ export class ListingsService {
       });
       const row = await this.findOwn(tx, orgId, id);
       await this.statusEvent(tx, before, row, auth.userId);
+      // Позиция снова в продаже — подходящие открытые заявки получают продавца (SPEC 8.5).
+      if (row.status === 'ACTIVE') await this.matching.notifyForListing(tx, id);
       await this.audit.record(tx, {
         action: `listing.${action.toLowerCase()}`,
         entityType: 'Listing',
@@ -373,6 +377,9 @@ export class ListingsService {
         actorUserId: auth.userId,
       });
       await this.statusEvent(tx, before, row, auth.userId);
+      if (row.status === 'ACTIVE' && before.status !== 'ACTIVE') {
+        await this.matching.notifyForListing(tx, id);
+      }
       await this.audit.record(tx, {
         action: 'listing.confirm',
         entityType: 'Listing',

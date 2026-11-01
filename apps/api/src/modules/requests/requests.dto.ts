@@ -146,3 +146,39 @@ export class RequestDto {
 }
 
 export class RequestPageDto extends PageDto(RequestDto) {}
+
+export class CandidateDto {
+  @ApiProperty({ format: 'uuid' }) listingId!: string;
+  @ApiProperty({ type: String, nullable: true, description: 'Только O/A' }) sellerOrgId!:
+    string | null;
+  @ApiProperty({ type: String, nullable: true, description: 'Только O/A' }) sellerName!:
+    string | null;
+  @ApiProperty({ type: String, nullable: true, description: 'Только O/A' }) farmName!:
+    string | null;
+  @ApiProperty({ type: RegionRefDto }) region!: RegionRefDto;
+  @ApiProperty({ description: 'Покупателю — вверх до 5 км (D-53)' }) distanceKm!: number;
+  @ApiProperty({ example: 0.82 }) score!: number;
+  @ApiProperty({ example: '2000.000' }) availableKg!: string;
+  @ApiProperty({ type: String, nullable: true, description: 'null — договорная' })
+  pricePerKg!: string | null;
+}
+
+export class SplitLineDto {
+  @ApiProperty({ format: 'uuid' }) listingId!: string;
+  @ApiProperty({ example: '1500.000' }) volumeKg!: string;
+}
+
+export class SuggestedSplitDto {
+  @ApiProperty({ type: SplitLineDto, isArray: true }) lines!: SplitLineDto[];
+  @ApiProperty({ example: '2500.000' }) coveredKg!: string;
+  @ApiProperty({ description: 'Остаток закрыт полностью' }) complete!: boolean;
+}
+
+export class CandidatesDto {
+  @ApiProperty({ type: CandidateDto, isArray: true }) items!: CandidateDto[];
+  @ApiProperty({ type: SuggestedSplitDto }) suggestedSplit!: SuggestedSplitDto;
+}
+
+export class InviteSellerDto {
+  @ApiProperty({ format: 'uuid' }) @IsUUID() sellerOrgId!: string;
+}

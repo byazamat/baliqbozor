@@ -247,6 +247,79 @@
         ],
         "type": "object"
       },
+      "CandidateDto": {
+        "properties": {
+          "availableKg": {
+            "example": "2000.000",
+            "type": "string"
+          },
+          "distanceKm": {
+            "description": "Покупателю — вверх до 5 км (D-53)",
+            "type": "number"
+          },
+          "farmName": {
+            "description": "Только O/A",
+            "nullable": true,
+            "type": "string"
+          },
+          "listingId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "pricePerKg": {
+            "description": "null — договорная",
+            "nullable": true,
+            "type": "string"
+          },
+          "region": {
+            "$ref": "#/components/schemas/RegionRefDto"
+          },
+          "score": {
+            "example": 0.82,
+            "type": "number"
+          },
+          "sellerName": {
+            "description": "Только O/A",
+            "nullable": true,
+            "type": "string"
+          },
+          "sellerOrgId": {
+            "description": "Только O/A",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "listingId",
+          "sellerOrgId",
+          "sellerName",
+          "farmName",
+          "region",
+          "distanceKm",
+          "score",
+          "availableKg",
+          "pricePerKg"
+        ],
+        "type": "object"
+      },
+      "CandidatesDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateDto"
+            },
+            "type": "array"
+          },
+          "suggestedSplit": {
+            "$ref": "#/components/schemas/SuggestedSplitDto"
+          }
+        },
+        "required": [
+          "items",
+          "suggestedSplit"
+        ],
+        "type": "object"
+      },
       "ChangeRoleDto": {
         "properties": {
           "role": {
@@ -859,6 +932,18 @@
         },
         "required": [
           "result"
+        ],
+        "type": "object"
+      },
+      "InviteSellerDto": {
+        "properties": {
+          "sellerOrgId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sellerOrgId"
         ],
         "type": "object"
       },
@@ -2458,6 +2543,23 @@
         ],
         "type": "object"
       },
+      "SplitLineDto": {
+        "properties": {
+          "listingId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "volumeKg": {
+            "example": "1500.000",
+            "type": "string"
+          }
+        },
+        "required": [
+          "listingId",
+          "volumeKg"
+        ],
+        "type": "object"
+      },
       "SubmitResultDto": {
         "properties": {
           "status": {
@@ -2496,6 +2598,30 @@
         },
         "required": [
           "mediaIds"
+        ],
+        "type": "object"
+      },
+      "SuggestedSplitDto": {
+        "properties": {
+          "complete": {
+            "description": "Остаток закрыт полностью",
+            "type": "boolean"
+          },
+          "coveredKg": {
+            "example": "2500.000",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/SplitLineDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "lines",
+          "coveredKg",
+          "complete"
         ],
         "type": "object"
       },
@@ -3492,6 +3618,79 @@
               }
             },
             "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/requests/{id}/candidates": {
+      "get": {
+        "operationId": "AdminRequests_candidates",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidatesDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/requests/{id}/invite": {
+      "post": {
+        "operationId": "AdminRequests_invite",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteSellerDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Продавец вне топа получит «Новая заявка для вас»"
           }
         },
         "security": [
@@ -5959,6 +6158,49 @@
               }
             },
             "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}/candidates": {
+      "get": {
+        "operationId": "Requests_candidates",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidatesDto"
+                }
+              }
+            },
+            "description": "Кандидаты подбора и подсказка сборного заказа"
           }
         },
         "security": [

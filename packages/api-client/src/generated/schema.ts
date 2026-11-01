@@ -164,6 +164,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/requests/{id}/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AdminRequests_candidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/requests/{id}/invite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AdminRequests_invite"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/requests/{id}/reject": {
         parameters: {
             query?: never;
@@ -772,6 +804,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/requests/{id}/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Requests_candidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/requests/{id}/submit": {
         parameters: {
             query?: never;
@@ -935,6 +983,29 @@ export interface components {
             /** @example +998901234567 */
             phone: string;
             platformRole: components["schemas"]["PlatformRole"];
+        };
+        CandidateDto: {
+            /** @example 2000.000 */
+            availableKg: string;
+            /** @description Покупателю — вверх до 5 км (D-53) */
+            distanceKm: number;
+            /** @description Только O/A */
+            farmName: string | null;
+            /** Format: uuid */
+            listingId: string;
+            /** @description null — договорная */
+            pricePerKg: string | null;
+            region: components["schemas"]["RegionRefDto"];
+            /** @example 0.82 */
+            score: number;
+            /** @description Только O/A */
+            sellerName: string | null;
+            /** @description Только O/A */
+            sellerOrgId: string | null;
+        };
+        CandidatesDto: {
+            items: components["schemas"]["CandidateDto"][];
+            suggestedSplit: components["schemas"]["SuggestedSplitDto"];
         };
         ChangeRoleDto: {
             role: components["schemas"]["MemberRole"];
@@ -1143,6 +1214,10 @@ export interface components {
              * @enum {string}
              */
             result: "ADDED" | "INVITED";
+        };
+        InviteSellerDto: {
+            /** Format: uuid */
+            sellerOrgId: string;
         };
         /** @enum {string} */
         LegalForm: "INDIVIDUAL" | "SOLE_PROPRIETOR" | "LLC" | "FARM_ENTERPRISE" | "DEHKAN_FARM" | "OTHER";
@@ -1598,6 +1673,12 @@ export interface components {
             nameRu: string;
             nameUz: string;
         };
+        SplitLineDto: {
+            /** Format: uuid */
+            listingId: string;
+            /** @example 1500.000 */
+            volumeKg: string;
+        };
         SubmitResultDto: {
             status: components["schemas"]["VerificationStatus"];
             /** Format: uuid */
@@ -1606,6 +1687,13 @@ export interface components {
         SubmitVerificationDto: {
             mediaIds: string[];
             note?: string;
+        };
+        SuggestedSplitDto: {
+            /** @description Остаток закрыт полностью */
+            complete: boolean;
+            /** @example 2500.000 */
+            coveredKg: string;
+            lines: components["schemas"]["SplitLineDto"][];
         };
         TokenPairDto: {
             accessToken: string;
@@ -2070,6 +2158,51 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RequestDto"];
                 };
+            };
+        };
+    };
+    AdminRequests_candidates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidatesDto"];
+                };
+            };
+        };
+    };
+    AdminRequests_invite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InviteSellerDto"];
+            };
+        };
+        responses: {
+            /** @description Продавец вне топа получит «Новая заявка для вас» */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3517,6 +3650,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RequestDto"];
+                };
+            };
+        };
+    };
+    Requests_candidates: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Кандидаты подбора и подсказка сборного заказа */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidatesDto"];
                 };
             };
         };

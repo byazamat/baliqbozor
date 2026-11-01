@@ -5,6 +5,7 @@ import {
   DomainError,
   ErrorCode,
   nextRequestStatus,
+  publicDistanceKm,
   type RequestTerms,
   requestExpiresAt,
   tashkentDate,
@@ -24,9 +25,11 @@ import {
   assertOrgStatusAllows,
   requireOrg,
 } from '../auth/policy.js';
+import { MatchingService } from '../matching/matching.service.js';
 import { SettingsService } from '../settings/settings.service.js';
 import type {
   AdminRequestsQueryDto,
+  CandidatesDto,
   CreateRequestDto,
   MyRequestsQueryDto,
   RequestDto,
@@ -126,6 +129,7 @@ export class RequestsService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly settings: SettingsService,
+    private readonly matching: MatchingService,
   ) {}
 
   async listMine(auth: AuthContext, q: MyRequestsQueryDto): Promise<RequestPageDto> {
@@ -324,8 +328,10 @@ export class RequestsService {
         status,
         ...(taskId ? { taskId } : {}),
       });
-      if (status === 'OPEN')
+      if (status === 'OPEN') {
         await recordEvent(tx, 'request.opened', id, { requestId: id, orgId: org.id });
+        await this.matching.notifyOnOpen(tx, id, before.volumeKg.toString());
+      }
       const row = await this.findOwn(tx, org.id, id);
       await this.audit.record(tx, {
         action: 'request.submit',
@@ -375,6 +381,7 @@ export class RequestsService {
           operatorId: auth.userId,
         });
         await recordEvent(tx, 'request.opened', id, { requestId: id, orgId });
+        await this.matching.notifyOnOpen(tx, id, before.volumeKg.toString());
       } else {
         await recordEvent(tx, 'request.rejected', id, {
           requestId: id,
@@ -423,6 +430,66 @@ export class RequestsService {
         after: { status },
       });
       return toRequestDto(tx, await this.findOwn(tx, orgId, id));
+    });
+  }
+
+  /** Кандидаты подбора и подсказка сборного заказа: покупатель — своя заявка, O/A — любая. */
+  async candidates(auth: AuthContext, id: string): Promise<CandidatesDto> {
+    const staff = auth.platformRole === 'OPERATOR' || auth.platformRole === 'ADMIN';
+    const db = this.prisma.client;
+    const row = staff
+      ? await db.buyerRequest.findUnique({ where: { id }, include: REQUEST_INCLUDE })
+      : (assertCanInOrg(auth, 'REQUESTS_VIEW'), await this.findOwn(db, requireOrg(auth).id, id));
+    if (!row) throw new DomainError(ErrorCode.NOT_FOUND, 'Request not found');
+    const remaining = (await remainingKg(db, row)).toString();
+    const { ranked, split } = await db.$transaction((tx) =>
+      this.matching.candidates(tx, id, remaining),
+    );
+    const listings = await db.listing.findMany({
+      where: { id: { in: ranked.map((c) => c.listingId) } },
+      select: {
+        id: true,
+        seller: { select: { name: true } },
+        farm: { select: { name: true, region: REGION } },
+      },
+    });
+    const byId = new Map(listings.map((l) => [l.id, l]));
+    return {
+      items: ranked.flatMap((c) => {
+        const l = byId.get(c.listingId);
+        if (!l) return [];
+        return [
+          {
+            listingId: c.listingId,
+            sellerOrgId: staff ? c.orgId : null,
+            sellerName: staff ? l.seller.name : null,
+            farmName: staff ? l.farm.name : null,
+            region: l.farm.region,
+            distanceKm: staff ? Math.round(c.distanceKm) : publicDistanceKm(c.distanceKm),
+            score: c.score,
+            availableKg: c.availableKg,
+            pricePerKg: c.pricePerKg?.toString() ?? null,
+          },
+        ];
+      }),
+      suggestedSplit: {
+        lines: split.lines.map((l) => ({ listingId: l.listingId, volumeKg: l.volumeKg })),
+        coveredKg: split.coveredKg,
+        complete: split.complete,
+      },
+    };
+  }
+
+  async invite(auth: AuthContext, id: string, sellerOrgId: string): Promise<void> {
+    assertCanOnPlatform(auth, 'REQUEST_REVIEW');
+    await this.prisma.client.$transaction(async (tx) => {
+      await this.matching.invite(tx, id, sellerOrgId, auth.userId);
+      await this.audit.record(tx, {
+        action: 'request.invite',
+        entityType: 'BuyerRequest',
+        entityId: id,
+        after: { sellerOrgId },
+      });
     });
   }
 

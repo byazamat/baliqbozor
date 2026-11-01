@@ -292,6 +292,118 @@ export interface paths {
         patch: operations["Farms_update"];
         trace?: never;
     };
+    "/api/v1/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Catalog_search"];
+        put?: never;
+        post: operations["SellerListings_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/listings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Catalog_card"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["SellerListings_update"];
+        trace?: never;
+    };
+    "/api/v1/listings/{id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SellerListings_archive"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/listings/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SellerListings_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/listings/{id}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SellerListings_pause"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/listings/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SellerListings_publish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/listings/{id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["SellerListings_resume"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -548,6 +660,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/seller/listings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SellerListings_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/seller/listings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["SellerListings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -651,6 +795,18 @@ export interface components {
         ChangeRoleDto: {
             role: components["schemas"]["MemberRole"];
         };
+        ConfirmListingDto: {
+            /**
+             * @description Новая цена (OWNER/MANAGER, D-15)
+             * @example 25000
+             */
+            pricePerKg?: string;
+            /**
+             * @description Новый объём, кг (OWNER/MANAGER, D-15)
+             * @example 1800
+             */
+            volumeKg?: string;
+        };
         CreateAddressDto: {
             addressText: string;
             contactName?: string;
@@ -690,6 +846,40 @@ export interface components {
             name: string;
             regionId: number;
             waterBodyTypes: components["schemas"]["WaterBodyType"][];
+        };
+        CreateListingDto: {
+            /**
+             * @description Начало окна вылова
+             * @example 2026-11-05
+             */
+            availableFrom: string;
+            /** @example 2026-11-30 */
+            availableTo?: string | null;
+            description?: string;
+            /** Format: uuid */
+            farmId: string;
+            form: components["schemas"]["ProductForm"];
+            kind: components["schemas"]["ListingKind"];
+            /** @description Фото и видео (назначение LISTING_MEDIA) в порядке показа */
+            mediaIds?: string[];
+            /**
+             * @description Минимальная партия, кг; по умолчанию — `order.minOrderKg`
+             * @example 100
+             */
+            minOrderKg?: string;
+            /**
+             * @description Сум за кг; только для FIXED
+             * @example 26000
+             */
+            pricePerKg?: string | null;
+            priceType: components["schemas"]["PriceType"];
+            sizeClassId: number;
+            speciesId: number;
+            /**
+             * @description Объём, кг
+             * @example 2000
+             */
+            volumeKg: string;
         };
         CreateOrgDto: {
             /** @example +998901234567 */
@@ -741,6 +931,13 @@ export interface components {
             updatedAt: string;
             waterBodyTypes: components["schemas"]["WaterBodyType"][];
         };
+        FarmRefDto: {
+            /** Format: uuid */
+            id: string;
+            isActive: boolean;
+            name: string;
+            region: components["schemas"]["RegionRefDto"];
+        };
         HealthDto: {
             /** @example api */
             service: string;
@@ -775,6 +972,60 @@ export interface components {
         };
         /** @enum {string} */
         LegalForm: "INDIVIDUAL" | "SOLE_PROPRIETOR" | "LLC" | "FARM_ENTERPRISE" | "DEHKAN_FARM" | "OTHER";
+        ListingDto: {
+            /** @example 2026-11-05 */
+            availableFrom: string;
+            /** @example 2000.000 */
+            availableKg: string;
+            availableTo: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            description: string | null;
+            farm: components["schemas"]["FarmRefDto"];
+            form: components["schemas"]["ProductForm"];
+            /**
+             * Format: date-time
+             * @description Срок подтверждения актуальности (только ACTIVE)
+             */
+            freshnessDueAt: string | null;
+            /** @description Есть видео контрольного облова */
+            hasVideo: boolean;
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["ListingKind"];
+            /** Format: date-time */
+            lastConfirmedAt: string | null;
+            media: components["schemas"]["MediaDto"][];
+            /** @example 100.000 */
+            minOrderKg: string;
+            pauseReason: components["schemas"]["ListingPauseReason"] | null;
+            /** @example 26000 */
+            pricePerKg: string | null;
+            priceType: components["schemas"]["PriceType"];
+            /** Format: date-time */
+            publishedAt: string | null;
+            /** @example 0.000 */
+            reservedKg: string;
+            sizeClass: components["schemas"]["SizeClassRefDto"];
+            /** @example 0.000 */
+            soldKg: string;
+            species: components["schemas"]["SpeciesRefDto"];
+            status: components["schemas"]["ListingStatus"];
+            /** Format: date-time */
+            updatedAt: string;
+            /** @example 2000.000 */
+            volumeKg: string;
+        };
+        /** @enum {string} */
+        ListingKind: "AVAILABLE_NOW" | "FUTURE_HARVEST";
+        ListingPageDto: {
+            items: components["schemas"]["ListingDto"][];
+            nextCursor: string | null;
+        };
+        /** @enum {string} */
+        ListingPauseReason: "MANUAL" | "FRESHNESS" | "FARM_INACTIVE";
+        /** @enum {string} */
+        ListingStatus: "DRAFT" | "ACTIVE" | "PAUSED" | "SOLD_OUT" | "EXPIRED" | "ARCHIVED";
         /** @enum {string} */
         Locale: "uz" | "ru";
         LoginResultDto: {
@@ -954,6 +1205,70 @@ export interface components {
         };
         /** @enum {string} */
         PlatformRole: "USER" | "OPERATOR" | "ADMIN";
+        /** @enum {string} */
+        PriceType: "FIXED" | "NEGOTIABLE";
+        /** @enum {string} */
+        ProductForm: "LIVE" | "CHILLED";
+        PublicListingDto: {
+            /** @example 2026-11-05 */
+            availableFrom: string;
+            /** @example 2000.000 */
+            availableKg: string;
+            availableTo: string | null;
+            description: string | null;
+            /** @description Расстояние от `near`, округлено вверх до 5 км */
+            distanceKm: number | null;
+            form: components["schemas"]["ProductForm"];
+            /** @description Есть видео контрольного облова */
+            hasVideo: boolean;
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["ListingKind"];
+            /** Format: date-time */
+            lastConfirmedAt: string | null;
+            /** @description В списке — только обложка */
+            media: components["schemas"]["PublicMediaDto"][];
+            /** @description Сколько фото и видео у позиции */
+            mediaCount: number;
+            /** @example 100.000 */
+            minOrderKg: string;
+            /** @description Ценовой индекс — M11 (пока null) */
+            priceIndex: Record<string, never> | null;
+            /** @example 26000 */
+            pricePerKg: string | null;
+            priceType: components["schemas"]["PriceType"];
+            /** Format: date-time */
+            publishedAt: string | null;
+            region: components["schemas"]["RegionRefDto"];
+            seller: components["schemas"]["PublicSellerDto"];
+            sizeClass: components["schemas"]["SizeClassRefDto"];
+            species: components["schemas"]["SpeciesRefDto"];
+            /** @enum {string} */
+            status: "ACTIVE" | "SOLD_OUT";
+        };
+        PublicListingPageDto: {
+            items: components["schemas"]["PublicListingDto"][];
+            nextCursor: string | null;
+        };
+        PublicMediaDto: {
+            durationSec: number | null;
+            height: number | null;
+            /** Format: uuid */
+            id: string;
+            /** @enum {string} */
+            kind: "IMAGE" | "VIDEO";
+            thumbUrl: string | null;
+            /** @description Подписанная ссылка, 10 минут */
+            url: string;
+            width: number | null;
+        };
+        PublicSellerDto: {
+            /** @example 4.80 */
+            ratingAvg: string | null;
+            ratingCount: number;
+            /** @example 92.50 */
+            reliabilityScore: string | null;
+        };
         ReadAllResultDto: {
             updated: number;
         };
@@ -1022,6 +1337,12 @@ export interface components {
             /** @example 1.000 */
             minKg: string;
         };
+        SizeClassRefDto: {
+            code: string;
+            id: number;
+            labelRu: string;
+            labelUz: string;
+        };
         SpeciesDto: {
             /** @example SILVER_CARP */
             code: string;
@@ -1030,6 +1351,12 @@ export interface components {
             nameRu: string;
             nameUz: string;
             sizeClasses: components["schemas"]["SizeClassDto"][];
+        };
+        SpeciesRefDto: {
+            code: string;
+            id: number;
+            nameRu: string;
+            nameUz: string;
         };
         SubmitResultDto: {
             status: components["schemas"]["VerificationStatus"];
@@ -1090,6 +1417,40 @@ export interface components {
             name?: string;
             regionId?: number;
             waterBodyTypes?: components["schemas"]["WaterBodyType"][];
+        };
+        UpdateListingDto: {
+            /**
+             * @description Начало окна вылова
+             * @example 2026-11-05
+             */
+            availableFrom?: string;
+            /** @example 2026-11-30 */
+            availableTo?: string | null;
+            description?: string;
+            /** Format: uuid */
+            farmId?: string;
+            form?: components["schemas"]["ProductForm"];
+            kind?: components["schemas"]["ListingKind"];
+            /** @description Фото и видео (назначение LISTING_MEDIA) в порядке показа */
+            mediaIds?: string[];
+            /**
+             * @description Минимальная партия, кг; по умолчанию — `order.minOrderKg`
+             * @example 100
+             */
+            minOrderKg?: string;
+            /**
+             * @description Сум за кг; только для FIXED
+             * @example 26000
+             */
+            pricePerKg?: string | null;
+            priceType?: components["schemas"]["PriceType"];
+            sizeClassId?: number;
+            speciesId?: number;
+            /**
+             * @description Объём, кг
+             * @example 2000
+             */
+            volumeKg?: string;
         };
         UpdateMeDto: {
             fullName?: string;
@@ -1788,6 +2149,251 @@ export interface operations {
             };
         };
     };
+    Catalog_search: {
+        parameters: {
+            query?: {
+                /** @description Рыба доступна в эту дату */
+                availableOn?: string;
+                /** @description Курсор из `nextCursor` предыдущей страницы */
+                cursor?: string;
+                form?: components["schemas"]["ProductForm"];
+                kind?: components["schemas"]["ListingKind"];
+                limit?: number;
+                /** @description Цена за кг не выше; без «договорной» */
+                maxPrice?: string;
+                /** @description Точка покупателя `lat,lng` */
+                near?: string;
+                /** @description С `near`; по умолчанию `request.defaultRadiusKm` */
+                radiusKm?: number;
+                regionId?: number;
+                sizeClassId?: number;
+                sort?: "score" | "price" | "distance" | "fresh";
+                speciesId?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicListingPageDto"];
+                };
+            };
+        };
+    };
+    SellerListings_create: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateListingDto"];
+            };
+        };
+        responses: {
+            /** @description Черновик (DRAFT) */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingDto"];
+                };
+            };
+        };
+    };
+    Catalog_card: {
+        parameters: {
+            query?: {
+                near?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PublicListingDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    SellerListings_update: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateListingDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingDto"];
+                };
+            };
+        };
+    };
+    SellerListings_archive: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Любой статус → ARCHIVED (без резервов) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingDto"];
+                };
+            };
+        };
+    };
+    SellerListings_confirm: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmListingDto"];
+            };
+        };
+        responses: {
+            /** @description Подтверждение свежести (SPEC 8.3, D-15) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingDto"];
+                };
+            };
+        };
+    };
+    SellerListings_pause: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ACTIVE → PAUSED */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingDto"];
+                };
+            };
+        };
+    };
+    SellerListings_publish: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description DRAFT/PAUSED/EXPIRED → ACTIVE */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingDto"];
+                };
+            };
+        };
+    };
+    SellerListings_resume: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description PAUSED → ACTIVE */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingDto"];
+                };
+            };
+        };
+    };
     Me_me: {
         parameters: {
             query?: never;
@@ -2427,6 +3033,64 @@ export interface operations {
             };
             /** @description INVALID_TRANSITION */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    SellerListings_list: {
+        parameters: {
+            query?: {
+                /** @description Курсор из `nextCursor` предыдущей страницы */
+                cursor?: string;
+                farmId?: string;
+                limit?: number;
+                status?: components["schemas"]["ListingStatus"];
+            };
+            header: {
+                "X-Org-Id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingPageDto"];
+                };
+            };
+        };
+    };
+    SellerListings_get: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Org-Id": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingDto"];
+                };
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

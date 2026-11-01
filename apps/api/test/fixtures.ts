@@ -93,3 +93,46 @@ export async function addFarm(
     },
   });
 }
+
+/** Вид рыбы с размерным классом (справочники очищаются между тестами). */
+export async function addSpecies(app: INestApplication, code = 'SILVER_CARP') {
+  const prisma = prismaOf(app);
+  const species = await prisma.fishSpecies.create({
+    data: { code, nameUz: `${code} uz`, nameRu: `${code} ru` },
+  });
+  const size = await prisma.sizeClass.create({
+    data: {
+      speciesId: species.id,
+      code: '1-2',
+      labelUz: '1–2 kg',
+      labelRu: '1–2 кг',
+      minKg: 1,
+      maxKg: 2,
+    },
+  });
+  return { species, size };
+}
+
+/** Обработанное фото или видео наличия (как после worker, D-52). */
+export async function addListingMedia(
+  app: INestApplication,
+  orgId: string,
+  uploaderId: string,
+  options: { kind?: 'IMAGE' | 'VIDEO'; listingId?: string; status?: 'PROCESSED' | 'UPLOADED' } = {},
+) {
+  const key = `listing_media/${orgId}/${Math.random().toString(36).slice(2)}`;
+  return prismaOf(app).mediaFile.create({
+    data: {
+      uploaderId,
+      orgId,
+      purpose: 'LISTING_MEDIA',
+      kind: options.kind ?? 'IMAGE',
+      status: options.status ?? 'PROCESSED',
+      mimeType: options.kind === 'VIDEO' ? 'video/mp4' : 'image/jpeg',
+      sizeBytes: 1000,
+      storageKey: `${key}.processed`,
+      thumbnailKey: `${key}.thumb.webp`,
+      listingId: options.listingId ?? null,
+    },
+  });
+}

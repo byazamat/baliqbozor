@@ -262,6 +262,21 @@
         ],
         "type": "object"
       },
+      "ConfirmListingDto": {
+        "properties": {
+          "pricePerKg": {
+            "description": "Новая цена (OWNER/MANAGER, D-15)",
+            "example": "25000",
+            "type": "string"
+          },
+          "volumeKg": {
+            "description": "Новый объём, кг (OWNER/MANAGER, D-15)",
+            "example": "1800",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "CreateAddressDto": {
         "properties": {
           "addressText": {
@@ -373,6 +388,91 @@
           "lat",
           "lng",
           "waterBodyTypes"
+        ],
+        "type": "object"
+      },
+      "CreateListingDto": {
+        "properties": {
+          "availableFrom": {
+            "description": "Начало окна вылова",
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "availableTo": {
+            "example": "2026-11-30",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "farmId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "form": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProductForm"
+              }
+            ]
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ListingKind"
+              }
+            ]
+          },
+          "mediaIds": {
+            "description": "Фото и видео (назначение LISTING_MEDIA) в порядке показа",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 10,
+            "type": "array"
+          },
+          "minOrderKg": {
+            "description": "Минимальная партия, кг; по умолчанию — `order.minOrderKg`",
+            "example": "100",
+            "type": "string"
+          },
+          "pricePerKg": {
+            "description": "Сум за кг; только для FIXED",
+            "example": "26000",
+            "nullable": true,
+            "type": "string"
+          },
+          "priceType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PriceType"
+              }
+            ]
+          },
+          "sizeClassId": {
+            "type": "number"
+          },
+          "speciesId": {
+            "type": "number"
+          },
+          "volumeKg": {
+            "description": "Объём, кг",
+            "example": "2000",
+            "type": "string"
+          }
+        },
+        "required": [
+          "farmId",
+          "speciesId",
+          "sizeClassId",
+          "form",
+          "kind",
+          "volumeKg",
+          "priceType",
+          "availableFrom"
         ],
         "type": "object"
       },
@@ -565,6 +665,30 @@
         ],
         "type": "object"
       },
+      "FarmRefDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "region": {
+            "$ref": "#/components/schemas/RegionRefDto"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "isActive",
+          "region"
+        ],
+        "type": "object"
+      },
       "HealthDto": {
         "properties": {
           "service": {
@@ -673,6 +797,203 @@
           "FARM_ENTERPRISE",
           "DEHKAN_FARM",
           "OTHER"
+        ],
+        "type": "string"
+      },
+      "ListingDto": {
+        "properties": {
+          "availableFrom": {
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "availableKg": {
+            "example": "2000.000",
+            "type": "string"
+          },
+          "availableTo": {
+            "nullable": true,
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "farm": {
+            "$ref": "#/components/schemas/FarmRefDto"
+          },
+          "form": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProductForm"
+              }
+            ]
+          },
+          "freshnessDueAt": {
+            "description": "Срок подтверждения актуальности (только ACTIVE)",
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "hasVideo": {
+            "description": "Есть видео контрольного облова",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ListingKind"
+              }
+            ]
+          },
+          "lastConfirmedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "media": {
+            "items": {
+              "$ref": "#/components/schemas/MediaDto"
+            },
+            "type": "array"
+          },
+          "minOrderKg": {
+            "example": "100.000",
+            "type": "string"
+          },
+          "pauseReason": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ListingPauseReason"
+              }
+            ],
+            "nullable": true
+          },
+          "pricePerKg": {
+            "example": "26000",
+            "nullable": true,
+            "type": "string"
+          },
+          "priceType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PriceType"
+              }
+            ]
+          },
+          "publishedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "reservedKg": {
+            "example": "0.000",
+            "type": "string"
+          },
+          "sizeClass": {
+            "$ref": "#/components/schemas/SizeClassRefDto"
+          },
+          "soldKg": {
+            "example": "0.000",
+            "type": "string"
+          },
+          "species": {
+            "$ref": "#/components/schemas/SpeciesRefDto"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ListingStatus"
+              }
+            ]
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "volumeKg": {
+            "example": "2000.000",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "species",
+          "sizeClass",
+          "form",
+          "kind",
+          "availableKg",
+          "minOrderKg",
+          "priceType",
+          "pricePerKg",
+          "availableFrom",
+          "availableTo",
+          "description",
+          "hasVideo",
+          "lastConfirmedAt",
+          "farm",
+          "status",
+          "pauseReason",
+          "volumeKg",
+          "reservedKg",
+          "soldKg",
+          "freshnessDueAt",
+          "publishedAt",
+          "media",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "ListingKind": {
+        "enum": [
+          "AVAILABLE_NOW",
+          "FUTURE_HARVEST"
+        ],
+        "type": "string"
+      },
+      "ListingPageDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ListingDto"
+            },
+            "type": "array"
+          },
+          "nextCursor": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "type": "object"
+      },
+      "ListingPauseReason": {
+        "enum": [
+          "MANUAL",
+          "FRESHNESS",
+          "FARM_INACTIVE"
+        ],
+        "type": "string"
+      },
+      "ListingStatus": {
+        "enum": [
+          "DRAFT",
+          "ACTIVE",
+          "PAUSED",
+          "SOLD_OUT",
+          "EXPIRED",
+          "ARCHIVED"
         ],
         "type": "string"
       },
@@ -1297,6 +1618,240 @@
         ],
         "type": "string"
       },
+      "PriceType": {
+        "enum": [
+          "FIXED",
+          "NEGOTIABLE"
+        ],
+        "type": "string"
+      },
+      "ProductForm": {
+        "enum": [
+          "LIVE",
+          "CHILLED"
+        ],
+        "type": "string"
+      },
+      "PublicListingDto": {
+        "properties": {
+          "availableFrom": {
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "availableKg": {
+            "example": "2000.000",
+            "type": "string"
+          },
+          "availableTo": {
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "distanceKm": {
+            "description": "Расстояние от `near`, округлено вверх до 5 км",
+            "nullable": true,
+            "type": "number"
+          },
+          "form": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProductForm"
+              }
+            ]
+          },
+          "hasVideo": {
+            "description": "Есть видео контрольного облова",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ListingKind"
+              }
+            ]
+          },
+          "lastConfirmedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "media": {
+            "description": "В списке — только обложка",
+            "items": {
+              "$ref": "#/components/schemas/PublicMediaDto"
+            },
+            "type": "array"
+          },
+          "mediaCount": {
+            "description": "Сколько фото и видео у позиции",
+            "type": "number"
+          },
+          "minOrderKg": {
+            "example": "100.000",
+            "type": "string"
+          },
+          "priceIndex": {
+            "description": "Ценовой индекс — M11 (пока null)",
+            "nullable": true,
+            "type": "object"
+          },
+          "pricePerKg": {
+            "example": "26000",
+            "nullable": true,
+            "type": "string"
+          },
+          "priceType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PriceType"
+              }
+            ]
+          },
+          "publishedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "region": {
+            "$ref": "#/components/schemas/RegionRefDto"
+          },
+          "seller": {
+            "$ref": "#/components/schemas/PublicSellerDto"
+          },
+          "sizeClass": {
+            "$ref": "#/components/schemas/SizeClassRefDto"
+          },
+          "species": {
+            "$ref": "#/components/schemas/SpeciesRefDto"
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "SOLD_OUT"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "species",
+          "sizeClass",
+          "form",
+          "kind",
+          "availableKg",
+          "minOrderKg",
+          "priceType",
+          "pricePerKg",
+          "availableFrom",
+          "availableTo",
+          "description",
+          "hasVideo",
+          "lastConfirmedAt",
+          "status",
+          "region",
+          "seller",
+          "distanceKm",
+          "media",
+          "mediaCount",
+          "publishedAt",
+          "priceIndex"
+        ],
+        "type": "object"
+      },
+      "PublicListingPageDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PublicListingDto"
+            },
+            "type": "array"
+          },
+          "nextCursor": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "type": "object"
+      },
+      "PublicMediaDto": {
+        "properties": {
+          "durationSec": {
+            "nullable": true,
+            "type": "number"
+          },
+          "height": {
+            "nullable": true,
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "IMAGE",
+              "VIDEO"
+            ],
+            "type": "string"
+          },
+          "thumbUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "url": {
+            "description": "Подписанная ссылка, 10 минут",
+            "type": "string"
+          },
+          "width": {
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "url",
+          "thumbUrl",
+          "width",
+          "height",
+          "durationSec"
+        ],
+        "type": "object"
+      },
+      "PublicSellerDto": {
+        "properties": {
+          "ratingAvg": {
+            "example": "4.80",
+            "nullable": true,
+            "type": "string"
+          },
+          "ratingCount": {
+            "type": "number"
+          },
+          "reliabilityScore": {
+            "example": "92.50",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "ratingAvg",
+          "ratingCount",
+          "reliabilityScore"
+        ],
+        "type": "object"
+      },
       "ReadAllResultDto": {
         "properties": {
           "updated": {
@@ -1533,6 +2088,29 @@
         ],
         "type": "object"
       },
+      "SizeClassRefDto": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "labelRu": {
+            "type": "string"
+          },
+          "labelUz": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "labelUz",
+          "labelRu"
+        ],
+        "type": "object"
+      },
       "SpeciesDto": {
         "properties": {
           "code": {
@@ -1566,6 +2144,29 @@
           "nameRu",
           "nameLatin",
           "sizeClasses"
+        ],
+        "type": "object"
+      },
+      "SpeciesRefDto": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "nameRu": {
+            "type": "string"
+          },
+          "nameUz": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "nameUz",
+          "nameRu"
         ],
         "type": "object"
       },
@@ -1731,6 +2332,81 @@
             },
             "minItems": 1,
             "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateListingDto": {
+        "properties": {
+          "availableFrom": {
+            "description": "Начало окна вылова",
+            "example": "2026-11-05",
+            "type": "string"
+          },
+          "availableTo": {
+            "example": "2026-11-30",
+            "nullable": true,
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "farmId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "form": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProductForm"
+              }
+            ]
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ListingKind"
+              }
+            ]
+          },
+          "mediaIds": {
+            "description": "Фото и видео (назначение LISTING_MEDIA) в порядке показа",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 10,
+            "type": "array"
+          },
+          "minOrderKg": {
+            "description": "Минимальная партия, кг; по умолчанию — `order.minOrderKg`",
+            "example": "100",
+            "type": "string"
+          },
+          "pricePerKg": {
+            "description": "Сум за кг; только для FIXED",
+            "example": "26000",
+            "nullable": true,
+            "type": "string"
+          },
+          "priceType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PriceType"
+              }
+            ]
+          },
+          "sizeClassId": {
+            "type": "number"
+          },
+          "speciesId": {
+            "type": "number"
+          },
+          "volumeKg": {
+            "description": "Объём, кг",
+            "example": "2000",
+            "type": "string"
           }
         },
         "type": "object"
@@ -2980,6 +3656,512 @@
         ]
       }
     },
+    "/api/v1/listings": {
+      "get": {
+        "operationId": "Catalog_search",
+        "parameters": [
+          {
+            "description": "Курсор из `nextCursor` предыдущей страницы",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "speciesId",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sizeClassId",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "form",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ProductForm"
+            }
+          },
+          {
+            "in": "query",
+            "name": "regionId",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ListingKind"
+            }
+          },
+          {
+            "description": "Рыба доступна в эту дату",
+            "in": "query",
+            "name": "availableOn",
+            "required": false,
+            "schema": {
+              "example": "2026-11-05",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Цена за кг не выше; без «договорной»",
+            "in": "query",
+            "name": "maxPrice",
+            "required": false,
+            "schema": {
+              "example": "27000",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Точка покупателя `lat,lng`",
+            "in": "query",
+            "name": "near",
+            "required": false,
+            "schema": {
+              "example": "41.2995,69.2401",
+              "type": "string"
+            }
+          },
+          {
+            "description": "С `near`; по умолчанию `request.defaultRadiusKm`",
+            "in": "query",
+            "name": "radiusKm",
+            "required": false,
+            "schema": {
+              "maximum": 2000,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "default": "score",
+              "enum": [
+                "score",
+                "price",
+                "distance",
+                "fresh"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicListingPageDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "listings"
+        ]
+      },
+      "post": {
+        "operationId": "SellerListings_create",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateListingDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            },
+            "description": "Черновик (DRAFT)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}": {
+      "get": {
+        "operationId": "Catalog_card",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "near",
+            "required": false,
+            "schema": {
+              "example": "41.2995,69.2401",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicListingDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "listings"
+        ]
+      },
+      "patch": {
+        "operationId": "SellerListings_update",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateListingDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}/archive": {
+      "post": {
+        "operationId": "SellerListings_archive",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            },
+            "description": "Любой статус → ARCHIVED (без резервов)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}/confirm": {
+      "post": {
+        "operationId": "SellerListings_confirm",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmListingDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            },
+            "description": "Подтверждение свежести (SPEC 8.3, D-15)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}/pause": {
+      "post": {
+        "operationId": "SellerListings_pause",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            },
+            "description": "ACTIVE → PAUSED"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}/publish": {
+      "post": {
+        "operationId": "SellerListings_publish",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            },
+            "description": "DRAFT/PAUSED/EXPIRED → ACTIVE"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/listings/{id}/resume": {
+      "post": {
+        "operationId": "SellerListings_resume",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            },
+            "description": "PAUSED → ACTIVE"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
+        ]
+      }
+    },
     "/api/v1/me": {
       "get": {
         "operationId": "Me_me",
@@ -3999,6 +5181,131 @@
         ],
         "tags": [
           "orgs"
+        ]
+      }
+    },
+    "/api/v1/seller/listings": {
+      "get": {
+        "operationId": "SellerListings_list",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "description": "Курсор из `nextCursor` предыдущей страницы",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ListingStatus"
+            }
+          },
+          {
+            "in": "query",
+            "name": "farmId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingPageDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
+        ]
+      }
+    },
+    "/api/v1/seller/listings/{id}": {
+      "get": {
+        "operationId": "SellerListings_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Org-Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "listings"
         ]
       }
     },

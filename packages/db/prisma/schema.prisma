@@ -308,7 +308,11 @@ model OtpCode {
   consumedAt DateTime?
   createdAt  DateTime   @default(now())
 
+  /// Служебное (D-41): IP запроса — для лимита «кодов с одного IP в час» (SPEC 13.2).
+  ip String?
+
   @@index([phone, createdAt])
+  @@index([ip, createdAt])
 }
 
 model Session {

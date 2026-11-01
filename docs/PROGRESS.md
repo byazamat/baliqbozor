@@ -154,10 +154,10 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M1.4 Guard'ы и изоляция
 
-- [ ] Глобальный guard: аутентификация → платформенная роль → членство (`X-Org-Id`, D-14) → политика ресурса; отказ по умолчанию, `@Public()` для открытых
-- [ ] Декораторы `@Roles`, `@OrgRoles`, `@OrgTypes`, `@CurrentUser`, `@CurrentOrg`
-- [ ] Проверка статуса организации (`ORG_SUSPENDED`, `ORG_NOT_VERIFIED`) по правилам 8.1
-- [ ] Тестовые хелперы e2e: создать пользователя/организацию/токен, `expectIsolated(...)` для пары организаций A/B
+- [x] Глобальные guard'ы: `AuthGuard` (аутентификация, отказ по умолчанию, `@Public()`) → `AccessGuard` (платформенная роль, членство по `X-Org-Id` или пути с проверкой совпадения, D-14) → лимит; политики ресурса — `assertCanInOrg`/`assertCanOnPlatform` в сервисах
+- [x] Декораторы `@PlatformRoles`, `@OrgScoped({ types, roles, allowPlatformStaff, fromParam })`, `@CurrentAuth` (организация — `auth.org`)
+- [x] `assertOrgStatusAllows` — ограничения 8.1 (`ORG_SUSPENDED`, `ORG_NOT_VERIFIED`, тип)
+- [x] Хелперы e2e: `FakeSms`, `loginAs`, `actor` (с платформенной ролью), `createOrg`, `addMember`, `expectIsolated`; e2e guard'ов (8 тестов)
 
 ### M1.5 Профиль, организации, участники, адреса
 

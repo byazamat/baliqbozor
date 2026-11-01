@@ -39,6 +39,37 @@
       "title": "Baliq savdosi"
     }
   },
+  "notifications": {
+    "org": {
+      "verification": {
+        "approved": {
+          "title": "Tashkilot tasdiqlandi",
+          "body": "«{org}» tekshiruvdan o‘tdi. Endi platformadan to‘liq foydalanishingiz mumkin."
+        },
+        "rejected": {
+          "title": "Tekshiruv rad etildi",
+          "body": "«{org}» tekshiruvdan o‘tmadi. Sabab: {note}. Ma’lumotlarni tuzatib, qayta yuboring."
+        }
+      },
+      "member": {
+        "added": {
+          "title": "Siz tashkilotga qo‘shildingiz",
+          "body": "Sizni «{org}» tashkilotiga qo‘shishdi."
+        },
+        "invited": {
+          "sms": "{brand}: sizni «{org}» tashkilotiga taklif qilishdi. Kirish: {url}"
+        }
+      }
+    },
+    "ops": {
+      "task": {
+        "created": {
+          "title": "Yangi vazifa",
+          "body": "«{org}» tashkilotini tekshirish kerak."
+        }
+      }
+    }
+  },
   "errors": {
     "VALIDATION_FAILED": "Ma'lumotlar noto'g'ri kiritilgan",
     "UNAUTHORIZED": "Tizimga kiring",

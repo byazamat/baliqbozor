@@ -308,6 +308,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Notifications_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Notifications_read"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["Notifications_readAll"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/orgs": {
         parameters: {
             query?: never;
@@ -665,6 +713,28 @@ export interface components {
             type: components["schemas"]["OrgType"];
             verificationStatus: components["schemas"]["VerificationStatus"];
         };
+        NotificationDto: {
+            body: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** @description Идентификаторы для перехода */
+            data: {
+                [key: string]: unknown;
+            } | null;
+            /** @example org.verification.approved */
+            eventType: string;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            readAt: string | null;
+            title: string;
+        };
+        NotificationPageDto: {
+            items: components["schemas"]["NotificationDto"][];
+            nextCursor: string | null;
+            /** @description Непрочитанных всего */
+            unreadCount: number;
+        };
         OpsTaskDto: {
             /** Format: uuid */
             assigneeId: string | null;
@@ -746,6 +816,9 @@ export interface components {
         };
         /** @enum {string} */
         PlatformRole: "USER" | "OPERATOR" | "ADMIN";
+        ReadAllResultDto: {
+            updated: number;
+        };
         ReadinessCheckDto: {
             /** @example timeout */
             error?: string;
@@ -1475,6 +1548,77 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Notifications_list: {
+        parameters: {
+            query?: {
+                /** @description Курсор из `nextCursor` предыдущей страницы */
+                cursor?: string;
+                limit?: number;
+                /** @description Только непрочитанные */
+                unreadOnly?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationPageDto"];
+                };
+            };
+        };
+    };
+    Notifications_read: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
+    Notifications_readAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadAllResultDto"];
                 };
             };
         };

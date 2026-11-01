@@ -14,6 +14,7 @@ import { DictModule } from './modules/dict/dict.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { MediaModule } from './modules/media/media.module.js';
 import { MeModule } from './modules/me/me.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
 import { OrgsModule } from './modules/orgs/orgs.module.js';
 import { VerificationModule } from './modules/verification/verification.module.js';
 import { SettingsModule } from './modules/settings/settings.module.js';
@@ -36,6 +37,7 @@ export class AppModule {
         DictModule,
         MediaModule,
         VerificationModule,
+        NotificationsModule,
       ],
       providers: [
         { provide: ENV, useValue: env },

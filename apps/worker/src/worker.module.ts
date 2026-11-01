@@ -10,6 +10,7 @@ import { InfraModule } from './infra/infra.module.js';
 import { REDIS, RedisModule } from './infra/redis.js';
 import { StorageModule } from './infra/storage.js';
 import { loggerParams } from './logger.js';
+import { ListingsModule } from './listings/listings.module.js';
 import { MediaModule } from './media/media.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { OutboxModule } from './outbox/outbox.module.js';
@@ -45,6 +46,7 @@ export class WorkerModule {
         NotificationsModule,
         StorageModule,
         MediaModule,
+        ListingsModule,
         HealthModule,
       ],
     };

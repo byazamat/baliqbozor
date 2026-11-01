@@ -1,6 +1,14 @@
 import type { TransactionClient } from '@baliqbozor/db';
 import type { DomainEventPayloads, DomainEventType } from '@baliqbozor/domain';
-import { type Locale, type MessageKey, translate, type TranslateParams } from '@baliqbozor/i18n';
+import type { MemberRole } from '@baliqbozor/domain';
+import {
+  formatDateTime,
+  formatKg,
+  type Locale,
+  type MessageKey,
+  translate,
+  type TranslateParams,
+} from '@baliqbozor/i18n';
 import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
 
 import { ENV, type Env } from '../config/env.js';
@@ -14,7 +22,7 @@ interface Recipient {
 }
 
 /**
- * Уведомления по каталогу SPEC 11.2 (события M1). In-app — запись `Notification` в транзакции
+ * Уведомления по каталогу SPEC 11.2 (события M1 и M2). In-app — запись `Notification` в транзакции
  * обработки события (статус SENT сразу: доставка = запись). SMS — после записи, перед коммитом.
  */
 @Injectable()
@@ -80,6 +88,46 @@ export class NotificationHandlers implements OnModuleInit {
         { taskId: p.taskId, type: p.type, ...(p.orgId ? { orgId: p.orgId } : {}) },
       );
     });
+    this.handle('listing.freshness_reminder', async (p, tx) => {
+      const l = await this.listing(tx, p.listingId);
+      if (!l || l.status !== 'ACTIVE') return;
+      await this.notify(
+        tx,
+        await this.members(tx, p.orgId, ['OWNER', 'MANAGER', 'STAFF']),
+        'listing.freshness_reminder',
+        'notifications.listing.freshness_reminder',
+        (locale) => ({
+          ...l.names(locale),
+          volume: formatKg(l.availableKg, locale),
+          date: formatDateTime(p.dueAt),
+        }),
+        { listingId: p.listingId, orgId: p.orgId },
+      );
+    });
+    this.handle('listing.auto_paused', async (p, tx) => {
+      const l = await this.listing(tx, p.listingId);
+      if (!l) return;
+      await this.notify(
+        tx,
+        await this.members(tx, p.orgId, ['OWNER', 'MANAGER']),
+        'listing.auto_paused',
+        'notifications.listing.auto_paused',
+        (locale) => ({ ...l.names(locale), days: String(p.freshnessDays) }),
+        { listingId: p.listingId, orgId: p.orgId },
+      );
+    });
+    this.handle('listing.expired', async (p, tx) => {
+      const l = await this.listing(tx, p.listingId);
+      if (!l) return;
+      await this.notify(
+        tx,
+        await this.members(tx, p.orgId, ['OWNER', 'MANAGER']),
+        'listing.expired',
+        'notifications.listing.expired',
+        (locale) => l.names(locale),
+        { listingId: p.listingId, orgId: p.orgId },
+      );
+    });
     this.handle('org.member.invited', async (p, tx) => {
       const inv = await tx.orgInvitation.findUnique({
         where: { id: p.invitationId },
@@ -113,6 +161,38 @@ export class NotificationHandlers implements OnModuleInit {
     return rows.map((r) => r.user);
   }
 
+  private async members(
+    tx: TransactionClient,
+    orgId: string,
+    roles: MemberRole[],
+  ): Promise<Recipient[]> {
+    const rows = await tx.membership.findMany({
+      where: { orgId, role: { in: roles }, user: { status: 'ACTIVE' } },
+      select: { user: { select: { id: true, locale: true } } },
+    });
+    return rows.map((r) => r.user);
+  }
+
+  /** Позиция наличия для текста: вид и размер на языке получателя, доступный объём. */
+  private async listing(tx: TransactionClient, id: string) {
+    const l = await tx.listing.findUnique({
+      where: { id },
+      include: {
+        species: { select: { nameUz: true, nameRu: true } },
+        sizeClass: { select: { labelUz: true, labelRu: true } },
+      },
+    });
+    if (!l) return null;
+    return {
+      status: l.status,
+      availableKg: l.volumeKg.minus(l.reservedKg).minus(l.soldKg).toString(),
+      names: (locale: Locale) => ({
+        species: locale === 'ru' ? l.species.nameRu : l.species.nameUz,
+        size: locale === 'ru' ? l.sizeClass.labelRu : l.sizeClass.labelUz,
+      }),
+    };
+  }
+
   private async orgName(tx: TransactionClient, orgId: string): Promise<string> {
     return (
       (await tx.organization.findUnique({ where: { id: orgId }, select: { name: true } }))?.name ??
@@ -125,18 +205,19 @@ export class NotificationHandlers implements OnModuleInit {
     recipients: Recipient[],
     eventType: DomainEventType,
     keyBase: string,
-    params: TranslateParams,
+    params: TranslateParams | ((locale: Locale) => TranslateParams),
     data: Record<string, string>,
   ): Promise<void> {
     if (recipients.length === 0) return;
+    const paramsFor = (locale: Locale) => (typeof params === 'function' ? params(locale) : params);
     const now = new Date();
     await tx.notification.createMany({
       data: recipients.map((r) => ({
         userId: r.id,
         eventType,
         channel: 'IN_APP' as const,
-        title: translate(r.locale, `${keyBase}.title` as MessageKey, params),
-        body: translate(r.locale, `${keyBase}.body` as MessageKey, params),
+        title: translate(r.locale, `${keyBase}.title` as MessageKey, paramsFor(r.locale)),
+        body: translate(r.locale, `${keyBase}.body` as MessageKey, paramsFor(r.locale)),
         data,
         status: 'SENT' as const,
         sentAt: now,

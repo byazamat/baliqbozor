@@ -359,6 +359,20 @@
           "body": "«{org}» tashkilotini tekshirish kerak."
         }
       }
+    },
+    "listing": {
+      "freshness_reminder": {
+        "title": "Mavjudlikni tasdiqlang",
+        "body": "{species}, {size}: {volume}. {date} gacha tasdiqlang, aks holda e’lon pauzaga o‘tadi. «Mavjud baliq» bo‘limida tasdiqlang, hajmni o‘zgartiring yoki sotuvdan oling."
+      },
+      "auto_paused": {
+        "title": "E’lon pauzada",
+        "body": "{species}, {size}: e’lon {days} kun tasdiqlanmadi va katalogdan olindi. Qaytarish uchun «Dolzarb» tugmasini bosing."
+      },
+      "expired": {
+        "title": "E’lon muddati tugadi",
+        "body": "{species}, {size}: ovlash muddati tugadi. Sanalarni yangilab, e’lonni qayta joylang."
+      }
     }
   },
   "org": {

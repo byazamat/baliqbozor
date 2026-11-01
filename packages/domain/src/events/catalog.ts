@@ -46,7 +46,7 @@ export interface DomainEventPayloads {
   };
   'listing.confirmed': { listingId: string; orgId: string; actorUserId: string };
   'listing.freshness_reminder': { listingId: string; orgId: string; dueAt: string };
-  'listing.auto_paused': { listingId: string; orgId: string };
+  'listing.auto_paused': { listingId: string; orgId: string; freshnessDays: number };
   'listing.expired': { listingId: string; orgId: string };
 }
 

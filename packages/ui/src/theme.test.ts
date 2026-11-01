@@ -38,6 +38,10 @@ const TEXT_PAIRS: [string, string][] = [
   ['white', 'danger-700'],
   ['brand-700', 'surface'],
   ['brand-700', 'brand-50'],
+  // Текст ошибки поля и обязательная звёздочка.
+  ['danger-700', 'surface'],
+  ['danger-600', 'surface'],
+  ['ink', 'brand-50'],
   ...(['neutral', 'info', 'success', 'warning', 'danger'] as const).map(
     (tone): [string, string] => [`status-${tone}-fg`, `status-${tone}-bg`],
   ),
@@ -47,6 +51,8 @@ const TEXT_PAIRS: [string, string][] = [
 const UI_PAIRS: [string, string][] = [
   ['border-strong', 'surface'],
   ['brand-600', 'surface'],
+  // Рамка поля с ошибкой.
+  ['danger-600', 'surface'],
 ];
 
 describe('theme contrast (WCAG AA)', () => {

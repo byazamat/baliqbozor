@@ -8,6 +8,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./session-server": {
+      "types": "./dist/session-server.d.ts",
+      "default": "./dist/session-server.js"
     }
   },
   "files": [

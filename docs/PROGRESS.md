@@ -112,10 +112,11 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M1.0 Схема БД и миграция `init` (D-04, D-11)
 
-- [ ] Полная схема SPEC 7.2 в `packages/db/prisma/schema.prisma` + модель `OrgInvitation` (D-11) и обратные связи; `prisma validate`
-- [ ] `prisma migrate dev --name init` + ручной SQL в той же миграции: частичные уникальные индексы `PriceIndex` (с `regionId` и без)
-- [ ] Проверка миграции на чистой БД и повторного применения; CI: `prisma migrate diff` (схема ↔ миграции) и `migrate deploy` перед e2e
-- [ ] `packages/db`: экспорт типов и enum-ов, хелпер транзакций; тест подключения и enum-ов
+- [x] Полная схема SPEC 7.2 в `packages/db/prisma/schema.prisma` (43 модели) + `OrgInvitation` (D-11); сверено с SPEC построчно — отличия только запланированные; `prisma validate`
+- [x] Миграция `20261101001507_init`; частичные уникальные индексы `PriceIndex` через preview `partialIndexes` вместо ручного SQL (D-38); проверено, что дубликаты отсекаются
+- [x] `migrate deploy` на пустой БД и повторно — без изменений; `pnpm db:check-drift` (код 0 без расхождений, 2 при расхождении); в CI: `db:migrate:deploy` → `db:check-drift` перед e2e
+- [x] `packages/db`: экспорт enum-ов, типов моделей и `TransactionClient`; тест экспорта enum-ов
+- [x] Генерация кода — отдельная turbo-задача `generate` (Prisma, i18n, `next typegen`), от которой зависят build/lint/typecheck/test: убрана гонка параллельных `prisma generate` (D-38)
 
 ### M1.1 Домен: правила M1 (`packages/domain`, покрытие ≥ 90%)
 

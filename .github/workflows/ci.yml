@@ -32,7 +32,15 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
       - name: Unit tests
-        run: pnpm test:unit
+        # При падении — выдержка из лога в аннотацию (читается через публичный API без авторизации).
+        run: |
+          set -o pipefail
+          if ! pnpm test:unit 2>&1 | tee /tmp/unit.log; then
+            excerpt=$(grep -E '●|✕|FAIL|Error|rror:|Expected|Received|at .*\.test\.' /tmp/unit.log | head -60 \
+              | sed 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')
+            echo "::error title=Unit tests failed::${excerpt}"
+            exit 1
+          fi
       - name: i18n key parity
         run: pnpm i18n:check
       - name: Prisma schema

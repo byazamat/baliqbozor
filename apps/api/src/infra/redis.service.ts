@@ -26,9 +26,14 @@ export class RedisService implements OnModuleDestroy {
     });
   }
 
-  async ping(): Promise<void> {
+  /** Подключиться, если ещё не подключены (команды без очереди офлайн падают до подключения). */
+  async ready(): Promise<Redis> {
     if (this.client.status === 'wait') await this.client.connect();
-    await this.client.ping();
+    return this.client;
+  }
+
+  async ping(): Promise<void> {
+    await (await this.ready()).ping();
   }
 
   onModuleDestroy(): void {

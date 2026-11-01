@@ -7,6 +7,7 @@ import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module.js';
 import { ApiExceptionFilter } from './common/api-exception.filter.js';
 import { jsonReplacer } from './common/json-replacer.js';
+import { requestContextMiddleware } from './common/request-context.js';
 import { createValidationPipe } from './common/validation.js';
 import type { Env } from './config/env.js';
 import { createOpenApiDocument } from './openapi/document.js';
@@ -18,6 +19,8 @@ export function configureApp(app: NestExpressApplication, env: Env): NestExpress
   app.useLogger(app.get(Logger));
   app.setGlobalPrefix(API_PREFIX, { exclude: ['health', 'ready'] });
   app.set('json replacer', jsonReplacer);
+  if (env.TRUST_PROXY_HOPS > 0) app.set('trust proxy', env.TRUST_PROXY_HOPS);
+  app.use(requestContextMiddleware);
   app.disable('x-powered-by');
   app.use(helmet({ contentSecurityPolicy: env.APP_ENV === 'production' ? undefined : false }));
   app.enableCors({ origin: [env.WEB_URL, env.ADMIN_URL], credentials: true });

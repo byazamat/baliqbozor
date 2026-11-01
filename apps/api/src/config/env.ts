@@ -30,6 +30,10 @@ export const envSchema = z.object({
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   SENTRY_DSN_API: optionalString,
   BRAND_NAME: z.string().min(1).default('BaliqBozor'),
+  /** Лимит запросов на пользователя (или IP до входа) в минуту, SPEC 10.1; 0 — выключен. */
+  RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(0).default(100),
+  /** Сколько reverse proxy перед API: от этого зависит реальный IP клиента (`trust proxy`). */
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
 });
 
 export type Env = z.infer<typeof envSchema>;

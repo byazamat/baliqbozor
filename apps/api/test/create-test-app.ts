@@ -14,7 +14,8 @@ export interface TestAppOptions {
 
 /** Поднимает приложение так же, как main.ts, но без прослушивания порта. */
 export async function createTestApp(options: TestAppOptions = {}): Promise<NestExpressApplication> {
-  const env: Env = { ...loadEnv(process.env), ...options.env };
+  // Лимит запросов в e2e выключен, кроме тестов самого лимита (передают env явно).
+  const env: Env = { ...loadEnv(process.env), RATE_LIMIT_PER_MINUTE: 0, ...options.env };
   let builder = Test.createTestingModule({
     imports: [AppModule.forRoot(env), ...(options.extraModules ?? [])],
   });

@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from 'node:http';
 import { Socket } from 'node:net';
 
 import { loadEnv } from '../config/env.js';
-import { loggerParams } from './logger.js';
+import { authLogProps, loggerParams } from './logger.js';
 
 const env = loadEnv({
   NODE_ENV: 'test',
@@ -76,5 +76,21 @@ describe('loggerParams', () => {
 
   it('does not use pretty transport outside local development', () => {
     expect(pinoHttp.transport).toBeUndefined();
+  });
+});
+
+describe('authLogProps', () => {
+  it('adds userId and orgId of an authenticated request', () => {
+    const req = new IncomingMessage(new Socket()) as IncomingMessage & { auth?: unknown };
+    expect(authLogProps(req)).toEqual({});
+    req.auth = { userId: 'u1', platformRole: 'USER', sessionId: 's' };
+    expect(authLogProps(req)).toEqual({ userId: 'u1' });
+    req.auth = {
+      userId: 'u1',
+      platformRole: 'USER',
+      sessionId: 's',
+      org: { id: 'o1', type: 'SELLER', role: 'OWNER' },
+    };
+    expect(authLogProps(req)).toEqual({ userId: 'u1', orgId: 'o1' });
   });
 });

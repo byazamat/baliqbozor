@@ -2,11 +2,13 @@ import { Controller, Get, HttpCode, Res } from '@nestjs/common';
 import { ApiOkResponse, ApiServiceUnavailableResponse, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 
+import { SkipRateLimit } from '../../common/rate-limit.guard.js';
 import { HealthDto, ReadinessDto } from './health.dto.js';
 import { HealthService } from './health.service.js';
 
 /** `/health` и `/ready` — вне префикса `/api/v1` (DECISIONS D-05). */
 @ApiTags('health')
+@SkipRateLimit()
 @Controller()
 export class HealthController {
   constructor(private readonly health: HealthService) {}

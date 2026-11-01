@@ -310,4 +310,6 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 - [x] e2e API: продавец, наличие, публикация, каталог с фильтрами и расстоянием (`listings`, `catalog`); сценарий M1 — с хозяйством (D-28)
 - [x] Сценарий 14.3 №4: e2e worker (напоминание → автопауза → уведомления), e2e API (пауза не видна в каталоге, «Актуально» → `ACTIVE`)
 - [x] Playwright (`pnpm test:acceptance`): M1 теперь добавляет хозяйство на карте до проверки; M2 — продавец создаёт позицию с фото (проверка worker), публикует; гость находит её в `/catalog` по виду, цене и «рядом со мной», открывает карточку без закрытых данных
-- [x] Чистая БД → migrate → seed → drift (в CI: job `web-e2e` на чистой БД; локально — `db:check-drift` и повторный seed без изменений); CI зелёный; PROGRESS и DECISIONS (D-51…D-56) обновлены
+- [x] Чистая БД → migrate → seed → drift (в CI: job `web-e2e` на чистой БД; локально — `db:check-drift` и повторный seed без изменений); CI зелёный; PROGRESS и DECISIONS (D-51…D-56) обновлены ([прогон 41357201418](https://github.com/byazamat/baliqbozor/actions/runs/41357201418): checks, e2e, Playwright smoke + приёмка M1–M2)
+
+**M2 закрыт 2026-11-02.**

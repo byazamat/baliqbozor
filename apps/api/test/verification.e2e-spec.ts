@@ -32,6 +32,7 @@ describe('organization verification (e2e)', () => {
       data: {
         uploaderId,
         orgId,
+        purpose: 'ORG_VERIFICATION',
         kind: 'IMAGE',
         status,
         mimeType: 'image/jpeg',

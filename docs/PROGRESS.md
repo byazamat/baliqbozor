@@ -252,11 +252,11 @@ Dockerfile'ы приложений — при подготовке staging (M11)
 
 ### M2.2 Обработка медиа (api + worker)
 
-- [ ] API: `purpose` `FARM_PHOTO`/`LISTING_MEDIA` (продавец OWNER/MANAGER, `X-Org-Id`), `complete` → событие `media.uploaded` в транзакции
-- [ ] Worker: outbox `media.uploaded` → очередь BullMQ `media` (jobId = mediaId, повторы); проверка magic bytes; изображения — sharp: поворот по EXIF, удаление метаданных (в том числе GPS), перезапись оригинала, превью WebP; видео — ffmpeg: длительность ≤ 60 с, удаление метаданных, кадр-превью; итог `PROCESSED` или `REJECTED` с причиной
-- [ ] `GET /media/:id` (статус для клиента), ссылки на превью; доступ к фото наличия и хозяйства — члены организации, O/A; публично — только обработанные фото активного наличия через каталог
-- [ ] Web: сжатие фото до ~2 МБ на клиенте и перевод HEIC в JPEG там, где браузер умеет (D-46 п. 7)
-- [ ] Тесты: unit (определение типа, решения обработки), e2e worker с MinIO (EXIF/GPS удалён, превью есть, подмена типа отклонена, длинное видео отклонено)
+- [x] API: `purpose` `FARM_PHOTO`/`LISTING_MEDIA` (продавец OWNER/MANAGER, `X-Org-Id`), `complete` → событие `media.uploaded` в транзакции
+- [x] Worker: outbox `media.uploaded` → очередь BullMQ `media` (jobId = mediaId, повторы); проверка magic bytes; изображения — sharp: поворот по EXIF, удаление метаданных (в том числе GPS), очищенная копия под новым ключом и удаление оригинала, превью WebP; видео — ffmpeg (`ffmpeg-static`, `FFMPEG_PATH`): длительность ≤ 60 с, удаление метаданных, кадр-превью; итог `PROCESSED` или `REJECTED` с причиной
+- [x] `GET /media/:id` (статус и причина отказа), `GET /media/:id/url?variant=thumb`; доступ — загрузивший, члены организации, O/A; публичная выдача обработанных фото — через каталог (M2.6); документы организации и верификация берут только `ORG_VERIFICATION`
+- [x] Web: `compressPhoto` (до ~2 МБ, JPEG, HEIC → JPEG там, где браузер умеет, D-46 п. 7) и `uploadSellerMedia`; экраны — в M2.7
+- [x] Тесты: unit worker (EXIF/GPS и геотег QuickTime удалены, поворот, превью, PNG, битый файл, PDF, видео 62 с отклонено), e2e worker с MinIO (outbox → очередь → `PROCESSED`/`REJECTED`, оригинал удалён), e2e api (права по назначению, событие один раз, статус, изоляция)
 
 ### M2.3 Хозяйства
 

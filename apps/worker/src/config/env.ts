@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+const optionalString = z
+  .string()
+  .optional()
+  .transform((v) => (v && v.trim() !== '' ? v : undefined));
+
 /** Переменные окружения worker (SPEC 13.6 + D-05, D-10). Проверяются при старте. */
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -14,6 +19,18 @@ export const envSchema = z.object({
   /** Адрес веба для ссылок в SMS и уведомлениях (D-10). */
   WEB_URL: z.url().default('http://localhost:3000'),
   BRAND_NAME: z.string().min(1).default('BaliqBozor'),
+  /** Хранилище файлов: worker читает загрузки и пишет обработанные копии (D-52). */
+  S3_ENDPOINT: z.url(),
+  S3_REGION: z.string().min(1),
+  S3_BUCKET: z.string().min(1),
+  S3_ACCESS_KEY: z.string().min(1),
+  S3_SECRET_KEY: z.string().min(1),
+  S3_FORCE_PATH_STYLE: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((v) => v === 'true'),
+  /** Свой ffmpeg вместо бинарника из `ffmpeg-static` (например, системный в Docker-образе). */
+  FFMPEG_PATH: optionalString,
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -13,7 +13,7 @@ import { AuditService } from '../../infra/audit.service.js';
 import { recordEvent } from '../../infra/events.js';
 import { PrismaService } from '../../infra/prisma.service.js';
 import { assertCanInOrg, requireOrg } from '../auth/policy.js';
-import type { MediaDto } from '../media/media.dto.js';
+import { type MediaDto, toMediaDto } from '../media/media.dto.js';
 import { OrgsService } from '../orgs/orgs.service.js';
 import type {
   AdminOrgDetailsDto,
@@ -58,7 +58,12 @@ export class VerificationService {
         wasVerified: !!org.verifiedAt,
       });
       const media = await tx.mediaFile.findMany({
-        where: { id: { in: ids }, orgId, status: { in: ['UPLOADED', 'PROCESSED'] } },
+        where: {
+          id: { in: ids },
+          orgId,
+          purpose: 'ORG_VERIFICATION',
+          status: { in: ['UPLOADED', 'PROCESSED'] },
+        },
         select: { id: true },
       });
       if (media.length !== ids.length) {
@@ -213,17 +218,14 @@ export class VerificationService {
   /** Загруженные документы организации (без незавершённых и отклонённых загрузок). */
   async documents(orgId: string): Promise<MediaDto[]> {
     const rows = await this.prisma.client.mediaFile.findMany({
-      where: { orgId, status: { in: ['UPLOADED', 'PROCESSED'] } },
+      where: {
+        orgId,
+        purpose: 'ORG_VERIFICATION',
+        status: { in: ['UPLOADED', 'PROCESSED'] },
+      },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
     });
-    return rows.map((d) => ({
-      id: d.id,
-      kind: d.kind,
-      status: d.status,
-      mimeType: d.mimeType,
-      sizeBytes: d.sizeBytes,
-      createdAt: d.createdAt,
-    }));
+    return rows.map(toMediaDto);
   }
 
   async orgDetails(auth: AuthContext, orgId: string): Promise<AdminOrgDetailsDto> {

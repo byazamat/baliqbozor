@@ -12,6 +12,8 @@ allowBuilds:
   '@swc/core': true # проверка нативного бинарника (next-intl, @nestjs/cli)
   msgpackr-extract: true # нативный ускоритель msgpack для bullmq (готовые бинарники)
   '@scarf/scarf': false # телеметрия swagger-ui
+  sharp: true # обработка изображений в worker (готовые бинарники libvips, D-52)
+  ffmpeg-static: true # скачивает бинарник ffmpeg для видео в worker (D-52)
 
 minimumReleaseAgeExclude:
   - '@aws-sdk/checksums@3.1002.1'

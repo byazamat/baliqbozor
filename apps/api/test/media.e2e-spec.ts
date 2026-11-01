@@ -148,4 +148,61 @@ describe('media uploads (e2e, real MinIO)', () => {
       .set(bearer(owner))
       .expect(404);
   });
+
+  it('seller photos and videos: OWNER/MANAGER of a seller upload, completion queues processing', async () => {
+    const owner = await actor(app, sms);
+    const manager = await actor(app, sms);
+    const staff = await actor(app, sms);
+    const buyer = await actor(app, sms);
+    const org = await createOrg(app, owner.userId);
+    const buyerOrg = await createOrg(app, buyer.userId, { type: 'BUYER' });
+    await addMember(app, org.id, manager.userId, 'MANAGER');
+    await addMember(app, org.id, staff.userId, 'STAFF');
+
+    await requestUpload(staff, org.id, { purpose: 'LISTING_MEDIA' }).expect(403);
+    await requestUpload(buyer, buyerOrg.id, { purpose: 'FARM_PHOTO' }).expect(403);
+    await requestUpload(manager, org.id, {
+      purpose: 'FARM_PHOTO',
+      kind: 'VIDEO',
+      mimeType: 'video/mp4',
+    }).expect(415);
+    await requestUpload(manager, org.id, {
+      purpose: 'LISTING_MEDIA',
+      kind: 'VIDEO',
+      mimeType: 'video/quicktime',
+      sizeBytes: 60 * 1024 * 1024,
+    }).expect(201);
+
+    const res = await requestUpload(manager, org.id, { purpose: 'LISTING_MEDIA' }).expect(201);
+    const mediaId = res.body.mediaId as string;
+    await upload(res.body.uploadUrl as string, res.body.headers as Record<string, string>, PNG);
+    await http().post(`/api/v1/media/${mediaId}/complete`).set(bearer(manager)).expect(200);
+    const prisma = prismaOf(app);
+    expect(await prisma.mediaFile.findUniqueOrThrow({ where: { id: mediaId } })).toMatchObject({
+      purpose: 'LISTING_MEDIA',
+      status: 'UPLOADED',
+      orgId: org.id,
+    });
+    expect(
+      await prisma.domainEvent.count({ where: { type: 'media.uploaded', aggregateId: mediaId } }),
+    ).toBe(1);
+    // повторный complete не пишет второе событие
+    await http().post(`/api/v1/media/${mediaId}/complete`).set(bearer(manager)).expect(200);
+    expect(
+      await prisma.domainEvent.count({ where: { type: 'media.uploaded', aggregateId: mediaId } }),
+    ).toBe(1);
+
+    const status = await http().get(`/api/v1/media/${mediaId}`).set(bearer(staff)).expect(200);
+    expect(status.body).toMatchObject({ id: mediaId, status: 'UPLOADED', hasThumbnail: false });
+    await http().get(`/api/v1/media/${mediaId}/url?variant=thumb`).set(bearer(owner)).expect(404);
+    await expectIsolated(http().get(`/api/v1/media/${mediaId}`).set(bearer(buyer)));
+
+    // документы организации — только назначения ORG_VERIFICATION
+    const docs = await http()
+      .get(`/api/v1/orgs/${org.id}/documents`)
+      .set(bearer(owner))
+      .set('X-Org-Id', org.id)
+      .expect(200);
+    expect(docs.body).toEqual([]);
+  });
 });

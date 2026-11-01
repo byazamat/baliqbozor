@@ -614,6 +614,18 @@
             "format": "date-time",
             "type": "string"
           },
+          "durationSec": {
+            "nullable": true,
+            "type": "number"
+          },
+          "hasThumbnail": {
+            "description": "Есть превью (`GET /media/:id/url?variant=thumb`)",
+            "type": "boolean"
+          },
+          "height": {
+            "nullable": true,
+            "type": "number"
+          },
           "id": {
             "format": "uuid",
             "type": "string"
@@ -628,10 +640,22 @@
           "mimeType": {
             "type": "string"
           },
+          "rejectReason": {
+            "enum": [
+              "UNKNOWN_TYPE",
+              "TYPE_MISMATCH",
+              "VIDEO_TOO_LONG",
+              "UNREADABLE",
+              "SIZE_MISMATCH"
+            ],
+            "nullable": true,
+            "type": "string"
+          },
           "sizeBytes": {
             "type": "number"
           },
           "status": {
+            "description": "UPLOADED — ждёт обработки в worker; PROCESSED — проверен и очищен (D-52)",
             "enum": [
               "PENDING_UPLOAD",
               "UPLOADED",
@@ -639,6 +663,10 @@
               "REJECTED"
             ],
             "type": "string"
+          },
+          "width": {
+            "nullable": true,
+            "type": "number"
           }
         },
         "required": [
@@ -647,6 +675,11 @@
           "status",
           "mimeType",
           "sizeBytes",
+          "width",
+          "height",
+          "durationSec",
+          "hasThumbnail",
+          "rejectReason",
           "createdAt"
         ],
         "type": "object"
@@ -661,9 +694,11 @@
         "type": "string"
       },
       "MediaPurpose": {
-        "description": "ORG_VERIFICATION требует X-Org-Id",
+        "description": "Требует X-Org-Id. ORG_VERIFICATION — OWNER; FARM_PHOTO и LISTING_MEDIA — OWNER/MANAGER продавца",
         "enum": [
-          "ORG_VERIFICATION"
+          "ORG_VERIFICATION",
+          "FARM_PHOTO",
+          "LISTING_MEDIA"
         ],
         "type": "string"
       },
@@ -1646,7 +1681,7 @@
                 "$ref": "#/components/schemas/MediaPurpose"
               }
             ],
-            "description": "ORG_VERIFICATION требует X-Org-Id"
+            "description": "Требует X-Org-Id. ORG_VERIFICATION — OWNER; FARM_PHOTO и LISTING_MEDIA — OWNER/MANAGER продавца"
           },
           "sizeBytes": {
             "example": 1048576,
@@ -2616,6 +2651,51 @@
         ]
       }
     },
+    "/api/v1/media/{id}": {
+      "get": {
+        "operationId": "Media_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "media"
+        ]
+      }
+    },
     "/api/v1/media/{id}/complete": {
       "post": {
         "operationId": "Media_complete",
@@ -2680,6 +2760,19 @@
             "name": "id",
             "required": true,
             "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "variant",
+            "required": false,
+            "schema": {
+              "default": "original",
+              "enum": [
+                "original",
+                "thumb"
+              ],
               "type": "string"
             }
           }

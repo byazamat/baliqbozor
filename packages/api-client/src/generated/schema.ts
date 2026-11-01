@@ -276,6 +276,22 @@ export interface paths {
         patch: operations["Me_update"];
         trace?: never;
     };
+    "/api/v1/media/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["Media_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/media/{id}/complete": {
         parameters: {
             query?: never;
@@ -696,21 +712,31 @@ export interface components {
         MediaDto: {
             /** Format: date-time */
             createdAt: string;
+            durationSec: number | null;
+            /** @description Есть превью (`GET /media/:id/url?variant=thumb`) */
+            hasThumbnail: boolean;
+            height: number | null;
             /** Format: uuid */
             id: string;
             kind: components["schemas"]["MediaKind"];
             mimeType: string;
+            /** @enum {string|null} */
+            rejectReason: "UNKNOWN_TYPE" | "TYPE_MISMATCH" | "VIDEO_TOO_LONG" | "UNREADABLE" | "SIZE_MISMATCH" | null;
             sizeBytes: number;
-            /** @enum {string} */
+            /**
+             * @description UPLOADED — ждёт обработки в worker; PROCESSED — проверен и очищен (D-52)
+             * @enum {string}
+             */
             status: "PENDING_UPLOAD" | "UPLOADED" | "PROCESSED" | "REJECTED";
+            width: number | null;
         };
         /** @enum {string} */
         MediaKind: "IMAGE" | "VIDEO" | "PDF" | "OTHER";
         /**
-         * @description ORG_VERIFICATION требует X-Org-Id
+         * @description Требует X-Org-Id. ORG_VERIFICATION — OWNER; FARM_PHOTO и LISTING_MEDIA — OWNER/MANAGER продавца
          * @enum {string}
          */
-        MediaPurpose: "ORG_VERIFICATION";
+        MediaPurpose: "ORG_VERIFICATION" | "FARM_PHOTO" | "LISTING_MEDIA";
         MeDto: {
             fullName: string | null;
             /** Format: uuid */
@@ -1009,7 +1035,7 @@ export interface components {
             kind: components["schemas"]["MediaKind"];
             /** @example image/jpeg */
             mimeType: string;
-            /** @description ORG_VERIFICATION требует X-Org-Id */
+            /** @description Требует X-Org-Id. ORG_VERIFICATION — OWNER; FARM_PHOTO и LISTING_MEDIA — OWNER/MANAGER продавца */
             purpose: components["schemas"]["MediaPurpose"];
             /** @example 1048576 */
             sizeBytes: number;
@@ -1554,6 +1580,35 @@ export interface operations {
             };
         };
     };
+    Media_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaDto"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDto"];
+                };
+            };
+        };
+    };
     Media_complete: {
         parameters: {
             query?: never;
@@ -1594,7 +1649,9 @@ export interface operations {
     };
     Media_downloadUrl: {
         parameters: {
-            query?: never;
+            query?: {
+                variant?: "original" | "thumb";
+            };
             header?: never;
             path: {
                 id: string;

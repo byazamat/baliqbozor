@@ -8,7 +8,9 @@ import { HealthModule } from './health/health.module.js';
 import { HeartbeatModule } from './heartbeat/heartbeat.module.js';
 import { InfraModule } from './infra/infra.module.js';
 import { REDIS, RedisModule } from './infra/redis.js';
+import { StorageModule } from './infra/storage.js';
 import { loggerParams } from './logger.js';
+import { MediaModule } from './media/media.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
 import { OutboxModule } from './outbox/outbox.module.js';
 
@@ -41,6 +43,8 @@ export class WorkerModule {
         HeartbeatModule,
         OutboxModule,
         NotificationsModule,
+        StorageModule,
+        MediaModule,
         HealthModule,
       ],
     };

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -15,7 +15,13 @@ import { ApiErrorDto } from '../../common/api-error.dto.js';
 import type { AuthContext } from '../../common/request-context.js';
 import { OrgScoped } from '../auth/access.decorators.js';
 import { CurrentAuth } from '../auth/current-auth.decorator.js';
-import { DownloadUrlDto, MediaDto, UploadUrlDto, UploadUrlRequestDto } from './media.dto.js';
+import {
+  DownloadUrlDto,
+  DownloadUrlQueryDto,
+  MediaDto,
+  UploadUrlDto,
+  UploadUrlRequestDto,
+} from './media.dto.js';
 import { MediaService } from './media.service.js';
 
 @ApiTags('media')
@@ -52,13 +58,21 @@ export class MediaController {
     return this.media.complete(auth, id);
   }
 
+  @Get(':id')
+  @ApiOkResponse({ type: MediaDto })
+  @ApiNotFoundResponse({ type: ApiErrorDto })
+  get(@CurrentAuth() auth: AuthContext, @Param('id', ParseUUIDPipe) id: string): Promise<MediaDto> {
+    return this.media.get(auth, id);
+  }
+
   @Get(':id/url')
   @ApiOkResponse({ type: DownloadUrlDto })
   @ApiNotFoundResponse({ type: ApiErrorDto })
   downloadUrl(
     @CurrentAuth() auth: AuthContext,
     @Param('id', ParseUUIDPipe) id: string,
+    @Query() query: DownloadUrlQueryDto,
   ): Promise<DownloadUrlDto> {
-    return this.media.downloadUrl(auth, id);
+    return this.media.downloadUrl(auth, id, query.variant);
   }
 }
